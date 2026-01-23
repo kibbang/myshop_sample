@@ -1,0 +1,152 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+
+    <div class="page-header d-print-none mb-3">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">주문 목록</h2>
+                <div class="text-muted">주문 조회/상태 관리</div>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a class="btn btn-outline-primary" href="#">엑셀 다운로드</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 검색/필터 -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form class="row g-2" method="get" th:action="@{/admin/orders}">
+                <div class="col-md-3">
+                    <label class="form-label">기간</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" name="from" />
+                        <span class="input-group-text">~</span>
+                        <input type="date" class="form-control" name="to" />
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">상태</label>
+                    <select class="form-select" name="status">
+                        <option value="">전체</option>
+                        <option value="PAYMENT">PAYMENT</option>
+                        <option value="SHIPPING">SHIPPING</option>
+                        <option value="DONE">DONE</option>
+                        <option value="CANCEL">CANCEL</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">검색</label>
+                    <input type="text" class="form-control" name="keyword"
+                           placeholder="주문번호/구매자/전화번호" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">정렬</label>
+                    <select class="form-select" name="sort">
+                        <option value="createdAt_desc">최신순</option>
+                        <option value="createdAt_asc">오래된순</option>
+                        <option value="amount_desc">금액 높은순</option>
+                        <option value="amount_asc">금액 낮은순</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="d-grid gap-2 w-100">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                        <a class="btn btn-outline-secondary" th:href="@{/admin/orders}">초기화</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 리스트 -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">총 4건</h3>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table table-striped">
+                <thead>
+                <tr>
+                    <th>주문번호</th>
+                    <th>구매자</th>
+                    <th>상태</th>
+                    <th class="text-end">금액</th>
+                    <th class="text-end">주문일</th>
+                    <th class="text-end">관리</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                    <td class="text-muted">#20260120-0002</td>
+                    <td>김철수</td>
+                    <td><span class="badge bg-blue">SHIPPING</span></td>
+                    <td class="text-end">₩118,000</td>
+                    <td class="text-end text-muted">2026-01-20</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-muted">#20260120-0001</td>
+                    <td>홍길동</td>
+                    <td><span class="badge bg-yellow">PAYMENT</span></td>
+                    <td class="text-end">₩52,000</td>
+                    <td class="text-end text-muted">2026-01-20</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-muted">#20260119-0098</td>
+                    <td>이영희</td>
+                    <td><span class="badge bg-green">DONE</span></td>
+                    <td class="text-end">₩24,500</td>
+                    <td class="text-end text-muted">2026-01-19</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-muted">#20260119-0097</td>
+                    <td>박민수</td>
+                    <td><span class="badge bg-red">CANCEL</span></td>
+                    <td class="text-end">₩33,000</td>
+                    <td class="text-end text-muted">2026-01-19</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이징 (자리) -->
+        <div class="card-footer d-flex align-items-center">
+            <p class="m-0 text-muted">
+                Showing <span>1</span> to <span>10</span> of <span>4</span> entries
+            </p>
+            <ul class="pagination m-0 ms-auto">
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">prev</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">next</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+
+    <div class="page-header d-print-none">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">대시보드</h2>
+                <div class="text-muted">관리자 홈</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상단 KPI 카드 -->
+    <div class="row row-deck row-cards mt-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="subheader">오늘 주문</div>
+                    <div class="h1 mb-1">12</div>
+                    <div class="text-muted">전일 대비 +3</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="subheader">결제 완료</div>
+                    <div class="h1 mb-1">9</div>
+                    <div class="text-muted">결제 대기 2</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="subheader">상품 수</div>
+                    <div class="h1 mb-1">128</div>
+                    <div class="text-muted">품절 임박 3</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="subheader">회원 수</div>
+                    <div class="h1 mb-1">1,024</div>
+                    <div class="text-muted">이번 주 +7</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 아래 2컬럼 -->
+    <div class="row row-cards mt-3">
+        <!-- 최근 주문 -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">최근 주문</h3>
+                    <div class="card-actions">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/orders}">전체 보기</a>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                        <tr>
+                            <th>주문번호</th>
+                            <th>구매자</th>
+                            <th>상태</th>
+                            <th class="text-end">금액</th>
+                            <th class="text-end">주문일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>#20260120-0001</td>
+                            <td>홍길동</td>
+                            <td><span class="badge bg-yellow">PAYMENT</span></td>
+                            <td class="text-end">₩52,000</td>
+                            <td class="text-end text-muted">2026-01-20</td>
+                        </tr>
+                        <tr>
+                            <td>#20260120-0002</td>
+                            <td>김철수</td>
+                            <td><span class="badge bg-cyan">SHIPPING</span></td>
+                            <td class="text-end">₩118,000</td>
+                            <td class="text-end text-muted">2026-01-20</td>
+                        </tr>
+                        <tr>
+                            <td>#20260119-0098</td>
+                            <td>이영희</td>
+                            <td><span class="badge bg-green">DONE</span></td>
+                            <td class="text-end">₩24,500</td>
+                            <td class="text-end text-muted">2026-01-19</td>
+                        </tr>
+                        <tr>
+                            <td>#20260119-0097</td>
+                            <td>박민수</td>
+                            <td><span class="badge bg-red">CANCEL</span></td>
+                            <td class="text-end">₩33,000</td>
+                            <td class="text-end text-muted">2026-01-19</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 빠른 메뉴 + 재고 경고 -->
+        <div class="col-lg-4">
+            <div class="row row-cards">
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">빠른 메뉴</h3>
+                        </div>
+                        <div class="card-body d-grid gap-2">
+                            <a class="btn btn-primary btn-lg" th:href="@{/admin/products}">상품 관리</a>
+                            <a class="btn btn-outline-primary btn-lg" th:href="@{/admin/orders}">주문 관리</a>
+                            <a class="btn btn-outline-primary btn-lg" th:href="@{/admin/members}">회원 관리</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">재고 경고</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between">
+                                <div>상품 A</div>
+                                <div class="text-muted">2 left</div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between">
+                                <div>상품 B</div>
+                                <div class="text-muted">1 left</div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between">
+                                <div>상품 C</div>
+                                <div class="text-muted">0 left</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /row -->
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

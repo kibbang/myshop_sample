@@ -1,0 +1,32 @@
+package sample.myshop.admin;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminHomeController {
+
+    @GetMapping({"/", ""})
+    public String home(Model model) {
+        model.addAttribute("content", "admin/home/index :: content");
+        model.addAttribute("activeMenu", "home");
+        return "admin/layout/base";
+    }
+
+    @GetMapping("/orders")
+    public String orders(Model model) {
+        model.addAttribute("content", "admin/order/list :: content");
+        model.addAttribute("activeMenu", "orders");
+        return "admin/layout/base";
+    }
+
+    @GetMapping("/members")
+    public String members(Model model) {
+        model.addAttribute("content", "admin/member/list :: content");
+        model.addAttribute("activeMenu", "members");
+        return "admin/layout/base";
+    }
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sidebar">
+
+    <h1 class="navbar-brand navbar-brand-autodark">
+        <a th:href="@{/admin}">MyShop Admin</a>
+    </h1>
+
+    <div class="navbar-nav flex-row d-lg-none">
+        <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#sidebar-menu">
+            <span class="navbar-toggler-icon"></span>
+        </a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="sidebar-menu">
+        <ul class="navbar-nav pt-lg-3">
+
+            <li class="nav-item" th:classappend="${activeMenu}=='home' ? ' active' : ''">
+                <a class="nav-link" th:href="@{/admin}">
+                    <span class="nav-link-title">대시보드</span>
+                </a>
+            </li>
+
+            <li class="nav-item" th:classappend="${activeMenu} =='products' ? 'active' : ''">
+                <a class="nav-link" th:href="@{/admin/products}">
+                    <span class="nav-link-title">상품</span>
+                </a>
+            </li>
+
+            <li class="nav-item" th:classappend="${activeMenu}=='orders' ? 'active' : ''">
+                <a class="nav-link" th:href="@{/admin/orders}">
+                    <span class="nav-link-title">주문</span>
+                </a>
+            </li>
+
+            <li class="nav-item" th:classappend="${activeMenu}=='members' ? 'active' : ''">
+                <a class="nav-link" th:href="@{/admin/members}">
+                    <span class="nav-link-title">회원</span>
+                </a>
+            </li>
+            <li class="nav-item mt-3"
+                th:if="${session.loginUser != null}">
+                <form th:action="@{/logout}" method="post" class="px-3">
+                    <!-- CSRF 경로가 common/fragments 폴더 안에 있다면 그대로 유지 -->
+                    <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                    <button type="submit" class="btn btn-outline-danger w-100">로그아웃</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+</div>
+</body>
+</html>

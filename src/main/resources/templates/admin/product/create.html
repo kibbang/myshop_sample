@@ -1,0 +1,168 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <!--/*@thymesVar id="form" type="sample.myshop.admin.product.domain.dto.web.ProductCreateRequestDto"*/-->
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">Catalog</div>
+                    <h2 class="page-title">상품 등록</h2>
+                </div>
+                <div class="col-auto ms-auto d-print-none">
+                    <a class="btn btn-outline-secondary" th:href="@{/admin/products}">목록으로</a>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col">
+                    <ol class="breadcrumb breadcrumb-arrows" aria-label="breadcrumbs">
+                        <li class="breadcrumb-item"><a th:href="@{/admin}">Admin</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/admin/products}">Products</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="#">New</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+
+            <div class="row row-cards">
+                <div class="col-12 col-lg-8">
+                    <form class="card" method="post" th:action="@{/admin/products/create}" th:object="${form}">
+                        <!-- CSRF (Spring Security 기본이면 보통 th:name/th:value로 받음) -->
+                        <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+
+                        <div class="card-header">
+                            <h3 class="card-title">기본 정보</h3>
+                        </div>
+
+                        <div th:if="${#fields.hasGlobalErrors()}">
+                            <p class="field-error" th:each="error : ${#fields.globalErrors()}" th:text="${error.defaultMessage}"></p>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row g-3">
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">상품 코드</label>
+                                    <input type="text" class="form-control"
+                                           th:field="*{code}"
+                                           th:classappend="${#fields.hasErrors('code')} ? ' is-invalid' : ''"
+                                           placeholder="예) P-0001" required>
+                                    <div class="field-error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}">code error</div>
+                                    <div class="form-hint">고유 값(UNIQUE). 운영에선 변경하지 않는 걸 권장.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">통화</label>
+                                    <select class="form-select"
+                                       th:field="*{currency}"
+                                       th:classappend="${#fields.hasErrors('currency')} ? ' is-invalid' : ''"
+                                       required>
+                                    <!--/*@thymesVar id="productCurrencies" type=""*/-->
+                                    <option th:each="currency: ${productCurrencies}"
+                                            th:value="${currency.name()}"
+                                            th:text="${currency.label}">KRW</option>
+                                </select>
+                                <div class="field-error"
+                                     th:if="${#fields.hasErrors('currency')}"
+                                     th:errors="*{currency}">currency error</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">상품명</label>
+                                    <input type="text" class="form-control"
+                                           th:field="*{name}"
+                                           th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
+                                           placeholder="예) 베이직 티셔츠" required>
+                                    <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">name error</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">슬러그</label>
+                                    <input type="text" class="form-control"
+                                           th:field="*{slug}"
+                                           th:classappend="${#fields.hasErrors('slug')} ? ' is-invalid' : ''"
+                                           placeholder="예) basic-tshirt">
+                                    <div class="field-error" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}">slug error</div>
+                                    <div class="form-hint">URL용 식별자(선택). 비워두면 서버에서 생성하는 정책도 흔함.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">기본 가격</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control"
+                                               th:field="*{basePrice}"
+                                               th:classappend="${#fields.hasErrors('basePrice')} ? ' is-invalid' : ''"
+                                               min="0" step="1" placeholder="0" required>
+                                        <span class="input-group-text">원</span>
+                                    </div>
+                                    <div class="field-error" th:if="${#fields.hasErrors('basePrice')}" th:errors="*{basePrice}">basePrice error</div>
+                                    <div class="form-hint">Variant 가격을 쓰는 경우 override될 수 있음.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">상태</label>
+                                    <select class="form-select"
+                                            th:field="*{status}"
+                                            th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''">
+                                        <option th:each="product : ${productSaleStatus}"
+                                                th:value="${product.name()}"
+                                                th:text="${product.label}"></option>
+                                    </select>
+                                    <div class="field-error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">status error</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">설명</label>
+                                    <textarea class="form-control"
+                                              th:field="*{description}"
+                                              th:classappend="${#fields.hasErrors('description')} ? ' is-invalid' : ''"
+                                              rows="4"
+                                              placeholder="상품 설명(선택)"></textarea>
+                                    <div class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">description error</div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-end gap-2">
+                            <a class="btn btn-outline-secondary" th:href="@{/admin/products}">취소</a>
+                            <button type="submit" class="btn btn-primary">등록</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right side 도움말 카드 -->
+                <div class="col-12 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">등록 후 자동 처리</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled space-y">
+                                <li>✅ Product 저장</li>
+                                <li>✅ DEFAULT Variant 1개 생성</li>
+                                <li>✅ Inventory(0) 1개 생성</li>
+                            </ul>
+                            <div class="text-muted">
+                                이후 옵션/옵션값을 만든 뒤 Variant를 수동으로 추가하는 흐름으로 확장하면 됨.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

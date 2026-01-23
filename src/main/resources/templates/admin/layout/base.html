@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>MyShop Admin</title>
+
+    <!-- tabler css -->
+    <link rel="stylesheet" th:href="@{/assets/tabler/css/tabler.min.css}">
+    <!-- 네 커스텀 -->
+    <link rel="stylesheet" th:href="@{/assets/css/admin-custom.css}">
+</head>
+
+<body>
+<div class="page">
+    <!-- Sidebar -->
+    <aside class="navbar navbar-vertical navbar-expand-lg">
+        <div class="container-fluid" th:replace="~{admin/layout/sidebar :: sidebar}"></div>
+    </aside>
+
+    <div class="page-wrapper">
+        <!-- Content -->
+        <div class="page-body">
+            <div class="container-xxl">
+
+                <!-- 여기 중요: __${content}__  전처리-->
+                <div th:replace="~{__${content}__}"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- tabler js -->
+<script th:src="@{/assets/tabler/js/tabler.min.js}"></script>
+<script th:src="@{/assets/js/admin-custom.js}"></script>
+</body>
+</html>
