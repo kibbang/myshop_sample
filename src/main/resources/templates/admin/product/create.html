@@ -112,9 +112,9 @@
                                     <select class="form-select"
                                             th:field="*{status}"
                                             th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''">
-                                        <option th:each="product : ${productSaleStatus}"
-                                                th:value="${product.name()}"
-                                                th:text="${product.label}"></option>
+                                        <option th:each="status : ${productSaleStatus}"
+                                                th:value="${status.name()}"
+                                                th:text="${status.label}"></option>
                                     </select>
                                     <div class="field-error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">status error</div>
                                 </div>

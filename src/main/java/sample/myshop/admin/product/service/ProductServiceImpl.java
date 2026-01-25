@@ -5,7 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.dto.web.ProductCreateDto;
+import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
+import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
 import sample.myshop.admin.product.repository.ProductRepository;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,5 +32,10 @@ public class ProductServiceImpl implements ProductService{
         );
 
         return productRepository.save(product);
+    }
+
+    @Override
+    public List<ProductListItemDto> searchProducts(ProductSearchConditionDto condition, int page, int size) {
+        return productRepository.findProducts(condition, page, size);
     }
 }

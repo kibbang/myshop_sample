@@ -1,6 +1,7 @@
 package sample.myshop.admin.product.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -8,9 +9,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import sample.myshop.admin.product.domain.dto.web.ProductCreateDto;
 import sample.myshop.admin.product.domain.dto.web.ProductCreateRequestDto;
+import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
+import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
 import sample.myshop.admin.product.service.ProductService;
 
+import java.util.List;
+
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/admin/products")
 public class ProductController {
@@ -23,8 +29,18 @@ public class ProductController {
      * @return
      */
     @GetMapping
-    public String products(Model model) {
+    public String products(@ModelAttribute(name = "searchForm") ProductSearchConditionDto searchForm, Model model) {
+
+        log.info("keyword={}, status={}, page={}, size={}",
+                searchForm.getKeyword(), searchForm.getStatus(),
+                searchForm.getPage(), searchForm.getSize());
+
+        List<ProductListItemDto> productList = productService.searchProducts(searchForm, Math.max(searchForm.getPage(), 1), searchForm.getSize());
+
+        model.addAttribute("productList", productList);
+
         addContentView(model, "admin/product/list :: content");
+
         return "admin/layout/base";
     }
 
