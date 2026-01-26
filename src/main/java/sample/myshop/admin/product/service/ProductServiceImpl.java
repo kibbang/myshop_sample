@@ -1,16 +1,16 @@
 package sample.myshop.admin.product.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sample.myshop.admin.product.domain.Product;
-import sample.myshop.admin.product.domain.dto.web.ProductCreateDto;
-import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
-import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
+import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.repository.ProductRepository;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -42,5 +42,35 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Long getTotalProductCount(ProductSearchConditionDto condition) {
         return productRepository.countProducts(condition);
+    }
+
+    @Override
+    public ProductDetailDto showProduct(Long productId) {
+        ProductDetailDto findProduct = productRepository.findProductById(productId);
+
+        if(findProduct == null) {
+            throw new IllegalArgumentException("Product not found with id: " + productId);
+        }
+
+        return findProduct;
+    }
+
+    @Override
+    @Transactional
+    public void modifyProduct(ProductUpdateDto productUpdateDto) {
+        Product updateTargetProduct = productRepository.findProductByIdForUpdate(productUpdateDto.getId());
+
+        if(updateTargetProduct == null) {
+            throw new IllegalArgumentException("Product not found with id: " + productUpdateDto.getId());
+        }
+
+        updateTargetProduct.updateBasicInfo(
+                productUpdateDto.getName(),
+                productUpdateDto.getSlug(),
+                productUpdateDto.getDescription(),
+                productUpdateDto.getStatus(),
+                productUpdateDto.getBasePrice(),
+                productUpdateDto.getCurrency()
+        );
     }
 }

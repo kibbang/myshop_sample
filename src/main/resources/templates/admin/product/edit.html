@@ -1,0 +1,269 @@
+<!-- templates/admin/product/edit.html -->
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div th:fragment="content">
+      <!-- Page header -->
+      <div class="page-header d-print-none">
+        <div class="container-xl">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              <h2 class="page-title">상품 수정</h2>
+              <div class="text-secondary mt-1" th:if="${product != null}">
+                ID: <span th:text="${product.id}">1</span>
+                <span class="mx-2">·</span>
+                CODE: <span th:text="${product.code}">PRD-001</span>
+              </div>
+            </div>
+
+            <div class="col-auto ms-auto d-print-none">
+              <div class="btn-list">
+                <a
+                  class="btn btn-outline-secondary"
+                  th:href="@{/admin/products/{id}(id=${product.id})}"
+                >
+                  상세로
+                </a>
+                <a class="btn btn-outline-secondary" th:href="@{/admin/products}">
+                  목록
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Not found / empty -->
+      <div class="container-xl mt-3" th:if="${product == null}">
+        <div class="alert alert-danger" role="alert">
+          상품 정보를 찾을 수 없습니다.
+        </div>
+        <a class="btn btn-outline-secondary" th:href="@{/admin/products}">목록으로</a>
+      </div>
+
+      <!-- Form -->
+      <div class="page-body" th:if="${product != null}">
+        <div class="container-xl">
+          <div class="row row-cards">
+            <div class="col-12 col-lg-8">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">수정 정보</h3>
+                </div>
+
+                <form
+                  th:action="@{/admin/products/{id}(id=${product.id})}"
+                  method="post"
+                  th:object="${form}"
+                >
+                  <div class="card-body">
+                    <!-- CSRF (네가 만든 fragment가 있으면 교체해서 써) -->
+                    <input type="hidden" name="_csrf" th:value="${_csrf}" />
+
+                    <!-- Global error -->
+                    <div
+                      class="alert alert-danger"
+                      role="alert"
+                      th:if="${#fields.hasGlobalErrors()}"
+                    >
+                      <ul class="mb-0">
+                        <li th:each="e : ${#fields.globalErrors()}" th:text="${e}">에러</li>
+                      </ul>
+                    </div>
+
+                    <!-- name -->
+                    <div class="mb-3">
+                      <label class="form-label">상품명</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        th:field="*{name}"
+                        placeholder="상품명을 입력하세요"
+                        th:classappend="${#fields.hasErrors('name')} ? ' is-invalid'"
+                      />
+                      <div
+                        class="invalid-feedback"
+                        th:if="${#fields.hasErrors('name')}"
+                        th:errors="*{name}"
+                      >
+                        상품명 에러
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <!-- status -->
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">판매상태</label>
+                        <select
+                          class="form-select"
+                          th:field="*{status}"
+                          th:classappend="${#fields.hasErrors('status')} ? ' is-invalid'"
+                        >
+                          <option value="" disabled>선택하세요</option>
+                          <option
+                            th:each="saleStatus : ${productSaleStatus}"
+                            th:value="${saleStatus.name()}"
+                            th:text="${saleStatus.label}"
+                            th:selected="${product.status.name() == saleStatus.name()}"
+                          >
+                            ON_SALE
+                          </option>
+                        </select>
+                        <div
+                          class="invalid-feedback"
+                          th:if="${#fields.hasErrors('status')}"
+                          th:errors="*{status}"
+                        >
+                          상태 에러
+                        </div>
+                      </div>
+
+                      <!-- currency -->
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">통화</label>
+
+                        <!-- currency를 enum으로 쓰면 아래 select 그대로,
+                             문자열로 쓰면 input으로 바꿔도 됨 -->
+                        <select
+                          class="form-select"
+                          th:field="*{currency}"
+                          th:classappend="${#fields.hasErrors('currency')} ? ' is-invalid'"
+                        >
+                          <option value="" disabled>선택하세요</option>
+                          <option
+                            th:each="productCurrency : ${productCurrencies}"
+                            th:value="${productCurrency.name()}"
+                            th:text="${productCurrency.label}"
+                            th:selected="${productCurrency.name() == product.currency.name()}"
+                          >
+                            KRW
+                          </option>
+                        </select>
+
+                        <div
+                          class="invalid-feedback"
+                          th:if="${#fields.hasErrors('currency')}"
+                          th:errors="*{currency}"
+                        >
+                          통화 에러
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- basePrice -->
+                    <div class="mb-3">
+                      <label class="form-label">기본가격</label>
+                      <div class="input-group">
+                        <input
+                          type="number"
+                          class="form-control"
+                          th:field="*{basePrice}"
+                          min="0"
+                          step="1"
+                          placeholder="0"
+                          th:classappend="${#fields.hasErrors('basePrice')} ? ' is-invalid'"
+                        />
+                        <span class="input-group-text">
+                          <span th:text="*{currency} ?: 'CUR'">KRW</span>
+                        </span>
+                        <div
+                          class="invalid-feedback"
+                          th:if="${#fields.hasErrors('basePrice')}"
+                          th:errors="*{basePrice}"
+                        >
+                          가격 에러
+                        </div>
+                      </div>
+                      <div class="form-hint">0 이상 숫자만 입력</div>
+                    </div>
+
+                    <!-- slug -->
+                    <div class="mb-3">
+                      <label class="form-label">Slug</label>
+                      <input
+                        type="text"
+                        class="form-control font-monospace"
+                        th:field="*{slug}"
+                        placeholder="sample-product"
+                        th:classappend="${#fields.hasErrors('slug')} ? ' is-invalid'"
+                      />
+                      <div
+                        class="invalid-feedback"
+                        th:if="${#fields.hasErrors('slug')}"
+                        th:errors="*{slug}"
+                      >
+                        slug 에러
+                      </div>
+                      <div class="form-hint">URL 식별자(중복 정책은 서버에서 검증)</div>
+                    </div>
+
+                    <!-- description -->
+                    <div class="mb-3">
+                      <label class="form-label">설명</label>
+                      <textarea
+                        class="form-control"
+                        rows="8"
+                        th:field="*{description}"
+                        placeholder="상품 설명을 입력하세요"
+                        th:classappend="${#fields.hasErrors('description')} ? ' is-invalid'"
+                      ></textarea>
+                      <div
+                        class="invalid-feedback"
+                        th:if="${#fields.hasErrors('description')}"
+                        th:errors="*{description}"
+                      >
+                        설명 에러
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-footer d-flex justify-content-between">
+                    <a
+                      class="btn btn-outline-secondary"
+                      th:href="@{/admin/products/{id}(id=${product.id})}"
+                    >
+                      취소
+                    </a>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Side meta -->
+            <div class="col-12 col-lg-4">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">참고</h3>
+                </div>
+
+                <div class="card-body">
+                  <dl class="row">
+                    <dt class="col-5 text-secondary">ID</dt>
+                    <dd class="col-7" th:text="${product.id}">1</dd>
+
+                    <dt class="col-5 text-secondary">CODE</dt>
+                    <dd class="col-7 font-monospace" th:text="${product.code}">PRD-001</dd>
+
+                    <dt class="col-5 text-secondary">생성일</dt>
+                    <dd class="col-7" th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-26T10:00:00</dd>
+
+                    <dt class="col-5 text-secondary">수정일</dt>
+                    <dd class="col-7" th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-26T10:10:00</dd>
+                  </dl>
+
+                  <div class="hr-text">팁</div>
+                  <ul class="text-secondary mb-0">
+                    <li>검증 실패 시 입력값 유지 + 필드 에러 표시</li>
+                    <li>저장 성공 시 상세로 redirect + 플래시 메시지</li>
+                    <li>Slug 중복 검증은 서버에서 처리</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

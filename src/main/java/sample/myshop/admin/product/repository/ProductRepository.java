@@ -1,9 +1,9 @@
 package sample.myshop.admin.product.repository;
 
 import sample.myshop.admin.product.domain.Product;
+import sample.myshop.admin.product.domain.dto.web.ProductDetailDto;
 import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
 import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
-import sample.myshop.admin.product.domain.dto.web.SkuStockRowDto;
 
 import java.util.List;
 
@@ -14,4 +14,7 @@ public interface ProductRepository {
 
     Long countProducts(ProductSearchConditionDto condition);
 
+    ProductDetailDto findProductById(Long productId);
+
+    Product findProductByIdForUpdate(Long productId);
 }

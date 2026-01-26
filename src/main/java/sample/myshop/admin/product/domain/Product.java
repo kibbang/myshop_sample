@@ -3,7 +3,6 @@ package sample.myshop.admin.product.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sample.myshop.admin.product.domain.dto.web.ProductCreateRequestDto;
 import sample.myshop.admin.product.enums.Currency;
 import sample.myshop.admin.product.enums.SaleStatus;
 import sample.myshop.common.entity.CommonEntity;
@@ -57,6 +56,17 @@ public class Product extends CommonEntity {
         this.currency = currency;
     }
 
+    /**
+     * 생성 메소드
+     * @param code
+     * @param name
+     * @param slug
+     * @param description
+     * @param status
+     * @param basePrice
+     * @param currency
+     * @return Product
+     */
     public static Product createProduct(String code,
                                         String name,
                                         String slug,
@@ -66,6 +76,24 @@ public class Product extends CommonEntity {
                                         Currency currency
     ) {
         return new Product(code, name, slug, description, status, basePrice, currency);
+    }
+
+    /**
+     * 수정
+     * @param name
+     * @param slug
+     * @param description
+     * @param status
+     * @param basePrice
+     * @param currency
+     */
+    public void updateBasicInfo(String name, String slug, String description, SaleStatus status, int basePrice, Currency currency) {
+        this.name = name;
+        this.slug = slug;
+        this.description = description;
+        this.status = status;
+        this.basePrice = basePrice;
+        this.currency = currency;
     }
 }
 

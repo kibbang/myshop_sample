@@ -7,10 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import sample.myshop.admin.product.domain.dto.web.ProductCreateDto;
-import sample.myshop.admin.product.domain.dto.web.ProductCreateRequestDto;
-import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
-import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.service.ProductService;
 
 import java.util.List;
@@ -83,6 +81,64 @@ public class ProductController {
 
         return "redirect:/admin/products";
     }
+
+    @GetMapping("/{productId}")
+    public String show(@PathVariable Long productId, Model model) {
+        ProductDetailDto productDetailDto = productService.showProduct(productId);
+
+        model.addAttribute("product", productDetailDto);
+        addContentView(model, "admin/product/detail :: content");
+
+        return "admin/layout/base";
+    }
+
+    @GetMapping("/{productId}/edit")
+    public String edit(@PathVariable Long productId, @ModelAttribute(name = "form") ProductUpdateRequestDto productUpdateRequestDto, Model model) {
+        ProductDetailDto productDetailDto = productService.showProduct(productId);
+
+        model.addAttribute("product", productDetailDto);
+
+        productUpdateRequestDto.setName(productDetailDto.getName());
+        productUpdateRequestDto.setStatus(productDetailDto.getStatus());
+        productUpdateRequestDto.setCurrency(productDetailDto.getCurrency());
+        productUpdateRequestDto.setBasePrice(productDetailDto.getBasePrice());
+        productUpdateRequestDto.setSlug(productDetailDto.getSlug());
+        productUpdateRequestDto.setDescription(productDetailDto.getDescription());
+
+        addContentView(model, "admin/product/edit :: content");
+
+        return "admin/layout/base";
+    }
+
+    @PostMapping("/{productId}")
+    public String update(@PathVariable Long productId, @Validated @ModelAttribute(name = "form") ProductUpdateRequestDto productUpdateRequestDto, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            // 에러로 edit 페이지를 다시 렌더링할 때도, 템플릿이 기대하는 모델을 채워줘야 함
+            ProductDetailDto productDetailDto = productService.showProduct(productId);
+            model.addAttribute("product", productDetailDto);
+            model.addAttribute("productId", productId);
+
+            addContentView(model, "admin/product/edit :: content");
+            return "admin/layout/base";
+        }
+
+        ProductUpdateDto productUpdateDto = ProductUpdateDto.of(
+                productId,
+                productUpdateRequestDto.getName(),
+                productUpdateRequestDto.getSlug(),
+                productUpdateRequestDto.getDescription(),
+                productUpdateRequestDto.getStatus(),
+                productUpdateRequestDto.getBasePrice(),
+                productUpdateRequestDto.getCurrency()
+        );
+
+        productService.modifyProduct(productUpdateDto);
+
+        redirectAttributes.addFlashAttribute("flashMessage", "상품 수정이 완료되었습니다.");
+
+        return "redirect:/admin/products/" + productId;
+    }
+
 
     /**
      * 뷰에 컨텐츠 삽입

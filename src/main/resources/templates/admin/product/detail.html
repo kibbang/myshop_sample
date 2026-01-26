@@ -1,10 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<!-- templates/admin/product/detail.html -->
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
+<div th:fragment="content">
 
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <h2 class="page-title">
+                        상품 상세
+                    </h2>
+                    <div class="text-secondary mt-1" th:if="${product != null}">
+                        ID: <span th:text="${product.id}">1</span>
+                        <span class="mx-2">·</span>
+                        CODE: <span th:text="${product.code}">PRD-001</span>
+                    </div>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none" th:if="${product != null}">
+                    <div class="btn-list">
+                        <a class="btn btn-outline-secondary"
+                           th:href="@{/admin/products}">
+                            목록
+                        </a>
+                        <a class="btn btn-primary"
+                           th:href="@{/admin/products/{id}/edit(id=${product.id})}">
+                            수정하기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash message -->
+    <div class="container-xl mt-3" th:if="${flashMessage != null}">
+        <div class="alert alert-success" role="alert">
+            <div class="d-flex">
+                <div>
+                    <h4 class="alert-title">완료</h4>
+                    <div class="text-secondary" th:text="${flashMessage}">
+                        상품이 수정되었습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Not found / empty -->
+    <div class="container-xl mt-3" th:if="${product == null}">
+        <div class="alert alert-danger" role="alert">
+            상품 정보를 찾을 수 없습니다.
+        </div>
+        <a class="btn btn-outline-secondary" th:href="@{/admin/products}">목록으로</a>
+    </div>
+
+    <!-- Content -->
+    <div class="page-body" th:if="${product != null}">
+        <div class="container-xl">
+            <div class="row row-cards">
+
+                <!-- Main info -->
+                <div class="col-12 col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">기본 정보</h3>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">상품명</label>
+                                <div class="form-control-plaintext fw-semibold"
+                                     th:text="${product.name}">샘플 상품</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">판매상태</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge"
+                                              th:text="${product.status.label}"
+                                              th:classappend="${product.status != null and product.status.name() == 'ACTIVE'} ? ' bg-green-lt'
+                                                              : (${product.status != null and product.status.name() == 'INACTIVE'} ? ' bg-orange-lt'
+                                                              : ' bg-secondary-lt')">
+                                          판매 중
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Slug</label>
+                                    <div class="form-control-plaintext font-monospace"
+                                         th:text="${product.slug}">sample-product</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">기본가격</label>
+                                    <div class="form-control-plaintext">
+                                        <span class="fw-semibold" th:text="${#numbers.formatInteger(product.basePrice, 3, 'COMMA')}">10,000</span>
+                                        <span class="text-secondary ms-1" th:text="${product.currency}">KRW</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">통화</label>
+                                    <div class="form-control-plaintext" th:text="${product.currency}">KRW</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label">설명</label>
+                                <div class="form-control-plaintext"
+                                     style="white-space: pre-wrap;"
+                                     th:text="${product.description}">설명 텍스트
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meta info -->
+                <div class="col-12 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">메타</h3>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-5 text-secondary">ID</dt>
+                                <dd class="col-7" th:text="${product.id}">1</dd>
+
+                                <dt class="col-5 text-secondary">CODE</dt>
+                                <dd class="col-7 font-monospace" th:text="${product.code}">PRD-001</dd>
+
+                                <dt class="col-5 text-secondary">생성일</dt>
+                                <dd class="col-7">
+                                    <span th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-26T10:00:00</span>
+                                </dd>
+
+                                <dt class="col-5 text-secondary">수정일</dt>
+                                <dd class="col-7">
+                                    <span th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-26T10:10:00</span>
+                                </dd>
+                            </dl>
+
+                            <div class="hr-text">작업</div>
+
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-primary"
+                                   th:href="@{/admin/products/{id}/edit(id=${product.id})}">
+                                    수정하기
+                                </a>
+                                <a class="btn btn-outline-secondary"
+                                   th:href="@{/admin/products}">
+                                    목록으로
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Optional: Danger zone later -->
+                    <!--
+                    <div class="card mt-3">
+                      <div class="card-header">
+                        <h3 class="card-title text-danger">주의</h3>
+                      </div>
+                      <div class="card-body">
+                        <p class="text-secondary">삭제/비활성화 같은 기능은 다음 단계에서.</p>
+                      </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

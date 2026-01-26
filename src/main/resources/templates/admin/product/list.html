@@ -111,10 +111,10 @@
 <!--                    <td>상의</td>-->
                     <td class="text-end" th:text="|${#numbers.formatInteger(product.basePrice, 0, 'COMMA')}|">₩19,900</td>
                     <td class="text-end" th:text="${product.stockQuantity}"></td>
-                    <td><span class="badge bg-green" th:text="${product.status}">판매중</span></td>
+                    <td><span class="badge bg-green" th:text="${product.status.label}">판매중</span></td>
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">수정</a>
-                        <a class="btn btn-sm btn-outline-secondary" href="#">상세</a>
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/products/{id}/edit (id=${product.id})}">수정</a>
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/products/{id} (id=${product.id})}">상세</a>
                     </td>
                 </tr>
                 </tbody>

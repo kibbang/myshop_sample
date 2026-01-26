@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.Variant;
+import sample.myshop.admin.product.domain.dto.web.ProductDetailDto;
 import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
 import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
 import sample.myshop.admin.product.domain.dto.web.SkuStockRowDto;
@@ -121,7 +122,35 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Long countProducts(ProductSearchConditionDto condition) {
         return em.createQuery("select count(p.id) from Product p", Long.class).getSingleResult();
     }
-    
+
+
+    @Override
+    public ProductDetailDto findProductById(Long productId) {
+        Product product = em.find(Product.class, productId);
+
+        if (product == null) {
+           return null;
+        }
+
+        return ProductDetailDto.of(
+                product.getId(),
+                product.getCode(),
+                product.getName(),
+                product.getStatus(),
+                product.getBasePrice(),
+                product.getCurrency(),
+                product.getSlug(),
+                product.getDescription(),
+                product.getCreatedAt(),
+                product.getUpdatedAt()
+        );
+    }
+
+    @Override
+    public Product findProductByIdForUpdate(Long productId) {
+        return em.find(Product.class, productId);
+    }
+
     private Map<Long, SkuStockRowDto> findSkuAndStockByProductIds(List<Long> productIds) {
         if (productIds == null || productIds.isEmpty()) {
             return Collections.emptyMap();
