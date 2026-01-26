@@ -18,6 +18,8 @@ public class ProductDetailDto {
     private final Currency currency;
     private final String slug;
     private final String description;
+    private final String sku;
+    private final Integer stockQuantity;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -30,6 +32,8 @@ public class ProductDetailDto {
             Currency currency,
             String slug,
             String description,
+            String sku,
+            Integer stockQuantity,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
@@ -42,6 +46,8 @@ public class ProductDetailDto {
                 currency,
                 slug,
                 description,
+                sku,
+                stockQuantity,
                 createdAt,
                 updatedAt
         );

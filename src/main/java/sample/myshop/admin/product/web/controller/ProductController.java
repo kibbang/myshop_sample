@@ -83,7 +83,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public String show(@PathVariable Long productId, Model model) {
+    public String show(@PathVariable Long productId, @ModelAttribute(name = "inventoryForm") InventoryAdjustRequestDto inventoryAdjustRequestDto, Model model) {
         ProductDetailDto productDetailDto = productService.showProduct(productId);
 
         model.addAttribute("product", productDetailDto);
@@ -135,6 +135,28 @@ public class ProductController {
         productService.modifyProduct(productUpdateDto);
 
         redirectAttributes.addFlashAttribute("flashMessage", "상품 수정이 완료되었습니다.");
+
+        return "redirect:/admin/products/" + productId;
+    }
+
+    @PostMapping("/{productId}/inventory")
+    public String updateInventoryStock(@PathVariable Long productId,
+                                       @Validated @ModelAttribute(name = "inventoryForm") InventoryAdjustRequestDto inventoryAdjustRequestDto,
+                                       BindingResult bindingResult,
+                                       Model model,
+                                       RedirectAttributes redirectAttributes
+    ) {
+        if (bindingResult.hasErrors()) {
+            ProductDetailDto product = productService.showProduct(productId);
+            model.addAttribute("product", product);
+            addContentView(model, "admin/product/detail :: content");
+
+            return "admin/layout/base";
+        }
+
+        productService.modifyProductInventoryStock(productId, inventoryAdjustRequestDto.getStockQuantity());
+
+        redirectAttributes.addFlashAttribute("flashMessage", "재고 수정이 완료되었습니다.");
 
         return "redirect:/admin/products/" + productId;
     }

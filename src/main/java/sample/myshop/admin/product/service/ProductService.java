@@ -11,4 +11,5 @@ public interface ProductService {
 
     ProductDetailDto showProduct(Long productId);
     void modifyProduct(ProductUpdateDto productUpdateDto);
+    void modifyProductInventoryStock(Long productId, Integer stockQuantity);
 }

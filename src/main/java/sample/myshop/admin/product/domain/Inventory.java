@@ -35,4 +35,11 @@ public class Inventory {
         inventory.safetyStock = 0;
         return inventory;
     }
+
+    public void updateStockQuantity(int value) {
+        if (value < 0) {
+            throw new IllegalArgumentException("재고는 0보다 커야합니다.");
+        }
+        this.stockQuantity = value;
+    }
 }

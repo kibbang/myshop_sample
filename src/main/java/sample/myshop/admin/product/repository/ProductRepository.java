@@ -1,5 +1,6 @@
 package sample.myshop.admin.product.repository;
 
+import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.dto.web.ProductDetailDto;
 import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
@@ -17,4 +18,6 @@ public interface ProductRepository {
     ProductDetailDto findProductById(Long productId);
 
     Product findProductByIdForUpdate(Long productId);
+
+    Inventory findProductByIdForUpdateInventoryStock(Long productId);
 }

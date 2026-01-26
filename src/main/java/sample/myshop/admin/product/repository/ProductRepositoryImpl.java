@@ -105,7 +105,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                     product.getCreatedAt()
             );
 
-            // 각 상품 별 id로 컬렉션 조 회
+            // 각 상품 별 id로 컬렉션 조회
             SkuStockRowDto skuStockRowDto = productSkuAndStock.get(product.getId());
 
             if (skuStockRowDto != null) {
@@ -123,14 +123,23 @@ public class ProductRepositoryImpl implements ProductRepository {
         return em.createQuery("select count(p.id) from Product p", Long.class).getSingleResult();
     }
 
-
     @Override
     public ProductDetailDto findProductById(Long productId) {
-        Product product = em.find(Product.class, productId);
 
-        if (product == null) {
+        Inventory inventory = em.createQuery("select i" +
+                " from Inventory i" +
+                " join fetch i.variant v" +
+                " join fetch v.product p " +
+                "where p.id = :productId and v.isDefault = true", Inventory.class)
+                .setParameter("productId", productId)
+                .getSingleResult();
+
+        if (inventory == null) {
            return null;
         }
+
+        Variant variant = inventory.getVariant();
+        Product product = variant.getProduct();
 
         return ProductDetailDto.of(
                 product.getId(),
@@ -141,6 +150,8 @@ public class ProductRepositoryImpl implements ProductRepository {
                 product.getCurrency(),
                 product.getSlug(),
                 product.getDescription(),
+                variant.getSku(),
+                inventory.getStockQuantity(),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );
@@ -149,6 +160,18 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Product findProductByIdForUpdate(Long productId) {
         return em.find(Product.class, productId);
+    }
+
+    @Override
+    public Inventory findProductByIdForUpdateInventoryStock(Long productId) {
+        return em.createQuery("select i " +
+                        " from Inventory i " +
+                        " join fetch i.variant v " +
+                        " join fetch v.product p " +
+                        " where p.id = :productId and v.isDefault = true", Inventory.class
+                )
+                .setParameter("productId", productId)
+                .getSingleResult();
     }
 
     private Map<Long, SkuStockRowDto> findSkuAndStockByProductIds(List<Long> productIds) {

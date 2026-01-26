@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.repository.ProductRepository;
@@ -72,5 +73,21 @@ public class ProductServiceImpl implements ProductService{
                 productUpdateDto.getBasePrice(),
                 productUpdateDto.getCurrency()
         );
+    }
+
+    @Override
+    @Transactional
+    public void modifyProductInventoryStock(Long productId, Integer stockQuantity) {
+        if (stockQuantity == null) {
+            throw new IllegalArgumentException("재고는 필수입니다.");
+        }
+
+        Inventory productWithInventory = productRepository.findProductByIdForUpdateInventoryStock(productId);
+
+        if(productWithInventory == null) {
+            throw new IllegalArgumentException("아이템이 없습니다: " + productId);
+        }
+
+        productWithInventory.updateStockQuantity(stockQuantity);
     }
 }
