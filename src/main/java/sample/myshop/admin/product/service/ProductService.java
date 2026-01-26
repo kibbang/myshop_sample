@@ -9,4 +9,5 @@ import java.util.List;
 public interface ProductService {
     Long createProduct(ProductCreateDto productCreateDto);
     List<ProductListItemDto> searchProducts(ProductSearchConditionDto condition, int page, int size);
+    Long getTotalProductCount(ProductSearchConditionDto condition);
 }

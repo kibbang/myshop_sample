@@ -14,6 +14,8 @@ public class ProductListItemDto {
     private final SaleStatus status;
     private final int basePrice;
     private final Currency currency;
+    private String sku;
+    private int stockQuantity;
     private final LocalDateTime createdAt;
 
     private ProductListItemDto(Long id, String code, String name, SaleStatus status, int basePrice, Currency currency, LocalDateTime createdAt) {
@@ -39,5 +41,10 @@ public class ProductListItemDto {
      */
     public static ProductListItemDto of(Long id, String code, String name, SaleStatus status, int basePrice, Currency currency, LocalDateTime createdAt) {
         return new ProductListItemDto(id, code, name, status, basePrice, currency, createdAt);
+    }
+
+    public void addSkuAndStock(String sku, int stockQuantity) {
+        this.sku = sku;
+        this.stockQuantity = stockQuantity;
     }
 }

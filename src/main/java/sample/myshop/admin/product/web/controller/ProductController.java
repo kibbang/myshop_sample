@@ -30,14 +30,11 @@ public class ProductController {
      */
     @GetMapping
     public String products(@ModelAttribute(name = "searchForm") ProductSearchConditionDto searchForm, Model model) {
-
-        log.info("keyword={}, status={}, page={}, size={}",
-                searchForm.getKeyword(), searchForm.getStatus(),
-                searchForm.getPage(), searchForm.getSize());
-
         List<ProductListItemDto> productList = productService.searchProducts(searchForm, Math.max(searchForm.getPage(), 1), searchForm.getSize());
+        Long totalCount = productService.getTotalProductCount(searchForm);
 
         model.addAttribute("productList", productList);
+        model.addAttribute("totalCount", totalCount);
 
         addContentView(model, "admin/product/list :: content");
 

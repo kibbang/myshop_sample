@@ -38,4 +38,9 @@ public class ProductServiceImpl implements ProductService{
     public List<ProductListItemDto> searchProducts(ProductSearchConditionDto condition, int page, int size) {
         return productRepository.findProducts(condition, page, size);
     }
+
+    @Override
+    public Long getTotalProductCount(ProductSearchConditionDto condition) {
+        return productRepository.countProducts(condition);
+    }
 }

@@ -11,10 +11,15 @@ import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.Variant;
 import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
 import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
+import sample.myshop.admin.product.domain.dto.web.SkuStockRowDto;
 import sample.myshop.admin.product.enums.SaleStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -46,7 +51,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         // TODO: QueryDsl 배우면 개선 해야함 너무 불편...
 
-        String baseJpql = "select p from Product p";
+        String baseJpql = "select p from Product p ";
         boolean isFirstCondition = true;
 
         if (keyword != null && !keyword.isBlank()) {
@@ -82,11 +87,14 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         List<Product> productList = query.getResultList();
 
+        Map<Long, SkuStockRowDto> productSkuAndStock = findSkuAndStockByProductIds(productList.stream().map(Product::getId).toList());
+
 
         List<ProductListItemDto> productDtoList = new ArrayList<>();
 
         for (Product product : productList) {
-            productDtoList.add(ProductListItemDto.of(
+            // 일단 기본을 만듬
+            ProductListItemDto productListItemDto = ProductListItemDto.of(
                     product.getId(),
                     product.getCode(),
                     product.getName(),
@@ -94,9 +102,38 @@ public class ProductRepositoryImpl implements ProductRepository {
                     product.getBasePrice(),
                     product.getCurrency(),
                     product.getCreatedAt()
-            ));
+            );
+
+            // 각 상품 별 id로 컬렉션 조 회
+            SkuStockRowDto skuStockRowDto = productSkuAndStock.get(product.getId());
+
+            if (skuStockRowDto != null) {
+                productListItemDto.addSkuAndStock(skuStockRowDto.getSku(), skuStockRowDto.getStockQuantity());
+            }
+
+            productDtoList.add(productListItemDto);
         }
 
         return productDtoList;
+    }
+
+    @Override
+    public Long countProducts(ProductSearchConditionDto condition) {
+        return em.createQuery("select count(p.id) from Product p", Long.class).getSingleResult();
+    }
+    
+    private Map<Long, SkuStockRowDto> findSkuAndStockByProductIds(List<Long> productIds) {
+        if (productIds == null || productIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<SkuStockRowDto> skuStockRows = em.createQuery("select new sample.myshop.admin.product.domain.dto.web.SkuStockRowDto(p.id, v.sku, i.stockQuantity)" +
+                        " from Variant v" +
+                        " join v.product p join Inventory i on i.variant = v" +
+                        " where p.id in (:productIds) and v.isDefault = true", SkuStockRowDto.class)
+                .setParameter("productIds", productIds)
+                .getResultList();
+
+        return skuStockRows.stream().collect(Collectors.toMap(SkuStockRowDto::getProductId, Function.identity(),(a, b) -> a));
     }
 }

@@ -84,7 +84,7 @@
     <!-- 리스트 -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">총 <span th:text="${productList.size()}"></span>건</h3>
+            <h3 class="card-title">총 <span th:text="${totalCount}"></span>건</h3>
         </div>
 
         <div class="table-responsive" th:if="${!productList.isEmpty()}">
@@ -106,11 +106,11 @@
                     <td class="text-muted" th:text="${product.id}"></td>
                     <td>
                         <div class="fw-bold" th:text="${product.name}">기본 티셔츠</div>
-                        <div class="text-muted">SKU: TS-0001 · 브랜드A</div>
+                        <div class="text-muted">SKU: <span th:text="${product.sku}"></span></div>
                     </td>
 <!--                    <td>상의</td>-->
                     <td class="text-end" th:text="|${#numbers.formatInteger(product.basePrice, 0, 'COMMA')}|">₩19,900</td>
-                    <td class="text-end">120</td>
+                    <td class="text-end" th:text="${product.stockQuantity}"></td>
                     <td><span class="badge bg-green" th:text="${product.status}">판매중</span></td>
                     <td class="text-end">
                         <a class="btn btn-sm btn-outline-primary" href="#">수정</a>
@@ -126,7 +126,7 @@
         <!-- 페이징 (자리) -->
         <div class="card-footer d-flex align-items-center">
             <p class="m-0 text-muted">
-                Showing <span th:text="${searchForm.page}"></span> to <span th:text="${searchForm.size}"></span> of <span th:text="${productList.size()}"></span> entries
+                Showing <span th:text="${searchForm.page}"></span> to <span th:text="${searchForm.size}"></span> of <span th:text="${totalCount}"></span> entries
             </p>
             <ul class="pagination m-0 ms-auto">
                 <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">prev</a></li>
