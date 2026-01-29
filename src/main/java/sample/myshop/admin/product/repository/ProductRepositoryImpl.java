@@ -13,7 +13,7 @@ import sample.myshop.admin.product.domain.dto.web.ProductDetailDto;
 import sample.myshop.admin.product.domain.dto.web.ProductListItemDto;
 import sample.myshop.admin.product.domain.dto.web.ProductSearchConditionDto;
 import sample.myshop.admin.product.domain.dto.web.SkuStockRowDto;
-import sample.myshop.admin.product.enums.SaleStatus;
+import sample.myshop.enums.product.SaleStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package sample.myshop.admin.product.enums;
+package sample.myshop.enums.product;
 
 import lombok.Getter;
 

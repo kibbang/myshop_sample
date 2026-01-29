@@ -3,8 +3,8 @@ package sample.myshop.admin.product.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sample.myshop.admin.product.enums.Currency;
-import sample.myshop.admin.product.enums.SaleStatus;
+import sample.myshop.enums.product.Currency;
+import sample.myshop.enums.product.SaleStatus;
 import sample.myshop.common.entity.CommonEntity;
 
 import static jakarta.persistence.GenerationType.*;

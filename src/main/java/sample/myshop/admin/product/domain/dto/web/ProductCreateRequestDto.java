@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import sample.myshop.admin.product.enums.Currency;
-import sample.myshop.admin.product.enums.SaleStatus;
+import sample.myshop.enums.product.Currency;
+import sample.myshop.enums.product.SaleStatus;
 
 @Getter
 @Setter

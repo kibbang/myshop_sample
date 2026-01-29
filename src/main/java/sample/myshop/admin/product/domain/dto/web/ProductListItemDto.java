@@ -1,8 +1,8 @@
 package sample.myshop.admin.product.domain.dto.web;
 
 import lombok.Getter;
-import sample.myshop.admin.product.enums.Currency;
-import sample.myshop.admin.product.enums.SaleStatus;
+import sample.myshop.enums.product.Currency;
+import sample.myshop.enums.product.SaleStatus;
 
 import java.time.LocalDateTime;
 

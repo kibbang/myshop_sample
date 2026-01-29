@@ -3,12 +3,12 @@ package sample.myshop.admin.product.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sample.myshop.admin.product.enums.SaleStatus;
+import sample.myshop.enums.product.SaleStatus;
 import sample.myshop.common.entity.CommonEntity;
 
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
-import static sample.myshop.admin.product.enums.SaleStatus.*;
+import static sample.myshop.enums.product.SaleStatus.*;
 
 /**
  * 같은 상품이라도 옵션 조합별로 실제로 파는 단위

@@ -2,7 +2,7 @@ package sample.myshop.admin.product.domain.dto.web;
 
 import jakarta.annotation.Nullable;
 import lombok.Getter;
-import sample.myshop.admin.product.enums.SaleStatus;
+import sample.myshop.enums.product.SaleStatus;
 import sample.myshop.common.entity.PaginatorEntity;
 
 @Getter

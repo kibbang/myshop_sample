@@ -2,25 +2,18 @@ package sample.myshop.admin.product.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import sample.myshop.admin.product.domain.Inventory;
-import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.Variant;
 import sample.myshop.admin.product.domain.dto.web.ProductCreateDto;
-import sample.myshop.admin.product.domain.dto.web.ProductCreateRequestDto;
-import sample.myshop.admin.product.enums.Currency;
-import sample.myshop.admin.product.enums.SaleStatus;
-import sample.myshop.admin.product.repository.ProductRepository;
-
-import java.util.List;
+import sample.myshop.enums.product.Currency;
+import sample.myshop.enums.product.SaleStatus;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
