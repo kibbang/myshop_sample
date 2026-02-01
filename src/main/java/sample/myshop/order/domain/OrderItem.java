@@ -39,9 +39,49 @@ public class OrderItem extends CommonEntity {
     @Column(name = "line_amount", nullable = false)
     private int lineAmount; // unitPrice * quantity
 
-    //TODO 생성 + 검증 + lineAmount 계산
-    public void createOrderItem() {
+    private OrderItem(Long productId, Long variantId, String skuSnapshot, String productNameSnapshot, int unitPrice, int quantity) {
+        this.productId = productId;
+        this.variantId = variantId;
+        this.skuSnapshot = skuSnapshot;
+        this.productNameSnapshot = productNameSnapshot;
+        this.unitPrice = unitPrice;
+        this.quantity = quantity;
+        this.lineAmount = unitPrice * quantity; // 내부 계산
+    }
 
+    public static OrderItem createOrderItem(
+            Long productId,
+            Long variantId,
+            String skuSnapshot,
+            String productNameSnapshot,
+            int unitPrice,
+            int quantity
+    ) {
+        if (productId == null) {
+            throw new IllegalArgumentException("상품은 필수 입니다.");
+        }
+
+        if (variantId == null) {
+            throw new IllegalArgumentException("상품의 SKU(Variant)는 필수 입니다.");
+        }
+
+        if (skuSnapshot == null || skuSnapshot.isBlank()) {
+            throw new IllegalArgumentException("상품의 SKU는 필수 입니다.");
+        }
+
+        if (productNameSnapshot == null || productNameSnapshot.isBlank()) {
+            throw new IllegalArgumentException("상품의 이름은 필수 입니다.");
+        }
+
+        if (unitPrice <= 0) {
+            throw new IllegalArgumentException("상품의 가격은 0보다 커야 합니다.");
+        }
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("상품의 수량은 0보다 커야 합니다.");
+        }
+
+        return new OrderItem(productId, variantId, skuSnapshot, productNameSnapshot, unitPrice, quantity);
     }
 
     /** 연관관계 편의 메소드 */

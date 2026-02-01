@@ -1,5 +1,6 @@
 package sample.myshop.order.domain;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sample.myshop.common.entity.CommonEntity;
 import sample.myshop.enums.order.OrderStatus;
@@ -11,6 +12,7 @@ import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 @Entity
+@Getter
 @Table(name = "ord_orders")
 @NoArgsConstructor(access = PROTECTED)
 public class Order extends CommonEntity {
@@ -32,15 +34,34 @@ public class Order extends CommonEntity {
     )
     private List<OrderItem> orderItems = new ArrayList<>();
 
-
-    // TODO orderNo/buyerLoginId 세팅, status는 기본 ORDERED 유지, totalAmount 0 시작
-    public void createOrder() {
-
+    private Order(String orderNo, String buyerLoginId) {
+        this.orderNo = orderNo;
+        this.buyerLoginId = buyerLoginId;
+        this.status = OrderStatus.ORDERED;
+        this.totalAmount = 0;
+        this.orderItems = new ArrayList<>();
     }
 
+    public static Order createOrder(String orderNo, String buyerLoginId) {
+        if (orderNo == null || orderNo.isBlank()) {
+            throw new IllegalArgumentException("주문번호는 필수입니다.");
+        }
 
-    /** 연관관계 편의 메소드 */
+        if (buyerLoginId == null || buyerLoginId.isBlank()) {
+            throw new IllegalArgumentException("주문자 아이디는 필수입니다.");
+        }
+
+        return new Order(orderNo, buyerLoginId);
+    }
+
+    /**
+     * 연관관계 편의 메소드
+     */
     public void addOrderItem(OrderItem orderItem) {
+        if(orderItem == null) {
+            throw new IllegalArgumentException("주문 상품은 필수입니다.");
+        }
+
         orderItems.add(orderItem);
         orderItem.assignOrder(this);
 
