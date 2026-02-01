@@ -1,0 +1,1 @@
+ALTER TABLE ord_orders ADD COLUMN member_id BIGINT NULL;

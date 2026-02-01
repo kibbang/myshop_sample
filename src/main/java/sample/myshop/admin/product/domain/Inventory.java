@@ -42,4 +42,24 @@ public class Inventory {
         }
         this.stockQuantity = value;
     }
+
+    /**
+     * 재고 증가
+     * @param value
+     */
+    public void increaseQuantity(int value) {
+        this.stockQuantity += value;
+    }
+
+    /**
+     * 재고 감소
+     * @param value
+     */
+    public void decreaseQuantity(int value) {
+        if (this.stockQuantity < value) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+
+        this.stockQuantity -= value;
+    }
 }

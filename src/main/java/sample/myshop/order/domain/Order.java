@@ -19,13 +19,20 @@ public class Order extends CommonEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
     @Column(name = "order_no", unique = true, length = 20, nullable = false)
     private String orderNo;
+
+    @Column(name = "member_id")
+    private Long memberId;
+
     @Column(name = "buyer_login_id", nullable = false)
     private String buyerLoginId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.ORDERED;
+
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
 
@@ -36,6 +43,7 @@ public class Order extends CommonEntity {
 
     private Order(String orderNo, String buyerLoginId) {
         this.orderNo = orderNo;
+        this.memberId = null; // 일단 null
         this.buyerLoginId = buyerLoginId;
         this.status = OrderStatus.ORDERED;
         this.totalAmount = 0;
