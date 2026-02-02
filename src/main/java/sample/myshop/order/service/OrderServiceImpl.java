@@ -3,6 +3,8 @@ package sample.myshop.order.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
+import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.repository.InventoryRepository;
 import sample.myshop.order.domain.Order;
@@ -10,6 +12,8 @@ import sample.myshop.order.domain.OrderItem;
 import sample.myshop.order.domain.dto.DefaultVariantSnapshotDto;
 import sample.myshop.order.repository.OrderRepository;
 import sample.myshop.utils.OrderGenerator;
+
+import java.util.List;
 
 import static sample.myshop.enums.order.OrderStatus.ORDERED;
 import static sample.myshop.enums.order.OrderStatus.valueOf;
@@ -75,6 +79,16 @@ public class OrderServiceImpl implements OrderService {
 
         // 주문 상태 변경
         targetOrder.cancel();
+    }
+
+    @Override
+    public List<OrderListItemDto> searchOrders(OrderSearchConditionDto condition, int page, int size) {
+        return orderRepository.findOrders(condition, page, size);
+    }
+
+    @Override
+    public Long getTotalOrderCount(OrderSearchConditionDto condition) {
+        return orderRepository.countOrders(condition);
     }
 
     @Override

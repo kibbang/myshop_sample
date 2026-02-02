@@ -2,6 +2,7 @@ package sample.myshop.common.advice;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import sample.myshop.enums.order.OrderStatus;
 import sample.myshop.enums.product.Currency;
 import sample.myshop.enums.product.SaleStatus;
 
@@ -15,5 +16,10 @@ public class EnumModelAdvice {
     @ModelAttribute("productSaleStatus")
     public SaleStatus[] productSaleStatus() {
         return SaleStatus.values();
+    }
+
+    @ModelAttribute("orderStatus")
+    public OrderStatus[] orderStatus() {
+        return OrderStatus.values();
     }
 }

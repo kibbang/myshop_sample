@@ -3,9 +3,13 @@ package sample.myshop.order.repository;
 import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import sample.myshop.admin.product.domain.Inventory;
+import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
+import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
+import sample.myshop.enums.order.OrderStatus;
 import sample.myshop.order.domain.Order;
 import sample.myshop.order.domain.dto.DefaultVariantSnapshotDto;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,5 +50,53 @@ public class OrderRepositoryImpl implements OrderRepository {
         } catch (Exception e) {
             throw new EntityNotFoundException("주문을 찾을 수 없습니다.: " + orderId);
         }
+    }
+
+    @Override
+    public List<OrderListItemDto> findOrders(OrderSearchConditionDto condition, int page, int size) {
+        String keyword = condition.getKeyword();
+        OrderStatus status = condition.getStatus();
+
+        String baseJpql = "select new sample.myshop.admin.order.domain.dto.web.OrderListItemDto(o.id, o.orderNo, o.buyerLoginId, o.status, o.totalAmount, o.createdAt)" +
+                " from Order o";
+
+        boolean isFirstCondition = true;
+
+        if (keyword != null && !keyword.isBlank()) {
+            if (isFirstCondition) {
+                baseJpql += " where o.orderNo like :keyword or o.buyerLoginId like :keyword";
+                isFirstCondition = false;
+            } else {
+                baseJpql += " and (o.orderNo like :keyword or o.buyerLoginId like :keyword)";
+            }
+        }
+
+        if (status != null) {
+            if (isFirstCondition) {
+                baseJpql += " where o.status = :status";
+                isFirstCondition = false;
+            } else {
+                baseJpql += " and o.status = :status";
+            }
+        }
+
+        baseJpql += " order by o.id desc";
+
+        TypedQuery<OrderListItemDto> orderListItemDtoTypedQuery = em.createQuery(baseJpql, OrderListItemDto.class).setFirstResult((page - 1) * size).setMaxResults(size);
+
+        if (keyword != null && !keyword.isBlank()) {
+            orderListItemDtoTypedQuery.setParameter("keyword", "%" + keyword + "%");
+        }
+
+        if (status != null) {
+            orderListItemDtoTypedQuery.setParameter("status", status);
+        }
+
+        return orderListItemDtoTypedQuery.getResultList();
+    }
+
+    @Override
+    public Long countOrders(OrderSearchConditionDto condition) {
+        return em.createQuery("select count(o) from Order o", Long.class).getSingleResult();
     }
 }

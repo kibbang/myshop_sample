@@ -16,13 +16,6 @@ public class AdminHomeController {
         return "admin/layout/base";
     }
 
-    @GetMapping("/orders")
-    public String orders(Model model) {
-        model.addAttribute("content", "admin/order/list :: content");
-        model.addAttribute("activeMenu", "orders");
-        return "admin/layout/base";
-    }
-
     @GetMapping("/members")
     public String members(Model model) {
         model.addAttribute("content", "admin/member/list :: content");

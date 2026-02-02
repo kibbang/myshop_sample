@@ -13,6 +13,8 @@ import sample.myshop.admin.product.service.ProductService;
 
 import java.util.List;
 
+import static java.lang.Math.*;
+
 @Controller
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class ProductController {
      */
     @GetMapping
     public String products(@ModelAttribute(name = "searchForm") ProductSearchConditionDto searchForm, Model model) {
-        List<ProductListItemDto> productList = productService.searchProducts(searchForm, Math.max(searchForm.getPage(), 1), searchForm.getSize());
+        List<ProductListItemDto> productList = productService.searchProducts(searchForm, max(searchForm.getPage(), 1), searchForm.getSize());
         Long totalCount = productService.getTotalProductCount(searchForm);
 
         model.addAttribute("productList", productList);

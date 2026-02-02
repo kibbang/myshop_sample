@@ -135,7 +135,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .getSingleResult();
 
         if (inventory == null) {
-           return null;
+            return null;
         }
 
         Variant variant = inventory.getVariant();

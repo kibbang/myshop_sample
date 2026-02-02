@@ -20,7 +20,7 @@
     <!-- 검색/필터 -->
     <div class="card mb-3">
         <div class="card-body">
-            <form class="row g-2" method="get" th:action="@{/admin/orders}">
+            <form class="row g-2" method="get" th:action="@{/admin/orders}" th:object="${searchForm}">
                 <div class="col-md-3">
                     <label class="form-label">기간</label>
                     <div class="input-group">
@@ -32,19 +32,18 @@
 
                 <div class="col-md-2">
                     <label class="form-label">상태</label>
-                    <select class="form-select" name="status">
+                    <select class="form-select" th:field="*{status}" name="status">
                         <option value="">전체</option>
-                        <option value="PAYMENT">PAYMENT</option>
-                        <option value="SHIPPING">SHIPPING</option>
-                        <option value="DONE">DONE</option>
-                        <option value="CANCEL">CANCEL</option>
+                        <option th:each="status : ${orderStatus}"
+                                th:value="${status.name()}"
+                                th:text="${status.label}"
+                        ></option>
                     </select>
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label">검색</label>
-                    <input type="text" class="form-control" name="keyword"
-                           placeholder="주문번호/구매자/전화번호" />
+                    <input type="text" class="form-control" th:field="*{keyword}" placeholder="주문번호/구매자/전화번호" />
                 </div>
 
                 <div class="col-md-2">
@@ -70,10 +69,10 @@
     <!-- 리스트 -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">총 4건</h3>
+            <h3 class="card-title">총 <span th:text="${totalOrderCount}"></span> 건</h3>
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive" th:if="${!orderList.isEmpty()}">
             <table class="table table-vcenter card-table table-striped">
                 <thead>
                 <tr>
@@ -87,61 +86,30 @@
                 </thead>
 
                 <tbody>
-                <tr>
-                    <td class="text-muted">#20260120-0002</td>
-                    <td>김철수</td>
-                    <td><span class="badge bg-blue">SHIPPING</span></td>
-                    <td class="text-end">₩118,000</td>
-                    <td class="text-end text-muted">2026-01-20</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="text-muted">#20260120-0001</td>
-                    <td>홍길동</td>
-                    <td><span class="badge bg-yellow">PAYMENT</span></td>
-                    <td class="text-end">₩52,000</td>
-                    <td class="text-end text-muted">2026-01-20</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="text-muted">#20260119-0098</td>
-                    <td>이영희</td>
-                    <td><span class="badge bg-green">DONE</span></td>
-                    <td class="text-end">₩24,500</td>
-                    <td class="text-end text-muted">2026-01-19</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="text-muted">#20260119-0097</td>
-                    <td>박민수</td>
-                    <td><span class="badge bg-red">CANCEL</span></td>
-                    <td class="text-end">₩33,000</td>
-                    <td class="text-end text-muted">2026-01-19</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                    </td>
-                </tr>
+                    <tr th:each="order : ${orderList}">
+                        <td class="text-muted" th:text="${order.orderNo}">#20260120-0002</td>
+                        <td th:text="${order.buyerLoginId}">김철수</td>
+                        <td><span class="badge bg-blue-lt" th:text="${order.status.label}">SHIPPING</span></td>
+                        <td class="text-end" th:text="|${#numbers.formatInteger(order.totalAmount, 0, 'COMMA')}|">₩118,000</td>
+                        <td class="text-end text-muted" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-20</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/order/{id} (id=${order.id})}">상세</a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
+        <div class="alert alert-warning" role="alert" th:if="${orderList.isEmpty()}">주문이 없습니다.</div>
+
         <!-- 페이징 (자리) -->
         <div class="card-footer d-flex align-items-center">
             <p class="m-0 text-muted">
-                Showing <span>1</span> to <span>10</span> of <span>4</span> entries
+                Showing <span th:text="${searchForm.page}"></span> to <span span th:text="${searchForm.size}"></span> of <span th:text="${totalCount}"></span> entries
             </p>
             <ul class="pagination m-0 ms-auto">
                 <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">prev</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item active"><a class="page-link" href="#" th:text="${searchForm.page}"></a></li>
                 <li class="page-item disabled"><a class="page-link" href="#">next</a></li>
             </ul>
         </div>
