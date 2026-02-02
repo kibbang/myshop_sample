@@ -10,6 +10,7 @@ import java.util.List;
 
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
+import static sample.myshop.enums.order.OrderStatus.*;
 
 @Entity
 @Getter
@@ -31,7 +32,7 @@ public class Order extends CommonEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status = OrderStatus.ORDERED;
+    private OrderStatus status = ORDERED;
 
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
@@ -41,11 +42,15 @@ public class Order extends CommonEntity {
     )
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
     private Order(String orderNo, String buyerLoginId) {
         this.orderNo = orderNo;
         this.memberId = null; // 일단 null
         this.buyerLoginId = buyerLoginId;
-        this.status = OrderStatus.ORDERED;
+        this.status = ORDERED;
         this.totalAmount = 0;
         this.orderItems = new ArrayList<>();
     }
@@ -66,7 +71,7 @@ public class Order extends CommonEntity {
      * 연관관계 편의 메소드
      */
     public void addOrderItem(OrderItem orderItem) {
-        if(orderItem == null) {
+        if (orderItem == null) {
             throw new IllegalArgumentException("주문 상품은 필수입니다.");
         }
 
@@ -74,5 +79,17 @@ public class Order extends CommonEntity {
         orderItem.assignOrder(this);
 
         totalAmount += orderItem.getLineAmount();
+    }
+
+    /**
+     * 주문 상태 변경 (주문 -> 취소)
+     */
+    public void cancel() {
+        //  주문 상태 체크
+        if (status != ORDERED) {
+            throw new IllegalArgumentException("주문 상태가 '" + ORDERED.getLabel() + "'이어야 합니다.");
+        }
+
+        status = CANCELED;
     }
 }

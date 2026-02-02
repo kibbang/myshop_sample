@@ -5,8 +5,8 @@ import sample.myshop.order.domain.Order;
 import sample.myshop.order.domain.dto.DefaultVariantSnapshotDto;
 
 public interface OrderRepository {
-    DefaultVariantSnapshotDto findDefaultVariant(Long productId);
-    Inventory findInventoryForUpdateByVariantId(Long variantId);
+    DefaultVariantSnapshotDto findDefaultVariantForOrder(Long productId);
 
     void save(Order order);
+    Order findByIdWithOrderItems(Long orderId);
 }
