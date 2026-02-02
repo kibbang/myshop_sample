@@ -1,5 +1,6 @@
 package sample.myshop.order.service;
 
+import sample.myshop.admin.order.domain.dto.web.OrderDetailDto;
 import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 
@@ -10,7 +11,7 @@ public interface OrderService {
 
     void cancelOrder(Long orderId);
 
-    void getOrder(Long orderId);
+    OrderDetailDto getOrder(Long orderId);
 
     List<OrderListItemDto> searchOrders(OrderSearchConditionDto condition, int page, int size);
 

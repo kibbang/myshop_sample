@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import sample.myshop.admin.order.domain.dto.web.OrderDetailDto;
 import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 import sample.myshop.order.service.OrderService;
@@ -32,6 +32,30 @@ public class OrderController {
 
         addContentView(model, "admin/order/list :: content");
         return "admin/layout/base";
+    }
+
+    @GetMapping("/{orderId}")
+    public String show(@PathVariable Long orderId, Model model) {
+        OrderDetailDto order = orderService.getOrder(orderId);
+
+        model.addAttribute("order", order);
+        addContentView(model, "admin/order/detail :: content");
+
+        return "admin/layout/base";
+    }
+
+    @PostMapping("/{orderId}/cancel")
+    public String cancel(@PathVariable Long orderId, RedirectAttributes redirectAttributes) {
+        try {
+            orderService.cancelOrder(orderId);
+
+            redirectAttributes.addFlashAttribute("message", "주문이 취소되었습니다.");
+        } catch (Exception e) {
+            log.error("주문 취소 실패: orderId={}", orderId, e);
+            redirectAttributes.addFlashAttribute("error", "주문 취소에 실패했습니다.");
+        }
+
+        return "redirect:/admin/orders/" + orderId;
     }
 
     /**

@@ -1,8 +1,11 @@
 package sample.myshop.order.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sample.myshop.admin.order.domain.dto.web.OrderDetailDto;
+import sample.myshop.admin.order.domain.dto.web.OrderItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 import sample.myshop.admin.product.domain.Inventory;
@@ -13,10 +16,9 @@ import sample.myshop.order.domain.dto.DefaultVariantSnapshotDto;
 import sample.myshop.order.repository.OrderRepository;
 import sample.myshop.utils.OrderGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static sample.myshop.enums.order.OrderStatus.ORDERED;
-import static sample.myshop.enums.order.OrderStatus.valueOf;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -92,7 +94,43 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void getOrder(Long orderId) {
+    public OrderDetailDto getOrder(Long orderId) {
+        Order orderWithItems = orderRepository.findByIdWithOrderItems(orderId);
 
+        List<OrderItemDto> orderItems = convertOrderItemsToDto(orderWithItems);
+
+        return OrderDetailDto.of(
+                orderWithItems.getId(),
+                orderWithItems.getOrderNo(),
+                orderWithItems.getBuyerLoginId(),
+                orderWithItems.getStatus(),
+                orderWithItems.getTotalAmount(),
+                orderWithItems.getCreatedAt(),
+                orderItems
+        );
+    }
+
+    /**
+     * OrderItem DTO 조립
+     * @param orderWithItems
+     * @return
+     */
+    private static List<OrderItemDto> convertOrderItemsToDto(Order orderWithItems) {
+        List<OrderItemDto> orderItems = new ArrayList<>();
+
+        for (OrderItem orderItem : orderWithItems.getOrderItems()) {
+            OrderItemDto orderItemDto = OrderItemDto.of(
+                    orderItem.getProductId(),
+                    orderItem.getVariantId(),
+                    orderItem.getSkuSnapshot(),
+                    orderItem.getProductNameSnapshot(),
+                    orderItem.getUnitPrice(),
+                    orderItem.getQuantity(),
+                    orderItem.getLineAmount()
+            );
+
+            orderItems.add(orderItemDto);
+        }
+        return orderItems;
     }
 }

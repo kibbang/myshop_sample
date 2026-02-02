@@ -93,7 +93,7 @@
                         <td class="text-end" th:text="|${#numbers.formatInteger(order.totalAmount, 0, 'COMMA')}|">₩118,000</td>
                         <td class="text-end text-muted" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-20</td>
                         <td class="text-end">
-                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/order/{id} (id=${order.id})}">상세</a>
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/orders/{id} (id=${order.id})}">상세</a>
                         </td>
                     </tr>
                 </tbody>

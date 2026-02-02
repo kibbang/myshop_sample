@@ -1,10 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- templates/admin/order/detail.html -->
+<div th:fragment="content">
 
-</body>
-</html>
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div th:if="${message}" class="alert alert-success mb-3" role="alert">
+                <div th:text="${message}">성공 메시지</div>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger mb-3" role="alert">
+                <div th:text="${error}">실패 메시지</div>
+            </div>
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">주문 조회/상태 관리</div>
+                    <h2 class="page-title">주문 상세</h2>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                        <a th:href="@{/admin/orders}" class="btn">
+                            목록으로
+                        </a>
+                        <form th:if="${order.status.name() == 'ORDERED'}" th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" method="post" class="d-inline">
+                            <input type="hidden" name="_csrf" th:value="${_csrf}" />
+                            <button type="submit" class="btn btn-outline-danger" onclick="this.disabled=true; return confirm('정말 주문을 취소할까요?')">
+                                주문 취소
+                            </button>
+                        </form>
+                        <!-- 이미 취소된 상태 안내 -->
+                        <span th:if="${order.status.name() == 'CANCELED'}" class="text-muted">
+                            이미 취소된 주문입니다.
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+
+            <!-- Order summary card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">주문 정보</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="text-muted">주문번호</div>
+                            <div class="fs-3 fw-semibold" th:text="${order.orderNo}">20260202...</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="text-muted">구매자</div>
+                            <div class="fs-3 fw-semibold" th:text="${order.buyerLoginId}">buyer01</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="text-muted">상태</div>
+                            <div>
+                                <span class="badge"
+                                      th:classappend="
+                                          ${order.status.name() == 'ORDERED'} ? ' bg-azure-lt text-azure' :
+                                          (${order.status.name() == 'CANCELED'} ? ' bg-red-lt text-red' : ' bg-secondary-lt text-secondary')"
+                                      th:text="${order.status.label}">
+                                    ORDERED
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="text-muted">총 금액</div>
+                            <div class="fs-3 fw-semibold">
+                                <span th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}">20,000</span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="text-muted">주문일</div>
+                            <div class="fs-3 fw-semibold" th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">
+                                2026-02-02 10:56:20
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="text-muted">주문 ID</div>
+                            <div class="fs-3 fw-semibold" th:text="${order.id}">1</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">주문 상품</h3>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                        <tr>
+                            <th>상품명</th>
+                            <th class="text-muted">SKU</th>
+                            <th class="text-end">수량</th>
+                            <th class="text-end">단가</th>
+                            <th class="text-end">금액</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:if="${order.orderItems == null || #lists.isEmpty(order.orderItems)}">
+                            <td colspan="5" class="text-center text-muted py-4">
+                                주문 상품이 없습니다.
+                            </td>
+                        </tr>
+
+                        <tr th:each="orderItem : ${order.orderItems}">
+                            <td>
+                                <div class="fw-semibold" th:text="${orderItem.productNameSnapshot}">테스트 상품</div>
+                                <div class="text-muted small">
+                                    productId:
+                                    <span th:text="${orderItem.productId}">1</span>
+                                    &nbsp;|&nbsp;
+                                    variantId:
+                                    <span th:text="${orderItem.variantId}">10</span>
+                                </div>
+                            </td>
+
+                            <td class="text-muted" th:text="${orderItem.skuSnapshot}">SKU-DEFAULT</td>
+
+                            <td class="text-end" th:text="${orderItem.quantity}">2</td>
+
+                            <td class="text-end">
+                                <span th:text="${#numbers.formatInteger(orderItem.unitPriceSnapshot, 3, 'COMMA')}">10,000</span>
+                            </td>
+
+                            <td class="text-end">
+                                <span class="fw-semibold" th:text="${#numbers.formatInteger(orderItem.lineAmount, 3, 'COMMA')}">
+                                    20,000
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                        <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end text-muted">총합</td>
+                            <td class="text-end">
+                                <span class="fw-bold" th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}">
+                                    20,000
+                                </span>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

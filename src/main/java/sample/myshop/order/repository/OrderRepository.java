@@ -12,6 +12,7 @@ public interface OrderRepository {
     DefaultVariantSnapshotDto findDefaultVariantForOrder(Long productId);
 
     void save(Order order);
+
     Order findByIdWithOrderItems(Long orderId);
 
     List<OrderListItemDto> findOrders(OrderSearchConditionDto condition, int page, int size);
