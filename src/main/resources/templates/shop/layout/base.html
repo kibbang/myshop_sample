@@ -33,7 +33,7 @@
                 <!-- 로그인 -->
                 <div class="nav-item dropdown" th:if="${session.loginUser != null}">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span th:text="${session.loginUser.loginId}">user</span>
+                        <span th:text="${session.loginUser.loginId}"></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- 관리자면 Admin 링크 -->

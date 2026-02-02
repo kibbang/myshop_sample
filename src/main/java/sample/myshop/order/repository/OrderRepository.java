@@ -18,4 +18,6 @@ public interface OrderRepository {
     List<OrderListItemDto> findOrders(OrderSearchConditionDto condition, int page, int size);
 
     Long countOrders(OrderSearchConditionDto condition);
+
+    Order findByOrderNoWithOrderItems(String orderNo);
 }

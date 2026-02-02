@@ -1,0 +1,90 @@
+<div th:fragment="content">
+    <div class="container-xl">
+
+        <!-- 헤더 -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h2 class="page-title">MyShop</h2>
+                    <div class="text-secondary">샘플 쇼핑몰 메인</div>
+                </div>
+
+                <!-- 로그인 상태 -->
+                <div class="col-auto">
+                      <span class="badge bg-green-lt"
+                            th:if="${session.loginUser != null}"
+                            th:text="${session.loginUser.loginId + '님'}">
+                            user
+                      </span>
+                    <span class="badge bg-yellow-lt" th:if="${session.loginUser == null}">
+                        로그인하면 주문할 수 있어요
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 히어로 -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h3 class="card-title">오늘은 뭐 살까?</h3>
+                <div class="text-secondary mb-3">대표 SKU 기준으로 간단히 주문까지 되는 최소 쇼핑 플로우를 구현 중입니다.</div>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-primary" th:href="@{/products}">상품 보러가기</a>
+                    <a class="btn btn-outline-secondary" th:href="@{/login}"
+                       th:if="${session.loginUser == null}">
+                        로그인
+                    </a>
+                    <a class="btn btn-outline-danger" th:href="@{/logout}"
+                       th:if="${session.loginUser != null}">
+                        로그아웃
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 공지 -->
+        <div class="alert alert-info" role="alert">
+            <strong>공지:</strong> 현재는 DEFAULT(대표) 옵션만 주문 가능합니다. (옵션/이미지는 다음 단계!)
+        </div>
+
+        <!-- 퀵 링크 -->
+        <div class="row row-cards">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="fw-bold mb-2">상품</div>
+                        <div class="text-secondary mb-3">상품 목록/상세로 이동</div>
+                        <a class="btn btn-outline-primary w-100" th:href="@{/products}">상품 목록</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="fw-bold mb-2">계정</div>
+                        <div class="text-secondary mb-3">로그인해서 주문하기</div>
+                        <a class="btn btn-outline-secondary w-100" th:href="@{/login}">로그인</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="fw-bold mb-2">관리자</div>
+                        <div class="text-secondary mb-3">상품/주문 관리로 이동</div>
+                        <a class="btn btn-outline-dark w-100" th:href="@{/admin}">관리자</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 느낌 -->
+        <div class="text-center text-secondary my-4">
+            MyShop Sample · Spring + Thymeleaf
+        </div>
+
+    </div>
+</div>

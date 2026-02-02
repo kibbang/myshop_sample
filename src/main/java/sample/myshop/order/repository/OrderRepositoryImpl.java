@@ -99,4 +99,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Long countOrders(OrderSearchConditionDto condition) {
         return em.createQuery("select count(o) from Order o", Long.class).getSingleResult();
     }
+
+    @Override
+    public Order findByOrderNoWithOrderItems(String orderNo) {
+        return em.createQuery("select distinct o from Order o join fetch o.orderItems where o.orderNo = :orderNo", Order.class)
+                .setParameter("orderNo", orderNo)
+                .getSingleResult();
+    }
 }

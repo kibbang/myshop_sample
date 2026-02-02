@@ -1,10 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
+<div th:fragment="content">
+    <div class="container-xl">
 
+        <div class="page-header d-print-none">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">Shop</div>
+                    <h2 class="page-title" th:text="${product.name}">상품명</h2>
+                    <div class="text-secondary">
+                        <span th:text="${#numbers.formatInteger(product.basePrice, 3, 'COMMA')}">10,000</span>
+                        <span th:text="${product.currency}">KRW</span>
+                    </div>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <a class="btn btn-outline-secondary" th:href="@{/products}">목록</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <h3 class="card-title">설명</h3>
+                <div class="text-secondary" th:text="${product.description}">설명</div>
+            </div>
+        </div>
+
+        <!-- 주문 폼 -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">주문하기</h3>
+            </div>
+
+            <form class="card-body" th:action="@{/orders}" method="post" th:object="${orderForm}">
+                <!-- CSRF -->
+                <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                <input type="hidden" th:field="*{productId}" />
+
+                <div class="mb-3">
+                    <label class="form-label">수량</label>
+                    <input type="number" class="form-control" min="1" th:field="*{quantity}" />
+                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}">
+                        수량 오류
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">주문하기</button>
+            </form>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>

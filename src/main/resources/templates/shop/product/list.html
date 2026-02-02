@@ -1,10 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
+<div th:fragment="content">
+    <div class="container-xl">
 
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">Shop</div>
+                    <h2 class="page-title">상품 목록</h2>
+                    <div class="text-secondary">판매중(ACTIVE) 상품만 노출됩니다.</div>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <a class="btn btn-outline-secondary" th:href="@{/}">메인</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="alert alert-warning" role="alert" th:if="${productList.isEmpty()}">
+            등록된 상품이 아직 없어요. 관리자에서 상품을 먼저 등록해 주세요.
+        </div>
+
+        <!-- List -->
+        <div class="card" th:if="${!productList.isEmpty()}">
+            <div class="card-header">
+                <h3 class="card-title mb-0">상품</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th>상품명</th>
+                        <th style="width: 160px;">가격</th>
+                        <th style="width: 120px;">통화</th>
+                        <th style="width: 120px;"></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="product : ${productList}">
+                        <td class="text-secondary" th:text="${product.id}">1</td>
+
+                        <td>
+                            <a class="text-reset fw-bold"
+                               th:href="@{/products/{id}(id=${product.id})}"
+                               th:text="${product.name}">
+                                상품명
+                            </a>
+                        </td>
+
+                        <td>
+                            <span th:text="${#numbers.formatInteger(product.basePrice, 3, 'COMMA')}">10,000</span>
+                        </td>
+
+                        <td class="text-secondary" th:text="${product.currency}">KRW</td>
+
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-primary" th:href="@{/products/{id}(id=${product.id})}">
+                                상세
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>

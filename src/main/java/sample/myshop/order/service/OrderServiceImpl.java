@@ -110,6 +110,11 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
+    @Override
+    public Order getOrderWithItemsByOrderNo(String orderNo) {
+        return orderRepository.findByOrderNoWithOrderItems(orderNo);
+    }
+
     /**
      * OrderItem DTO 조립
      * @param orderWithItems

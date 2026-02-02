@@ -65,6 +65,6 @@ public class OrderController {
      */
     private static void addContentView(Model model, String attributeTarget) {
         model.addAttribute("content", attributeTarget);
-        model.addAttribute("activeMenu", "products");
+        model.addAttribute("activeMenu", "orders");
     }
 }

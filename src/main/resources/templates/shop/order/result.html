@@ -1,0 +1,63 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="container-xl">
+
+        <div class="page-header d-print-none">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">Shop</div>
+                    <h2 class="page-title">주문 완료</h2>
+                    <div class="text-secondary">
+                        주문번호: <span class="fw-bold" th:text="${order.orderNo}">20260202...</span>
+                    </div>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <a class="btn btn-outline-secondary" th:href="@{/products}">계속 쇼핑하기</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="fw-bold mb-1">총 결제금액</div>
+                <div class="h2 m-0" th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}">10,000</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">주문 상품</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    <thead>
+                    <tr>
+                        <th>상품</th>
+                        <th style="width:120px;">수량</th>
+                        <th style="width:160px;">단가</th>
+                        <th style="width:160px;">금액</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="orderItem : ${order.orderItems}">
+                        <td>
+                            <div class="fw-bold" th:text="${orderItem.productNameSnapshot}">상품명</div>
+                            <div class="text-secondary" th:text="${orderItem.skuSnapshot}">SKU</div>
+                        </td>
+                        <td th:text="${orderItem.quantity}">1</td>
+                        <td th:text="${#numbers.formatInteger(orderItem.unitPrice, 3, 'COMMA')}">10,000</td>
+                        <td th:text="${#numbers.formatInteger(orderItem.lineAmount, 3, 'COMMA')}">10,000</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
