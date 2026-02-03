@@ -32,7 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(new AdminInterceptor())
                 .order(2)
-                .addPathPatterns("/admin/**").excludePathPatterns(
+                .addPathPatterns("/admin/**")
+                .excludePathPatterns(
                         "/error",
                         "/assets/**",
                         "/.well-known/**"

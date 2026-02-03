@@ -1,0 +1,162 @@
+<!-- templates/shop/order/prepare.html -->
+<div th:fragment="content">
+
+    <div class="container-xl mt-4">
+
+        <!-- Page header -->
+        <div class="page-header d-print-none mb-3">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">Order</div>
+                    <h2 class="page-title">주문서 확인</h2>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <a class="btn btn-outline-secondary"
+                       th:href="@{/products/{id}(id=${product.id})}">
+                        상품으로 돌아가기
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cards">
+
+            <!-- LEFT: 배송지/요청사항 -->
+            <div class="col-12 col-lg-7">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">배송지 정보</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/orders}" method="post" th:object="${orderDeliveryForm}">
+
+                            <!-- CSRF -->
+                            <input type="hidden" name="_csrf" th:value="${_csrf}"/>
+
+                            <div class="row g-3">
+
+                                <div class="col-md-6">
+                                    <label class="form-label">받는 사람</label>
+                                    <input type="text" class="form-control" th:field="*{receiverName}"
+                                           placeholder="홍길동" autocomplete="name">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">연락처</label>
+                                    <input type="text" class="form-control" th:field="*{receiverPhone}"
+                                           placeholder="010-0000-0000" autocomplete="tel">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label">우편번호</label>
+                                    <input type="text" class="form-control" th:field="*{zipcode}"
+                                           placeholder="12345" autocomplete="postal-code">
+                                </div>
+
+                                <div class="col-md-8">
+                                    <label class="form-label">기본 주소</label>
+                                    <input type="text" class="form-control" th:field="*{baseAddress}"
+                                           placeholder="도로명/지번 주소" autocomplete="address-line1">
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">상세 주소</label>
+                                    <input type="text" class="form-control" th:field="*{detailAddress}"
+                                           placeholder="상세 주소" autocomplete="address-line2">
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">배송 메모</label>
+                                    <textarea class="form-control" rows="3" th:field="*{deliveryMemo}"
+                                              placeholder="예) 부재 시 문 앞에 놓아주세요."></textarea>
+                                </div>
+
+                            </div>
+
+                            <div class="hr-text mt-4">최종 확인</div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    최종 주문하기
+                                </button>
+
+                                <a class="btn btn-outline-secondary"
+                                   th:href="@{/products/{id}(id=${product.id})}">
+                                    취소
+                                </a>
+                            </div>
+
+                            <div class="text-muted mt-3" style="font-size: 0.9rem;">
+                                주문 확정 시 배송지 정보는 주문 스냅샷으로 저장됩니다.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: 주문 요약 -->
+            <div class="col-12 col-lg-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">주문 요약</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="text-muted">상품</div>
+                            <div class="fw-bold" th:text="${product != null ? product.name : '상품명'}">상품명</div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-vcenter">
+                                <tbody>
+                                <tr>
+                                    <td class="text-muted">수량</td>
+                                    <td class="text-end" th:text="${quantity}">1</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-muted">단가</td>
+                                    <td class="text-end">
+                                        <span th:text="${product != null ? #numbers.formatInteger(product.basePrice, 0, 'COMMA') : '0'}">0</span>
+                                        <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-muted">소계</td>
+                                    <td class="text-end">
+                                        <span th:text="${product != null ? #numbers.formatInteger(product.basePrice * quantity, 0, 'COMMA') : '0'}">0</span>
+                                        <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-muted">배송비</td>
+                                    <td class="text-end">0</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="fw-bold">총 결제금액</td>
+                                    <td class="text-end fw-bold">
+                                        <span th:text="${product != null ? #numbers.formatInteger(product.basePrice * quantity, 0, 'COMMA') : '0'}">0</span>
+                                        <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="alert alert-info mt-3" role="alert">
+                            결제/쿠폰은 다음 단계에서 붙일 예정. 지금은 “주문 스냅샷(배송지)”까지 안정적으로 가는 게 목표
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

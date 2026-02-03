@@ -34,7 +34,7 @@
                 <h3 class="card-title mb-0">주문하기</h3>
             </div>
 
-            <form class="card-body" th:action="@{/orders}" method="post" th:object="${orderForm}">
+            <form class="card-body" th:action="@{/orders/prepare}" method="post" th:object="${orderForm}">
                 <!-- CSRF -->
                 <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
                 <input type="hidden" th:field="*{productId}" />

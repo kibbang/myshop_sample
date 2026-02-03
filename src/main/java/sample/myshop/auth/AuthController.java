@@ -36,7 +36,15 @@ public class AuthController {
     ) {
 
         if (loginUser != null) {
-            if (loginUser.getRole() == Role.ADMIN) return "redirect:/admin";
+            String target = sanitizeRedirect(redirect);
+
+            if (target != null) {
+                return "redirect:" + target;
+            }
+
+            if (loginUser.getRole() == Role.ADMIN) {
+                return "redirect:/admin";
+            }
 
             return "redirect:/";
         }
@@ -62,11 +70,9 @@ public class AuthController {
         try {
             SessionUser loggedInUser = memberService.login(loginId, password);
 
-            if (session != null) {
-                session.invalidate();
-            }
-
             HttpSession newSession = request.getSession(true);
+
+            request.changeSessionId(); // 세션 ID 변경 (기존엔 새로 발급하였으나 주문 전 로그인으로 왔을경우 정보를 가지고 있어야하기에)
 
             newSession.setAttribute(LOGIN_USER, loggedInUser);
 
@@ -103,5 +109,18 @@ public class AuthController {
             session.invalidate();
         }
         return "redirect:/login";
+    }
+
+    private String sanitizeRedirect(String redirect) {
+        if (redirect == null || redirect.isBlank()) return null;
+
+        String decoded = URLDecoder.decode(redirect, StandardCharsets.UTF_8);
+
+        if (!decoded.startsWith("/")) return null;
+        if (decoded.startsWith("//")) return null;
+        if (decoded.contains("\\")) return null;
+        if (decoded.contains("://")) return null;
+
+        return decoded;
     }
 }

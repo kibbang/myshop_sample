@@ -13,6 +13,12 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestURI = request.getRequestURI();
+        String method = request.getMethod();
+
+        // 주문 준비는 비로그인도 허용 (여기서 ORDER_PREPARE를 세션에 저장해야 함)
+        if ("/orders/prepare".equals(requestURI) && ("POST".equalsIgnoreCase(method))) {
+            return true;
+        }
 
         HttpSession session = request.getSession(false);
 
