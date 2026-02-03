@@ -1,5 +1,6 @@
 package sample.myshop.shop.product.repository;
 
+import sample.myshop.shop.main.dto.MainProductCardDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductDetailDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductListItemDto;
 
@@ -9,4 +10,6 @@ public interface ShopProductRepository {
     List<ShopProductListItemDto> findAll();
 
     ShopProductDetailDto findById(Long productId);
+
+    List<MainProductCardDto> findMainProductCards(int limit);
 }

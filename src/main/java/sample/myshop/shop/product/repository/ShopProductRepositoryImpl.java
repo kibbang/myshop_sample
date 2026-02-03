@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sample.myshop.enums.product.SaleStatus;
+import sample.myshop.shop.main.dto.MainProductCardDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductDetailDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductListItemDto;
 
@@ -30,5 +31,19 @@ public class ShopProductRepositoryImpl implements ShopProductRepository {
                 .setParameter("productId", productId)
                 .setParameter("status", SaleStatus.ACTIVE)
                 .getSingleResult();
+    }
+
+    @Override
+    public List<MainProductCardDto> findMainProductCards(int limit) {
+        return em.createQuery("select new sample.myshop.shop.main.dto.MainProductCardDto(p.id, p.name, p.slug, coalesce(v.salePrice, p.basePrice) , p.currency, v.sku, i.stockQuantity)" +
+                " from Product p" +
+                " join Variant v on v.product = p" +
+                " join Inventory i on i.variant = v" +
+                " where p.status = :status" +
+                " and v.isDefault = true" +
+                " order by p.id desc", MainProductCardDto.class)
+                .setParameter("status", SaleStatus.ACTIVE)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }

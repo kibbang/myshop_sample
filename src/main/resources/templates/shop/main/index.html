@@ -1,90 +1,187 @@
+<!-- templates/shop/home/index.html -->
 <div th:fragment="content">
-    <div class="container-xl">
 
-        <!-- 헤더 -->
-        <div class="page-header">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h2 class="page-title">MyShop</h2>
-                    <div class="text-secondary">샘플 쇼핑몰 메인</div>
-                </div>
+    <!-- HERO -->
+    <div class="container-xl mt-4">
+        <div class="card">
+            <div class="card-body p-5">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <div class="text-muted mb-2">MYSHOP</div>
+                        <h1 class="mb-3">오늘 필요한 걸, 빠르게.</h1>
+                        <p class="text-muted mb-4">
+                            대표 SKU 기준으로 바로 주문할 수 있는 미니 쇼핑몰.
+                        </p>
 
-                <!-- 로그인 상태 -->
-                <div class="col-auto">
-                      <span class="badge bg-green-lt"
-                            th:if="${session.loginUser != null}"
-                            th:text="${session.loginUser.loginId + '님'}">
-                            user
-                      </span>
-                    <span class="badge bg-yellow-lt" th:if="${session.loginUser == null}">
-                        로그인하면 주문할 수 있어요
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 히어로 -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h3 class="card-title">오늘은 뭐 살까?</h3>
-                <div class="text-secondary mb-3">대표 SKU 기준으로 간단히 주문까지 되는 최소 쇼핑 플로우를 구현 중입니다.</div>
-
-                <div class="d-flex gap-2 flex-wrap">
-                    <a class="btn btn-primary" th:href="@{/products}">상품 보러가기</a>
-                    <a class="btn btn-outline-secondary" th:href="@{/login}"
-                       th:if="${session.loginUser == null}">
-                        로그인
-                    </a>
-                    <a class="btn btn-outline-danger" th:href="@{/logout}"
-                       th:if="${session.loginUser != null}">
-                        로그아웃
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- 공지 -->
-        <div class="alert alert-info" role="alert">
-            <strong>공지:</strong> 현재는 DEFAULT(대표) 옵션만 주문 가능합니다. (옵션/이미지는 다음 단계!)
-        </div>
-
-        <!-- 퀵 링크 -->
-        <div class="row row-cards">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="fw-bold mb-2">상품</div>
-                        <div class="text-secondary mb-3">상품 목록/상세로 이동</div>
-                        <a class="btn btn-outline-primary w-100" th:href="@{/products}">상품 목록</a>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/products}" class="btn btn-primary">상품 보러가기</a>
+                            <a th:href="@{/orders}" class="btn btn-outline-secondary">내 주문 조회</a>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="fw-bold mb-2">계정</div>
-                        <div class="text-secondary mb-3">로그인해서 주문하기</div>
-                        <a class="btn btn-outline-secondary w-100" th:href="@{/login}">로그인</a>
+                    <!-- 이미지 자리 -->
+                    <div class="col-md-5 d-none d-md-block">
+                        <div class="ratio ratio-16x9 bg-light rounded overflow-hidden">
+                            <img class="w-100 h-100"
+                                 style="object-fit: cover;"
+                                 th:src="@{/assets/images/products/default.jpg}"
+                                 alt="product image">
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="fw-bold mb-2">관리자</div>
-                        <div class="text-secondary mb-3">상품/주문 관리로 이동</div>
-                        <a class="btn btn-outline-dark w-100" th:href="@{/admin}">관리자</a>
-                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- 푸터 느낌 -->
-        <div class="text-center text-secondary my-4">
-            MyShop Sample · Spring + Thymeleaf
-        </div>
-
     </div>
+
+    <!-- QUICK CATEGORIES (placeholder) -->
+    <div class="container-xl mt-4">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="card card-sm">
+                    <div class="card-body">
+                        <div class="fw-bold">전자/IT</div>
+                        <div class="text-muted small">준비중</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card card-sm">
+                    <div class="card-body">
+                        <div class="fw-bold">생활/주방</div>
+                        <div class="text-muted small">준비중</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card card-sm">
+                    <div class="card-body">
+                        <div class="fw-bold">패션</div>
+                        <div class="text-muted small">준비중</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card card-sm">
+                    <div class="card-body">
+                        <div class="fw-bold">식품</div>
+                        <div class="text-muted small">준비중</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="section-products" class="container-xl mt-5">
+        <div class="d-flex align-items-end justify-content-between mb-3">
+            <div>
+                <div class="text-muted">추천</div>
+                <h2 class="m-0">지금 바로 주문 가능한 상품</h2>
+            </div>
+            <!-- 나중에 정렬/필터 넣을 자리 -->
+        </div>
+
+        <div class="row row-cards">
+
+            <!-- 카드 반복 -->
+            <div class="col-6 col-md-4 col-lg-3" th:each="item : ${cards}">
+                <div class="card h-100">
+
+                    <!-- 상품 이미지 자리(placeholder) -->
+                    <div class="position-relative">
+                        <div class="ratio ratio-4x3 bg-light overflow-hidden">
+                            <img class="w-100 h-100"
+                                 style="object-fit: cover;"
+                                 th:src="@{/assets/images/products/{pid}/1.jpg(pid=${item.id})}"
+                                 onerror="this.onerror=null; this.src='/assets/images/products/default.jpg';"
+                                 alt="product image">
+                        </div>
+
+                        <div th:if="${item.soldOut}"
+                             class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                             style="background: rgba(0,0,0,.45);">
+                            <div class="text-white fw-bold">품절</div>
+                        </div>
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-start justify-content-between gap-2">
+                            <div class="fw-bold text-truncate" style="max-width: 170px;" th:text="${item.name}">상품명</div>
+
+                            <span class="badge"
+                                  th:classappend="${item.soldOut} ? ' bg-red-lt' : ' bg-green-lt'"
+                                  th:text="${item.soldOut} ?
+                                   ${T(sample.myshop.enums.product.SaleStatus).SOLDOUT.label}
+                                    : ${T(sample.myshop.enums.product.SaleStatus).ACTIVE.label}">
+                                IN STOCK
+                            </span>
+                        </div>
+
+                        <div class="text-muted small mt-1">
+                            SKU: <span th:text="${item.sku}">SKU</span>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="h3 m-0">
+                                <span th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')}">10,000</span>
+                                <span class="text-muted fs-5" th:text="${item.currency}">KRW</span>
+                            </div>
+
+                            <div class="text-muted small mt-1">
+                                재고: <span th:text="${item.stockQuantity}">0</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-3">
+                            <a class="btn btn-primary w-100"
+                               th:classappend="${item.soldOut} ? ' disabled' : ''"
+                               th:href="@{/products/{id}(id=${item.id})}">
+                                상품 보기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 빈 상태 -->
+            <div class="col-12" th:if="${#lists.isEmpty(cards)}">
+                <div class="alert alert-info">
+                    노출할 상품이 아직 없습니다. 먼저 상품을 등록해 주세요.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TRUST -->
+    <div class="container-xl my-5">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card card-sm">
+                    <div class="card-body">
+                        <div class="fw-bold">빠른 배송</div>
+                        <div class="text-muted">주문 후 빠르게 준비해드려요.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-sm">
+                    <div class="card-body">
+                        <div class="fw-bold">간편 반품</div>
+                        <div class="text-muted">정책은 추후 연결 예정.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-sm">
+                    <div class="card-body">
+                        <div class="fw-bold">고객 지원</div>
+                        <div class="text-muted">문의 기능은 다음 단계에서.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum SaleStatus {
     DRAFT("대기"),
     ACTIVE("판매 중"),
-    INACTIVE("판매중지");
+    INACTIVE("판매중지"),
+    SOLDOUT("품절");
 
     private final String label;
 
