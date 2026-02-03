@@ -10,7 +10,8 @@ import java.net.URLEncoder;
 
 import static java.nio.charset.StandardCharsets.*;
 import static sample.myshop.auth.SessionConst.*;
-import static sample.myshop.enums.auth.UserType.ADMIN;
+import static sample.myshop.member.enums.Role.ADMIN;
+
 
 public class AdminInterceptor implements HandlerInterceptor {
     @Override

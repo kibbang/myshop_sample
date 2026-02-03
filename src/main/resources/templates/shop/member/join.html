@@ -1,0 +1,103 @@
+<!-- templates/shop/member/join.html -->
+<div th:fragment="content">
+    <div class="container-xl">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">회원가입</h2>
+                        <p class="text-secondary mb-4">기본 배송지 정보를 함께 등록합니다.</p>
+
+                        <form th:action="@{/members/join}" th:object="${memberRegisterForm}" method="post">
+                            <!-- CSRF -->
+                            <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+
+                            <!-- 로그인 정보 -->
+                            <div class="mb-3">
+                                <label class="form-label">로그인 ID</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{loginId}"
+                                       placeholder="login id">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('loginId')}"
+                                     th:errors="*{loginId}">loginId error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">비밀번호</label>
+                                <input type="password" class="form-control"
+                                       th:field="*{password}"
+                                       placeholder="password">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}"
+                                     th:errors="*{password}">password error</div>
+                            </div>
+
+                            <!-- 프로필 -->
+                            <div class="mb-3">
+                                <label class="form-label">이름</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{name}"
+                                       placeholder="name">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('name')}"
+                                     th:errors="*{name}">name error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">전화번호</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{phone}"
+                                       placeholder="010-0000-0000">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('phone')}"
+                                     th:errors="*{phone}">phone error</div>
+                            </div>
+
+                            <hr class="my-4"/>
+
+                            <!-- 주소 -->
+                            <h3 class="card-title mb-3">기본 배송지</h3>
+
+                            <div class="mb-3">
+                                <label class="form-label">우편번호</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{zipcode}"
+                                       placeholder="zipcode">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('zipcode')}"
+                                     th:errors="*{zipcode}">zipcode error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">기본주소</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{baseAddress}"
+                                       placeholder="address1">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('baseAddress')}"
+                                     th:errors="*{baseAddress}">baseAddress error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">상세주소</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{detailAddress}"
+                                       placeholder="address2">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('detailAddress')}"
+                                     th:errors="*{detailAddress}">detailAddress error</div>
+                            </div>
+
+                            <!-- 글로벌 에러(중복 등) -->
+                            <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+                                <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">global error</div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">가입하기</button>
+                                <a th:href="@{/login}" class="btn btn-outline-secondary">취소</a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

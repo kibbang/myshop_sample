@@ -1,0 +1,59 @@
+<!-- templates/shop/member/shipping.html -->
+<div th:fragment="content">
+    <div class="container-xl">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">기본 배송지</h2>
+                        <p class="text-secondary mb-4">주문 시 기본값으로 사용됩니다.</p>
+
+                        <div class="alert alert-success" th:if="${message}" th:text="${message}">saved</div>
+
+                        <form th:action="@{/my/shipping}" th:object="${shippingFormDto}" method="post">
+                            <input type="hidden" name="_csrf" th:value="${_csrf}"/>
+
+                            <div class="mb-3">
+                                <label class="form-label">이름</label>
+                                <input type="text" class="form-control" th:field="*{name}">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('name')}"
+                                     th:errors="*{name}">name error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">전화번호</label>
+                                <input type="text" class="form-control" th:field="*{phone}">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('phone')}"
+                                     th:errors="*{phone}">phone error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">우편번호</label>
+                                <input type="text" class="form-control" th:field="*{zipcode}">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('zipcode')}"
+                                     th:errors="*{zipcode}">zipcode error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">기본주소</label>
+                                <input type="text" class="form-control" th:field="*{baseAddress}">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('baseAddress')}"
+                                     th:errors="*{baseAddress}">baseAddress error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">상세주소</label>
+                                <input type="text" class="form-control" th:field="*{detailAddress}">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
