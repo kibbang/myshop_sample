@@ -11,6 +11,7 @@ import sample.myshop.admin.product.repository.ProductRepository;
 import sample.myshop.enums.product.Currency;
 import sample.myshop.enums.product.SaleStatus;
 import sample.myshop.order.domain.Order;
+import sample.myshop.order.session.OrderDeliveryRequestDto;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static sample.myshop.enums.order.OrderStatus.CANCELED;
@@ -49,7 +50,15 @@ class OrderServiceImplTest {
         em.clear();
 
         // when
-        String orderNo = orderService.placeOrder(productId, 2, "buyer01");
+        OrderDeliveryRequestDto requestDto = new OrderDeliveryRequestDto();
+        requestDto.setReceiverName("tester");
+        requestDto.setReceiverPhone("01012345678");
+        requestDto.setReceiverZipcode("1235468");
+        requestDto.setReceiverBaseAddress("기본주소");
+        requestDto.setReceiverDetailAddress("상세주소");
+        requestDto.setDeliveryMemo("메모");
+
+        String orderNo = orderService.placeOrder(productId, 2, "buyer01", requestDto);
 
         em.flush();
         em.clear();
@@ -101,9 +110,18 @@ class OrderServiceImplTest {
         em.flush();
         em.clear();
 
+        OrderDeliveryRequestDto requestDto = new OrderDeliveryRequestDto();
+        requestDto.setReceiverName("tester");
+        requestDto.setReceiverPhone("01012345678");
+        requestDto.setReceiverZipcode("1235468");
+        requestDto.setReceiverBaseAddress("기본주소");
+        requestDto.setReceiverDetailAddress("상세주소");
+        requestDto.setDeliveryMemo("메모");
+
+
         // when & then
         assertThrows(IllegalStateException.class,
-                () -> orderService.placeOrder(productId, 2, "buyer01"),
+                () -> orderService.placeOrder(productId, 2, "buyer01", requestDto),
                 "Inventory.decreaseQuantity에서 재고 부족 예외가 발생해야 함"
         );
     }
@@ -133,7 +151,15 @@ class OrderServiceImplTest {
         em.clear();
 
         // when: 주문(2개)
-        String orderNo = orderService.placeOrder(productId, 2, "buyer01");
+        OrderDeliveryRequestDto requestDto = new OrderDeliveryRequestDto();
+        requestDto.setReceiverName("tester");
+        requestDto.setReceiverPhone("01012345678");
+        requestDto.setReceiverZipcode("1235468");
+        requestDto.setReceiverBaseAddress("기본주소");
+        requestDto.setReceiverDetailAddress("상세주소");
+        requestDto.setDeliveryMemo("메모");
+
+        String orderNo = orderService.placeOrder(productId, 2, "buyer01", requestDto);
 
         em.flush();
         em.clear();
@@ -187,7 +213,15 @@ class OrderServiceImplTest {
         em.flush();
         em.clear();
 
-        String orderNo = orderService.placeOrder(productId, 2, "buyer01");
+        OrderDeliveryRequestDto requestDto = new OrderDeliveryRequestDto();
+        requestDto.setReceiverName("tester");
+        requestDto.setReceiverPhone("01012345678");
+        requestDto.setReceiverZipcode("1235468");
+        requestDto.setReceiverBaseAddress("기본주소");
+        requestDto.setReceiverDetailAddress("상세주소");
+        requestDto.setDeliveryMemo("메모");
+
+        String orderNo = orderService.placeOrder(productId, 2, "buyer01", requestDto);
         em.flush();
         em.clear();
 
@@ -232,9 +266,17 @@ class OrderServiceImplTest {
         em.flush();
         em.clear();
 
+        OrderDeliveryRequestDto requestDto = new OrderDeliveryRequestDto();
+        requestDto.setReceiverName("tester");
+        requestDto.setReceiverPhone("01012345678");
+        requestDto.setReceiverZipcode("1235468");
+        requestDto.setReceiverBaseAddress("기본주소");
+        requestDto.setReceiverDetailAddress("상세주소");
+        requestDto.setDeliveryMemo("메모");
+
         // when: placeOrder(productId, 2) 시도 → 예외
         assertThrows(IllegalArgumentException.class,
-                () -> orderService.placeOrder(productId, 2, "buyer01")
+                () -> orderService.placeOrder(productId, 2, "buyer01", requestDto)
         );
 
         em.flush();

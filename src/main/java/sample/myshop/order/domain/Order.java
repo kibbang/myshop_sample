@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sample.myshop.common.entity.CommonEntity;
 import sample.myshop.enums.order.OrderStatus;
+import sample.myshop.release.domain.OrderRelease;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,25 +47,87 @@ public class Order extends CommonEntity {
     @Column(name = "version", nullable = false)
     private Long version;
 
-    private Order(String orderNo, String buyerLoginId) {
+    @OneToOne(mappedBy = "order", cascade =  CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private OrderRelease release;
+
+    @Column(name = "receiver_name")
+    private String receiverName;
+
+    @Column(name = "receiver_phone")
+    private String receiverPhone;
+
+    @Column(name = "receiver_zip")
+    private String receiverZip;
+
+    @Column(name = "receiver_base_address")
+    private String receiverBaseAddress;
+
+    @Column(name = "receiver_detail_address")
+    private String receiverDetailAddress;
+
+    @Column(name = "delivery_memo")
+    private String deliveryMemo;
+
+    private Order(
+            String orderNo,
+            String buyerLoginId,
+            Long memberId,
+            String receiverName,
+            String receiverPhone,
+            String receiverZip,
+            String receiverBaseAddress,
+            String receiverDetailAddress,
+            String deliveryMemo
+    ) {
         this.orderNo = orderNo;
-        this.memberId = null; // 일단 null
+        this.memberId = memberId;
         this.buyerLoginId = buyerLoginId;
         this.status = ORDERED;
         this.totalAmount = 0;
         this.orderItems = new ArrayList<>();
+        this.receiverName = receiverName;
+        this.receiverPhone = receiverPhone;
+        this.receiverZip = receiverZip;
+        this.receiverBaseAddress = receiverBaseAddress;
+        this.receiverDetailAddress = receiverDetailAddress;
+        this.deliveryMemo = deliveryMemo;
     }
 
-    public static Order createOrder(String orderNo, String buyerLoginId) {
+    public static Order createOrder(
+            String orderNo,
+            String buyerLoginId,
+            Long memberId,
+            String receiverName,
+            String receiverPhone,
+            String receiverZip,
+            String receiverBaseAddress,
+            String receiverDetailAddress,
+            String deliveryMemo
+    ) {
         if (orderNo == null || orderNo.isBlank()) {
             throw new IllegalArgumentException("주문번호는 필수입니다.");
         }
+
+        if (memberId == null) {
+            throw new IllegalArgumentException("주문 회원이 없습니다.");
+        }
+
 
         if (buyerLoginId == null || buyerLoginId.isBlank()) {
             throw new IllegalArgumentException("주문자 아이디는 필수입니다.");
         }
 
-        return new Order(orderNo, buyerLoginId);
+        return new Order(
+                orderNo,
+                buyerLoginId,
+                memberId,
+                receiverName,
+                receiverPhone,
+                receiverZip,
+                receiverBaseAddress,
+                receiverDetailAddress,
+                deliveryMemo
+        );
     }
 
     /**
@@ -81,6 +144,12 @@ public class Order extends CommonEntity {
         totalAmount += orderItem.getLineAmount();
     }
 
+    public void createRelease(OrderRelease orderRelease) {
+        release = orderRelease;
+
+        orderRelease.assignOrder(this);
+    }
+
     /**
      * 주문 상태 변경 (주문 -> 취소)
      */
@@ -91,5 +160,7 @@ public class Order extends CommonEntity {
         }
 
         status = CANCELED;
+
+        release.cancel();
     }
 }

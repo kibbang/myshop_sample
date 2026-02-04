@@ -65,10 +65,6 @@ public class ShopOrderController {
             return "redirect:/";
         }
 
-        // TODO: 상품 요약 조회 (상품명/가격 등)
-        // var product = productQueryService.getProductSummary(ps.getProductId());
-        // model.addAttribute("product", product);
-
         ShopProductDetailDto productDetail = shopProductService.getDetail(orderPrepareSession.getProductId());
         model.addAttribute("product", productDetail);
 
@@ -112,7 +108,8 @@ public class ShopOrderController {
         String placedOrderNo = orderService.placeOrder(
                 orderPrepareSession.getProductId(),
                 orderPrepareSession.getQuantity(),
-                sessionUser.getLoginId()
+                sessionUser.getLoginId(),
+                deliveryForm
         );
 
         redirectAttributes.addFlashAttribute("message", "주문 완료");

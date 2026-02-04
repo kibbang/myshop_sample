@@ -12,11 +12,11 @@ public class OrderDeliveryRequestDto {
     @NotBlank
     private String receiverPhone;
     @NotBlank
-    private String zipcode;
+    private String receiverZipcode;
     @NotBlank
-    private String baseAddress;
+    private String receiverBaseAddress;
     @NotBlank
-    private String detailAddress;
+    private String receiverDetailAddress;
     @NotBlank
     private String deliveryMemo;
 }

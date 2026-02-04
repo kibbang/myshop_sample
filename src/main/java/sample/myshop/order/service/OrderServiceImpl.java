@@ -10,10 +10,14 @@ import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.repository.InventoryRepository;
+import sample.myshop.member.domain.Member;
+import sample.myshop.member.repository.MemberRepository;
 import sample.myshop.order.domain.Order;
 import sample.myshop.order.domain.OrderItem;
 import sample.myshop.order.domain.dto.DefaultVariantSnapshotDto;
 import sample.myshop.order.repository.OrderRepository;
+import sample.myshop.order.session.OrderDeliveryRequestDto;
+import sample.myshop.release.domain.OrderRelease;
 import sample.myshop.utils.OrderGenerator;
 
 import java.util.ArrayList;
@@ -27,10 +31,14 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final InventoryRepository inventoryRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
-    public String placeOrder(Long productId, int quantity, String buyerLoginId) {
+    public String placeOrder(Long productId, int quantity, String buyerLoginId, OrderDeliveryRequestDto orderDeliveryRequestDto) {
+        // 주문자 ID 찾기
+        Member member = memberRepository.findByLoginId(buyerLoginId);
+
         // 대표 variant 찾기
         DefaultVariantSnapshotDto defaultVariant = orderRepository.findDefaultVariantForOrder(productId);
 
@@ -58,8 +66,22 @@ public class OrderServiceImpl implements OrderService {
         // Order 생성
         String newOrderId = OrderGenerator.generateOrderNo();
 
-        Order order = Order.createOrder(newOrderId, buyerLoginId);
+        Order order = Order.createOrder(
+                newOrderId,
+                buyerLoginId,
+                member.getId(),
+                orderDeliveryRequestDto.getReceiverName(),
+                orderDeliveryRequestDto.getReceiverPhone(),
+                orderDeliveryRequestDto.getReceiverZipcode(),
+                orderDeliveryRequestDto.getReceiverBaseAddress(),
+                orderDeliveryRequestDto.getReceiverDetailAddress(),
+                orderDeliveryRequestDto.getDeliveryMemo()
+        );
         order.addOrderItem(orderItem);
+
+        // 배송 생성
+        OrderRelease orderRelease = OrderRelease.create();
+        order.createRelease(orderRelease);
 
         orderRepository.save(order);
 

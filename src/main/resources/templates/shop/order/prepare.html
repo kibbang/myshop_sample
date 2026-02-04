@@ -51,19 +51,19 @@
 
                                 <div class="col-md-4">
                                     <label class="form-label">우편번호</label>
-                                    <input type="text" class="form-control" th:field="*{zipcode}"
+                                    <input type="text" class="form-control" th:field="*{receiverZipcode}"
                                            placeholder="12345" autocomplete="postal-code">
                                 </div>
 
                                 <div class="col-md-8">
                                     <label class="form-label">기본 주소</label>
-                                    <input type="text" class="form-control" th:field="*{baseAddress}"
+                                    <input type="text" class="form-control" th:field="*{receiverBaseAddress}"
                                            placeholder="도로명/지번 주소" autocomplete="address-line1">
                                 </div>
 
                                 <div class="col-12">
                                     <label class="form-label">상세 주소</label>
-                                    <input type="text" class="form-control" th:field="*{detailAddress}"
+                                    <input type="text" class="form-control" th:field="*{receiverDetailAddress}"
                                            placeholder="상세 주소" autocomplete="address-line2">
                                 </div>
 

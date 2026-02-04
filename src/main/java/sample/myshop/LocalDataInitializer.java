@@ -12,6 +12,7 @@ import sample.myshop.admin.product.repository.ProductRepository;
 import sample.myshop.enums.product.Currency;
 import sample.myshop.enums.product.SaleStatus;
 import sample.myshop.order.service.OrderService;
+import sample.myshop.order.session.OrderDeliveryRequestDto;
 
 @Component
 @Profile("local")
@@ -49,6 +50,19 @@ public class LocalDataInitializer implements CommandLineRunner { // SEED 역할�
         inv.updateStockQuantity(10);
 
         // 3) 주문 1건 생성
-        orderService.placeOrder(productId, 2, "buyer01");
+        OrderDeliveryRequestDto requestDto = new OrderDeliveryRequestDto();
+        requestDto.setReceiverName("tester");
+        requestDto.setReceiverPhone("01012345678");
+        requestDto.setReceiverZipcode("1235468");
+        requestDto.setReceiverBaseAddress("기본주소");
+        requestDto.setReceiverDetailAddress("상세주소");
+        requestDto.setDeliveryMemo("메모");
+
+        orderService.placeOrder(
+                productId,
+                2,
+                "buyer01",
+                requestDto
+        );
     }
 }
