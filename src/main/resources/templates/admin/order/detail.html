@@ -22,9 +22,24 @@
                         <a th:href="@{/admin/orders}" class="btn">
                             목록으로
                         </a>
-                        <form th:if="${order.status.name() == 'ORDERED'}" th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" method="post" class="d-inline">
-                            <input type="hidden" name="_csrf" th:value="${_csrf}" />
-                            <button type="submit" class="btn btn-outline-danger" onclick="this.disabled=true; return confirm('정말 주문을 취소할까요?')">
+                        <!-- 아래 부분들 상태 정리해서 개선 필요-->
+                        <!-- ✅ 출고 처리 (READY -> RELEASED) -->
+                        <form th:if="${order?.releaseStatus != null and order?.releaseStatus.name() == 'READY'}"
+                              th:action="@{/admin/releases/{orderId}/release(orderId=${order.id})}"
+                              method="post"
+                              class="d-inline js-confirm-submit"
+                              data-confirm-message="출고 처리로 변경할까요?">
+                            <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                            <button type="submit" class="btn btn-primary">
+                                출고 처리
+                            </button>
+                        </form>
+                        <form th:if="${order.status.name() == 'ORDERED' and order.releaseStatus?.name() == 'READY'}" th:action="@{/admin/orders/{id}/cancel(id=${order.id})}"
+                              method="post"
+                              class="d-inline js-confirm-submit"
+                              data-confirm-message="정말 주문을 취소할까요?">
+                            <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                            <button type="submit" class="btn btn-outline-danger">
                                 주문 취소
                             </button>
                         </form>
@@ -37,7 +52,6 @@
             </div>
         </div>
     </div>
-
     <!-- Page body -->
     <div class="page-body">
         <div class="container-xl">
@@ -75,6 +89,19 @@
                         </div>
 
                         <div class="col-12 col-md-6 col-lg-4">
+                            <div class="text-muted">출고상태</div>
+                            <div>
+                                <span class="badge"
+                                      th:classappend="
+                                          ${order.releaseStatus != null and order.releaseStatus.name() == 'READY'} ? ' bg-secondary-lt text-secondary' :
+                                          (${order.releaseStatus != null and order.releaseStatus.name() == 'RELEASED'} ? ' bg-green-lt text-green' : ' bg-secondary-lt text-secondary')"
+                                      th:text="${order.releaseStatus != null ? order.releaseStatus.label : '-'}">
+                                    READY
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
                             <div class="text-muted">총 금액</div>
                             <div class="fs-3 fw-semibold">
                                 <span th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}">20,000</span>
@@ -93,6 +120,44 @@
                             <div class="fs-3 fw-semibold" th:text="${order.id}">1</div>
                         </div>
 
+                    </div>
+                </div>
+            </div>
+            <!-- ✅ Shipping address card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">배송지</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="text-muted">받는사람</div>
+                            <div class="fs-3 fw-semibold" th:text="${order?.receiverName != null ? order?.receiverName : '-'}">홍길동</div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="text-muted">전화번호</div>
+                            <div class="fs-3 fw-semibold" th:text="${order?.receiverPhone != null ? order?.receiverPhone : '-'}">010-0000-0000</div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="text-muted">우편번호</div>
+                            <div class="fs-3 fw-semibold" th:text="${order?.receiverZip != null ? order?.receiverZip : '-'}">00000</div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="text-muted">메모</div>
+                            <div class="fs-3 fw-semibold" th:text="${order?.deliveryMemo != null ? order?.deliveryMemo : '-'}">문 앞에 놔주세요</div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="text-muted">주소</div>
+                            <div class="fs-3 fw-semibold">
+                                <span th:text="${order?.receiverBaseAddress != null ? order?.receiverBaseAddress : '-'}">서울...</span>
+                                <span th:text="${order?.receiverDetailAddress != null ? order?.receiverDetailAddress : ''}">101동...</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

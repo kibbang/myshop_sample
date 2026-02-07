@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import sample.myshop.common.entity.CommonEntity;
 import sample.myshop.enums.order.OrderStatus;
 import sample.myshop.release.domain.OrderRelease;
+import sample.myshop.release.enums.ReleaseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,11 +157,18 @@ public class Order extends CommonEntity {
     public void cancel() {
         //  주문 상태 체크
         if (status != ORDERED) {
-            throw new IllegalArgumentException("주문 상태가 '" + ORDERED.getLabel() + "'이어야 합니다.");
+            throw new IllegalStateException("주문 상태가 '" + ORDERED.getLabel() + "'이어야 합니다.");
         }
 
-        status = CANCELED;
+        // 주문 체크 이후 출고 단위 존재 여부 체크
+        if (release == null) {
+            throw new IllegalStateException("출고 정보가 없습니다.");
+        }
 
-        release.cancel();
+        // 출고 상태 변경
+        release.toCancel();
+
+        // 출고 상태 변경 이상 없을 경우 주문 상태 변경
+        status = CANCELED;
     }
 }

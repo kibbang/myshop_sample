@@ -44,7 +44,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Order findByIdWithOrderItems(Long orderId) {
         try {
-            return em.createQuery("select distinct o from Order o join fetch o.orderItems where o.id = :orderId", Order.class)
+            return em.createQuery("select distinct o" +
+                            " from Order o" +
+                            " left join fetch o.release r" + // left 추가 > release 추가 전 생성된 주문들 타겟
+                            " join fetch o.orderItems oi" +
+                            " where o.id = :orderId",
+                            Order.class)
                     .setParameter("orderId", orderId)
                     .getSingleResult();
         } catch (Exception e) {

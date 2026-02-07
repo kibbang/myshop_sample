@@ -128,7 +128,14 @@ public class OrderServiceImpl implements OrderService {
                 orderWithItems.getStatus(),
                 orderWithItems.getTotalAmount(),
                 orderWithItems.getCreatedAt(),
-                orderItems
+                orderItems,
+                orderWithItems.getReceiverName() == null ? "" : orderWithItems.getReceiverName(),
+                orderWithItems.getReceiverPhone() == null ? "" : orderWithItems.getReceiverPhone(),
+                orderWithItems.getReceiverZip() == null ? "" : orderWithItems.getReceiverZip(),
+                orderWithItems.getReceiverBaseAddress() == null ? "" : orderWithItems.getReceiverBaseAddress(),
+                orderWithItems.getReceiverDetailAddress() == null ? "" : orderWithItems.getReceiverDetailAddress(),
+                orderWithItems.getDeliveryMemo() == null ? "" : orderWithItems.getDeliveryMemo(),
+                orderWithItems.getRelease() == null ? null : orderWithItems.getRelease().getStatus()
         );
     }
 
