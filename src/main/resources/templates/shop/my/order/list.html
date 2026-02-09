@@ -60,16 +60,34 @@
                     <tbody>
                     <tr th:each="order : ${orderList}">
                         <!-- 주문번호 -->
+                        <!-- 기존: 주문번호 링크만 있던 부분을 아래로 교체 -->
                         <td>
                             <div class="d-flex flex-column">
-                                <a th:href="@{|/my/orders/${order?.orderNo}|}" class="text-reset fw-bold"
-                                   th:text="${order?.orderNo}">20260209000000000000</a>
+
+                                <!-- 주문번호 + 복사 버튼 -->
+                                <div class="d-flex align-items-center gap-2">
+                                    <a th:href="@{|/my/orders/${order.orderNo}|}"
+                                       class="text-reset fw-bold"
+                                       th:text="${order.orderNo}">
+                                        20260209000000000000
+                                    </a>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            th:attr="data-order-no=${order.orderNo}"
+                                            onclick="copyOrderNo(this.dataset.orderNo)">
+                                        주문번호 복사
+                                    </button>
+                                </div>
+
+                                <!-- 받는사람 -->
                                 <div class="text-muted mt-1">
                                     받는사람:
-                                    <span th:text="${order?.receiverName}">홍길동</span>
+                                    <span th:text="${order.receiverName != null ? order.receiverName : '-'}">홍길동</span>
                                 </div>
                             </div>
                         </td>
+
 
                         <!-- 주문일시 -->
                         <td class="text-muted"
@@ -125,6 +143,46 @@
                 </div>
             </div>
         </div>
-
     </div>
+
+    <!-- Toast container -->
+    <div id="copyToast"
+         class="toast position-fixed bottom-0 end-0 m-3"
+         role="alert" aria-live="assertive" aria-atomic="true"
+         style="z-index: 1080; display: none;">
+        <div class="toast-header">
+            <strong class="me-auto">알림</strong>
+            <button type="button" class="btn-close" aria-label="Close"
+                    onclick="hideCopyToast()"></button>
+        </div>
+        <div class="toast-body" id="copyToastBody">
+            복사되었습니다.
+        </div>
+    </div>
+
+    <script>
+        function showCopyToast(message) {
+            const toast = document.getElementById('copyToast');
+            const body = document.getElementById('copyToastBody');
+            body.textContent = message || '복사되었습니다.';
+            toast.style.display = 'block';
+
+            clearTimeout(window.__copyToastTimer);
+            window.__copyToastTimer = setTimeout(hideCopyToast, 1600);
+        }
+
+        function hideCopyToast() {
+            const toast = document.getElementById('copyToast');
+            toast.style.display = 'none';
+        }
+
+        async function copyOrderNo(orderNo) {
+            try {
+                await navigator.clipboard.writeText(orderNo);
+                showCopyToast('주문번호가 복사되었습니다.');
+            } catch (e) {
+                showCopyToast('복사에 실패했습니다. 주문번호를 드래그해서 복사해주세요.');
+            }
+        }
+    </script>
 </div>
