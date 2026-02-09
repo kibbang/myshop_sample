@@ -13,7 +13,7 @@ public interface OrderRepository {
 
     void save(Order order);
 
-    Order findByIdWithOrderItems(Long orderId);
+    Order findByIdWithDetail(Long orderId);
 
     List<OrderListItemDto> findOrders(OrderSearchConditionDto condition, int page, int size);
 

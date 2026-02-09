@@ -42,7 +42,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Order findByIdWithOrderItems(Long orderId) {
+    public Order findByIdWithDetail(Long orderId) {
         try {
             return em.createQuery("select distinct o" +
                             " from Order o" +

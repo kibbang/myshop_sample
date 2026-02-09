@@ -33,9 +33,6 @@ public class ShopOrderController {
 
         // 1) 주문 준비 세션 저장 (URL에 노출 X)
         session.setAttribute(SessionConst.ORDER_PREPARE, new OrderPrepareSession(form.getProductId(), form.getQuantity()));
-        log.info("prepare saved. sessionId={}, productId={}, quantity={}",
-                session.getId(), form.getProductId(), form.getQuantity());
-
 
         // 2) 비로그인이면 로그인으로
         SessionUser user = (SessionUser) session.getAttribute(SessionConst.LOGIN_USER);
@@ -80,7 +77,6 @@ public class ShopOrderController {
     @PostMapping
     public String placeOrder(
             @Validated @ModelAttribute OrderDeliveryRequestDto  deliveryForm,
-            Model model,
             HttpSession session,
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes

@@ -1,7 +1,6 @@
 package sample.myshop.order.service;
 
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sample.myshop.admin.order.domain.dto.web.OrderDetailDto;
@@ -21,6 +20,7 @@ import sample.myshop.release.domain.OrderRelease;
 import sample.myshop.utils.OrderGenerator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,17 +92,20 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void cancelOrder(Long orderId) {
         // 타겟 주문 조회
-        Order targetOrder = orderRepository.findByIdWithOrderItems(orderId);
+        Order targetOrder = orderRepository.findByIdWithDetail(orderId);
+
+        // 주문 상태 변경 (주문 및 출고상태 체크)
+        targetOrder.cancel();
 
         // 각 아이템별 재고 복구 (락 걸고 조회)
-        targetOrder.getOrderItems().forEach(orderItem -> {
-            Inventory orderedInventory = inventoryRepository.findInventoryForUpdateByVariantId(orderItem.getVariantId());
-
-            orderedInventory.increaseQuantity(orderItem.getQuantity());
-        });
-
-        // 주문 상태 변경
-        targetOrder.cancel();
+        targetOrder.getOrderItems().stream()
+                // 아이템이 2개이상 일경우 락의 순서가 엇갈리면 데드락이 날 가능성이 있음
+                // 방지 차원에서 순서 소팅
+                .sorted(Comparator.comparingLong(OrderItem::getVariantId))
+                .forEach(orderItem -> {
+                    Inventory orderedInventory = inventoryRepository.findInventoryForUpdateByVariantId(orderItem.getVariantId());
+                    orderedInventory.increaseQuantity(orderItem.getQuantity());
+                });
     }
 
     @Override
@@ -117,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDetailDto getOrder(Long orderId) {
-        Order orderWithItems = orderRepository.findByIdWithOrderItems(orderId);
+        Order orderWithItems = orderRepository.findByIdWithDetail(orderId);
 
         List<OrderItemDto> orderItems = convertOrderItemsToDto(orderWithItems);
 
