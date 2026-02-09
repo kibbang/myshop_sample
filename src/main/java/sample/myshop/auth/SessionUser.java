@@ -9,6 +9,7 @@ import sample.myshop.member.enums.Role;
 @Setter
 @AllArgsConstructor
 public class SessionUser {
+    private Long memberId;
     private String loginId;
     private Role role;
 }
