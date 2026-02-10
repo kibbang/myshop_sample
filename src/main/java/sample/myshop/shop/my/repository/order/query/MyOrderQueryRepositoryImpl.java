@@ -4,6 +4,11 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sample.myshop.order.domain.Order;
+import sample.myshop.order.domain.OrderItem;
+import sample.myshop.release.domain.OrderRelease;
+import sample.myshop.release.enums.ReleaseStatus;
+import sample.myshop.shop.my.domain.dto.MyOrderDetailDto;
+import sample.myshop.shop.my.domain.dto.MyOrderItemDto;
 import sample.myshop.shop.my.domain.dto.MyOrderListDto;
 
 import java.util.List;
@@ -43,4 +48,55 @@ public class MyOrderQueryRepositoryImpl implements MyOrderQueryRepository {
                 })
                 .toList();
     }
+
+    @Override
+    public MyOrderDetailDto getMyOrderDetail(String orderNo, Long memberId) {
+        List<Order> orders = em.createQuery("select distinct o" +
+                                " from Order o" +
+                                " join fetch o.orderItems" +
+                                " left join fetch o.release" +
+                                " where o.orderNo = :orderNo" +
+                                " and o.memberId = :memberId",
+                        Order.class)
+                .setParameter("orderNo", orderNo)
+                .setParameter("memberId", memberId)
+                .getResultList();
+
+        Order order = orders.getFirst();
+
+        List<OrderItem> fetchedOrderItems = order.getOrderItems();
+
+        OrderRelease release = order.getRelease();
+        ReleaseStatus releaseStatus = null;
+
+        if (release != null) {
+            releaseStatus = release.getStatus();
+        }
+
+        // 주문 아이템
+        List<MyOrderItemDto> myOrderItemDtoList = fetchedOrderItems.stream().map(orderItem -> new MyOrderItemDto(
+                orderItem.getProductNameSnapshot(),
+                orderItem.getSkuSnapshot(),
+                orderItem.getUnitPrice(),
+                orderItem.getQuantity(),
+                orderItem.getLineAmount()
+        ))
+                .toList();
+
+        return new MyOrderDetailDto(
+                order.getOrderNo(),
+                order.getCreatedAt(),
+                order.getTotalAmount(),
+                order.getStatus(),
+                releaseStatus,
+                order.getReceiverName(),
+                order.getReceiverPhone(),
+                order.getReceiverZip(),
+                order.getReceiverBaseAddress(),
+                order.getReceiverDetailAddress(),
+                order.getDeliveryMemo(),
+                myOrderItemDtoList
+        );
+    }
+
 }

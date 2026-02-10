@@ -1,0 +1,146 @@
+<div th:fragment="content" class="container-xl mt-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <div class="text-muted">내 주문</div>
+            <h2 class="mb-0">주문 상세</h2>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary"
+                    id="copyOrderNoBtn"
+                    th:attr="data-order-no=${order.orderNo}">
+                주문번호 복사
+            </button>
+            <a th:href="@{/my/orders}" class="btn btn-primary">목록으로</a>
+        </div>
+    </div>
+
+    <!-- 상태 요약 카드 -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="text-muted mb-1">주문번호</div>
+                    <div class="h3 mb-0" th:text="${order.orderNo}">202602...</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted mb-1">주문일시</div>
+                    <div th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-02-10 10:00:00</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted mb-1">상태</div>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-blue-lt" th:text="${order.orderStatus.label}">ORDERED</span>
+                        <span class="badge"
+                              th:classappend="${order.releaseStatus != null and order.releaseStatus.name() == 'RELEASED'} ? ' bg-green-lt' : ' bg-yellow-lt'"
+                              th:text="${order.releaseStatus != null ? order.releaseStatus.label : T(sample.myshop.release.enums.ReleaseStatus).READY.label}">
+              READY
+            </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 배송지 -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">배송지 정보</h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="text-muted">받는사람</div>
+                    <div th:text="${order.receiverName}">홍길동</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted">전화번호</div>
+                    <div th:text="${order.receiverPhone}">010-...</div>
+                </div>
+                <div class="col-12">
+                    <div class="text-muted">주소</div>
+                    <div>
+                        <span th:text="${order.receiverZip}">00000</span>
+                        <span th:text="${order.receiverBaseAddress}">address1</span>
+                        <span th:text="${order.receiverDetailAddress}">address2</span>
+                    </div>
+                </div>
+                <div class="col-12" th:if="${order.deliveryMemo != null and !#strings.isEmpty(order.deliveryMemo)}">
+                    <div class="text-muted">배송메모</div>
+                    <div th:text="${order.deliveryMemo}">문 앞에 놔주세요</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 주문상품 -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">주문 상품</h3>
+            <div class="ms-auto text-muted">
+                총액 <span class="fw-bold" th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}">10,000</span>원
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+                <thead>
+                <tr>
+                    <th>상품</th>
+                    <th>SKU</th>
+                    <th class="text-end">단가</th>
+                    <th class="text-end">수량</th>
+                    <th class="text-end">금액</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${order.orderItems}">
+                    <td th:text="${item.productNameSnapshot}">상품명</td>
+                    <td class="text-muted" th:text="${item.skuSnapshot}">SKU</td>
+                    <td class="text-end" th:text="${#numbers.formatInteger(item.unitPriceSnapshot, 3, 'COMMA')}">10,000</td>
+                    <td class="text-end" th:text="${item.quantity}">1</td>
+                    <td class="text-end fw-bold" th:text="${#numbers.formatInteger(item.lineAmount, 3, 'COMMA')}">10,000</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 토스트 자리 -->
+    <div id="copyToast" class="toast align-items-center position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">주문번호가 복사됐어요.</div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- ✅ 스크립트는 보통 body 끝에 두는 게 정석 (</html> 다음 X) -->
+    <script>
+        (function () {
+            const btn = document.getElementById('copyOrderNoBtn');
+            if (!btn) return;
+
+            btn.addEventListener('click', async () => {
+                const orderNo = btn.dataset.orderNo;
+                try {
+                    await navigator.clipboard.writeText(orderNo);
+
+                    const toastEl = document.getElementById('copyToast');
+                    if (toastEl && window.bootstrap) {
+                        const toast = new bootstrap.Toast(toastEl, { delay: 1500 });
+                        toast.show();
+                    } else {
+                        alert('주문번호가 복사됐어요.');
+                    }
+                } catch (e) {
+                    // fallback
+                    alert('복사에 실패했어요. 주문번호를 길게 눌러 복사해주세요.');
+                }
+            });
+        })();
+    </script>
+
+</div>

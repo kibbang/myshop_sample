@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import sample.myshop.auth.LoginUser;
 import sample.myshop.auth.SessionUser;
+import sample.myshop.shop.my.domain.dto.MyOrderDetailDto;
 import sample.myshop.shop.my.domain.dto.MyOrderListDto;
 import sample.myshop.shop.my.service.order.MyOrderService;
 
@@ -36,8 +38,14 @@ public class MyController {
     }
 
     @GetMapping("/orders/{orderNo}")
-    public String orderDetails(@PathVariable Long orderNo, Model model) {
+    public String orderDetails(@PathVariable String orderNo, @LoginUser SessionUser sessionUser, Model model) {
         // 타인 주문번호면 AccessDeniedException(또는 커스텀) 던져서 403
+
+        MyOrderDetailDto myOrderDetail = myOrderService.getMyOrderDetail(orderNo, sessionUser.getMemberId());
+
+        model.addAttribute("order", myOrderDetail);
+        addContentView(model, "shop/my/order/detail :: content");
+
         return "shop/layout/base";
     }
 
