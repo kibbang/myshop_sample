@@ -39,7 +39,7 @@ class ProductServiceImplTest {
                 Currency.KRW
         );
         // when
-        Long productId = productService.createProduct(req);
+        Long productId = productService.createProduct(req, null);
 
         // then
         assertThat(productId).isNotNull();

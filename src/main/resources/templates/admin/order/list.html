@@ -89,7 +89,13 @@
                     <tr th:each="order : ${orderList}">
                         <td class="text-muted" th:text="${order.orderNo}">#20260120-0002</td>
                         <td th:text="${order.buyerLoginId}">김철수</td>
-                        <td><span class="badge bg-blue-lt" th:text="${order.status.label}">SHIPPING</span></td>
+                        <td><span
+                                class="badge"
+                                th:classappend="
+                                          ${order.status.name() == 'ORDERED'} ? ' bg-azure-lt text-azure' :
+                                          (${order.status.name() == 'CANCELED'} ? ' bg-red-lt text-red' : ' bg-secondary-lt text-secondary')"
+                                th:text="${order.status.label}">
+                            SHIPPING</span></td>
                         <td class="text-end" th:text="|${#numbers.formatInteger(order.totalAmount, 0, 'COMMA')}|">₩118,000</td>
                         <td class="text-end text-muted" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-20</td>
                         <td class="text-end">

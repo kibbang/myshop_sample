@@ -34,7 +34,7 @@
 
             <div class="row row-cards">
                 <div class="col-12 col-lg-8">
-                    <form class="card" method="post" th:action="@{/admin/products/create}" th:object="${form}">
+                    <form class="card" method="post" th:action="@{/admin/products/create}" th:object="${form}" enctype="multipart/form-data">
                         <!-- CSRF (Spring Security 기본이면 보통 th:name/th:value로 받음) -->
                         <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
 
@@ -92,6 +92,15 @@
                                            placeholder="예) basic-tshirt">
                                     <div class="field-error" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}">slug error</div>
                                     <div class="form-hint">URL용 식별자(선택). 비워두면 서버에서 생성하는 정책도 흔함.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">대표 이미지</label>
+                                    <input type="file"
+                                           class="form-control"
+                                           name="primaryImage"
+                                           accept="image/*">
+                                    <div class="form-hint">업로드하면 /uploads/products/{id}/primary.jpg 로 저장됩니다.</div>
                                 </div>
 
                                 <div class="col-12 col-md-6">

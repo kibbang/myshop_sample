@@ -52,4 +52,13 @@ public class ProductDetailDto {
                 updatedAt
         );
     }
+
+    public String getPrimaryImageUrl() {
+
+        String purge = (updatedAt != null)
+                ? updatedAt.format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+                : String.valueOf(System.currentTimeMillis());
+
+        return "/uploads/products/" + id + "/1.jpg?purge=" + purge;
+    }
 }

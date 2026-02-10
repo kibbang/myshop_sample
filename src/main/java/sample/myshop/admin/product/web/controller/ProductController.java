@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.service.ProductService;
@@ -57,12 +58,17 @@ public class ProductController {
     /**
      * 등록
      * @param form
+     * @param images
      * @param bindingResult
      * @param model
      * @return
      */
     @PostMapping("/create")
-    public String save(@Validated @ModelAttribute(name = "form") ProductCreateRequestDto form, BindingResult bindingResult, Model model) {
+    public String save(
+            @Validated @ModelAttribute(name = "form") ProductCreateRequestDto form,
+            @RequestParam(required = false) MultipartFile[] images,
+            BindingResult bindingResult, Model model
+    ) {
 
         if (bindingResult.hasErrors()) {
             addContentView(model, "admin/product/create :: content");
@@ -79,7 +85,7 @@ public class ProductController {
                 form.getCurrency()
         );
 
-        productService.createProduct(productCreateDto);
+        productService.createProduct(productCreateDto, images);
 
         return "redirect:/admin/products";
     }
@@ -113,7 +119,15 @@ public class ProductController {
     }
 
     @PostMapping("/{productId}")
-    public String update(@PathVariable Long productId, @Validated @ModelAttribute(name = "form") ProductUpdateRequestDto productUpdateRequestDto, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+    public String update(
+            @PathVariable Long productId,
+            @Validated @ModelAttribute(name = "form") ProductUpdateRequestDto productUpdateRequestDto,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes,
+            @RequestParam(required = false) MultipartFile[] images,
+            @RequestParam(required = false, defaultValue = "false") boolean resetImages
+    ) {
         if (bindingResult.hasErrors()) {
             // 에러로 edit 페이지를 다시 렌더링할 때도, 템플릿이 기대하는 모델을 채워줘야 함
             ProductDetailDto productDetailDto = productService.showProduct(productId);
@@ -134,7 +148,7 @@ public class ProductController {
                 productUpdateRequestDto.getCurrency()
         );
 
-        productService.modifyProduct(productUpdateDto);
+        productService.modifyProduct(productUpdateDto, images, resetImages);
 
         redirectAttributes.addFlashAttribute("flashMessage", "상품 수정이 완료되었습니다.");
 
@@ -145,6 +159,7 @@ public class ProductController {
     public String updateInventoryStock(@PathVariable Long productId,
                                        @Validated @ModelAttribute(name = "inventoryForm") InventoryAdjustRequestDto inventoryAdjustRequestDto,
                                        BindingResult bindingResult,
+                                       @RequestParam(required = false) MultipartFile[] images,
                                        Model model,
                                        RedirectAttributes redirectAttributes
     ) {

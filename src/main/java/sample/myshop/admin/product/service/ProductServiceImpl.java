@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.repository.ProductRepository;
+import sample.myshop.utils.ImageStorage;
 
 import java.util.List;
 
@@ -18,10 +20,11 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
+    private final ImageStorage imageStorage;
 
     @Override
     @Transactional
-    public Long createProduct(ProductCreateDto productCreateDto) {
+    public Long createProduct(ProductCreateDto productCreateDto, MultipartFile[] imageFiles) {
         Product product = Product.createProduct(
                 productCreateDto.getCode(),
                 productCreateDto.getName(),
@@ -32,7 +35,14 @@ public class ProductServiceImpl implements ProductService{
                 productCreateDto.getCurrency()
         );
 
-        return productRepository.save(product);
+        Long productId = productRepository.save(product);
+
+        // 상품 저장 이후 이미지 저장
+        if (imageFiles != null && imageFiles.length > 0) {
+            imageStorage.store(productId, imageFiles);
+        }
+
+        return productId;
     }
 
     @Override
@@ -58,7 +68,7 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    public void modifyProduct(ProductUpdateDto productUpdateDto) {
+    public void modifyProduct(ProductUpdateDto productUpdateDto, MultipartFile[] imageFiles, boolean removeImageFiles) {
         Product updateTargetProduct = productRepository.findProductByIdForUpdate(productUpdateDto.getId());
 
         if(updateTargetProduct == null) {
@@ -73,6 +83,14 @@ public class ProductServiceImpl implements ProductService{
                 productUpdateDto.getBasePrice(),
                 productUpdateDto.getCurrency()
         );
+
+        if (removeImageFiles) {
+            imageStorage.clearAll(productUpdateDto.getId());
+        }
+
+        if (imageFiles != null && imageFiles.length > 0) {
+            imageStorage.store(productUpdateDto.getId(), imageFiles);
+        }
     }
 
     @Override

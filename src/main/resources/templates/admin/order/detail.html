@@ -43,10 +43,6 @@
                                 주문 취소
                             </button>
                         </form>
-                        <!-- 이미 취소된 상태 안내 -->
-                        <span th:if="${order.status.name() == 'CANCELED'}" class="text-muted">
-                            이미 취소된 주문입니다.
-                        </span>
                     </div>
                 </div>
             </div>
@@ -93,8 +89,13 @@
                             <div>
                                 <span class="badge"
                                       th:classappend="
-                                          ${order.releaseStatus != null and order.releaseStatus.name() == 'READY'} ? ' bg-secondary-lt text-secondary' :
-                                          (${order.releaseStatus != null and order.releaseStatus.name() == 'RELEASED'} ? ' bg-green-lt text-green' : ' bg-secondary-lt text-secondary')"
+                                          ${order.releaseStatus != null and order.releaseStatus.name() == 'CANCELED'}
+                                           ? ' bg-danger-lt text-danger'
+                                           : (${order.releaseStatus != null and order.releaseStatus.name() == 'READY'}
+                                               ? ' bg-secondary-lt text-secondary'
+                                               : (${order.releaseStatus != null and order.releaseStatus.name() == 'RELEASED'}
+                                                   ? ' bg-green-lt text-green'
+                                                   : ' bg-secondary-lt text-secondary'))"
                                       th:text="${order.releaseStatus != null ? order.releaseStatus.label : '-'}">
                                     READY
                                 </span>
