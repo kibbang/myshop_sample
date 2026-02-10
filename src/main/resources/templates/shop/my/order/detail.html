@@ -12,6 +12,15 @@
                     th:attr="data-order-no=${order.orderNo}">
                 주문번호 복사
             </button>
+            <form th:if="${order.orderStatus.name() != 'CANCELED'
+                  and order.releaseStatus != null
+                  and order.releaseStatus.name() == 'READY'}"
+                  th:action="@{|/my/orders/${order.orderNo}/cancel|}"
+                  method="post"
+                  onsubmit="return confirm('정말 주문을 취소할까요?');">
+                <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                <button type="submit" class="btn btn-danger">주문 취소</button>
+            </form>
             <a th:href="@{/my/orders}" class="btn btn-primary">목록으로</a>
         </div>
     </div>
@@ -33,9 +42,14 @@
                 <div class="col-md-4">
                     <div class="text-muted mb-1">상태</div>
                     <div class="d-flex gap-2">
-                        <span class="badge bg-blue-lt" th:text="${order.orderStatus.label}">ORDERED</span>
+                        <span class="badge" th:classappend="${order?.orderStatus.name() == 'ORDERED'} ? ' bg-blue-lt'
+                        : (${order?.orderStatus.name() == 'CANCELED'} ? ' bg-red-lt' : ' bg-secondary-lt')"
+                              th:text="${order.orderStatus.label}">ORDERED</span>
                         <span class="badge"
-                              th:classappend="${order.releaseStatus != null and order.releaseStatus.name() == 'RELEASED'} ? ' bg-green-lt' : ' bg-yellow-lt'"
+                              th:classappend="${order?.releaseStatus != null and order?.releaseStatus.name() == 'READY'} ? ' bg-yellow-lt'
+                                   : (${order?.releaseStatus != null and order?.releaseStatus.name() == 'RELEASED'} ? ' bg-green-lt'
+                                   : (${order?.releaseStatus != null and order?.releaseStatus.name() == 'CANCELED'} ? ' bg-red-lt'
+                                   : ' bg-secondary-lt'))"
                               th:text="${order.releaseStatus != null ? order.releaseStatus.label : T(sample.myshop.release.enums.ReleaseStatus).READY.label}">
               READY
             </span>

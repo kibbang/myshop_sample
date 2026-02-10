@@ -2,6 +2,7 @@ package sample.myshop.shop.my.repository.order.query;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Repository;
 import sample.myshop.order.domain.Order;
 import sample.myshop.order.domain.OrderItem;
@@ -51,30 +52,12 @@ public class MyOrderQueryRepositoryImpl implements MyOrderQueryRepository {
 
     @Override
     public MyOrderDetailDto getMyOrderDetail(String orderNo, Long memberId) {
-        List<Order> orders = em.createQuery("select distinct o" +
-                                " from Order o" +
-                                " join fetch o.orderItems" +
-                                " left join fetch o.release" +
-                                " where o.orderNo = :orderNo" +
-                                " and o.memberId = :memberId",
-                        Order.class)
-                .setParameter("orderNo", orderNo)
-                .setParameter("memberId", memberId)
-                .getResultList();
-
-        Order order = orders.getFirst();
-
-        List<OrderItem> fetchedOrderItems = order.getOrderItems();
-
-        OrderRelease release = order.getRelease();
-        ReleaseStatus releaseStatus = null;
-
-        if (release != null) {
-            releaseStatus = release.getStatus();
-        }
+        MyOrderFetch fetchedOrderDetails = fetchOrderDetails(orderNo, memberId);
+        Order order = fetchedOrderDetails.order;
 
         // 주문 아이템
-        List<MyOrderItemDto> myOrderItemDtoList = fetchedOrderItems.stream().map(orderItem -> new MyOrderItemDto(
+        List<MyOrderItemDto> myOrderItemDtoList = order.getOrderItems().stream()
+                .map(orderItem -> new MyOrderItemDto(
                 orderItem.getProductNameSnapshot(),
                 orderItem.getSkuSnapshot(),
                 orderItem.getUnitPrice(),
@@ -88,7 +71,7 @@ public class MyOrderQueryRepositoryImpl implements MyOrderQueryRepository {
                 order.getCreatedAt(),
                 order.getTotalAmount(),
                 order.getStatus(),
-                releaseStatus,
+                fetchedOrderDetails.releaseStatus(),
                 order.getReceiverName(),
                 order.getReceiverPhone(),
                 order.getReceiverZip(),
@@ -97,6 +80,52 @@ public class MyOrderQueryRepositoryImpl implements MyOrderQueryRepository {
                 order.getDeliveryMemo(),
                 myOrderItemDtoList
         );
+    }
+
+    @Override
+    public Order cancel(String orderNo, Long memberId) {
+        MyOrderFetch fetchedOrderDetails = fetchOrderDetails(orderNo, memberId);
+
+        return fetchedOrderDetails.order;
+    }
+
+
+    /**
+     * 주문 상세 조회
+     * @param orderNo
+     * @param memberId
+     * @return
+     */
+    private MyOrderFetch fetchOrderDetails(String orderNo, Long memberId) {
+        List<Order> orders = em.createQuery("select distinct o" +
+                                " from Order o" +
+                                " join fetch o.orderItems" +
+                                " left join fetch o.release" +
+                                " where o.orderNo = :orderNo" +
+                                " and o.memberId = :memberId",
+                        Order.class)
+                .setParameter("orderNo", orderNo)
+                .setParameter("memberId", memberId)
+                .getResultList();
+
+        Order order = orders.get(0);
+
+        OrderRelease release = order.getRelease();
+        ReleaseStatus releaseStatus = null;
+
+        if (release != null) {
+            releaseStatus = release.getStatus();
+        }
+
+        return new MyOrderFetch(order, releaseStatus);
+    }
+
+    /**
+     * 레코드화
+     * @param order
+     * @param releaseStatus
+     */
+    private record MyOrderFetch(Order order, ReleaseStatus releaseStatus) {
     }
 
 }

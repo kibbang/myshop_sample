@@ -96,15 +96,7 @@ public class OrderServiceImpl implements OrderService {
         // 주문 상태 변경 (주문 및 출고상태 체크)
         targetOrder.cancel();
 
-        // 각 아이템별 재고 복구 (락 걸고 조회)
-        targetOrder.getOrderItems().stream()
-                // 아이템이 2개이상 일경우 락의 순서가 엇갈리면 데드락이 날 가능성이 있음
-                // 방지 차원에서 순서 소팅
-                .sorted(Comparator.comparingLong(OrderItem::getVariantId))
-                .forEach(orderItem -> {
-                    Inventory orderedInventory = inventoryRepository.findInventoryForUpdateByVariantId(orderItem.getVariantId());
-                    orderedInventory.increaseQuantity(orderItem.getQuantity());
-                });
+        recoveryItemStock(targetOrder);
     }
 
     @Override
@@ -168,5 +160,17 @@ public class OrderServiceImpl implements OrderService {
             orderItems.add(orderItemDto);
         }
         return orderItems;
+    }
+
+    private void recoveryItemStock(Order targetOrder) {
+        // 각 아이템별 재고 복구 (락 걸고 조회)
+        targetOrder.getOrderItems().stream()
+                // 아이템이 2개이상 일경우 락의 순서가 엇갈리면 데드락이 날 가능성이 있음
+                // 방지 차원에서 순서 소팅
+                .sorted(Comparator.comparingLong(OrderItem::getVariantId))
+                .forEach(orderItem -> {
+                    Inventory orderedInventory = inventoryRepository.findInventoryForUpdateByVariantId(orderItem.getVariantId());
+                    orderedInventory.increaseQuantity(orderItem.getQuantity());
+                });
     }
 }
