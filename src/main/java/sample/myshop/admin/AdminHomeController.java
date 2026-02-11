@@ -15,11 +15,4 @@ public class AdminHomeController {
         model.addAttribute("activeMenu", "home");
         return "admin/layout/base";
     }
-
-    @GetMapping("/members")
-    public String members(Model model) {
-        model.addAttribute("content", "admin/member/list :: content");
-        model.addAttribute("activeMenu", "members");
-        return "admin/layout/base";
-    }
 }

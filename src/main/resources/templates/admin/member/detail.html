@@ -1,10 +1,181 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- templates/admin/members/detail.html -->
+<div th:fragment="content">
 
-</body>
-</html>
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">회원 관리</div>
+                    <h2 class="page-title">회원 상세</h2>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                        <a class="btn" th:href="@{/admin/members}">
+                            목록으로
+                        </a>
+                        <a class="btn btn-primary"
+                           th:href="@{|/admin/members/${member.id}/edit|}">
+                            수정하기
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메시지/에러 (필요하면 컨트롤러에서 message/error 내려주기) -->
+            <div class="row mt-3" th:if="${message}">
+                <div class="col">
+                    <div class="alert alert-success" role="alert">
+                        <div th:text="${message}">성공 메시지</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3" th:if="${error}">
+                <div class="col">
+                    <div class="alert alert-danger" role="alert">
+                        <div th:text="${error}">실패 메시지</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash message -->
+    <div class="container-xl mt-3" th:if="${flashMessage != null}">
+        <div class="alert alert-success" role="alert">
+            <div class="d-flex">
+                <div>
+                    <h4 class="alert-title">완료</h4>
+                    <div class="text-secondary" th:text="${flashMessage}">
+                        회원이 수정되었습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="row row-deck row-cards">
+
+                <!-- 계정 정보 -->
+                <div class="col-12 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">계정 정보</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="datagrid">
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">회원 ID</div>
+                                    <div class="datagrid-content" th:text="${member.id}">1</div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">로그인 ID</div>
+                                    <div class="datagrid-content" th:text="${member.loginId}">user01</div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">권한(Role)</div>
+                                    <div class="datagrid-content">
+                                        <!-- enum이면 member.role.name() / 문자열이면 그대로 출력 -->
+                                        <span class="badge bg-azure-lt" th:text="${member.role.label}">USER</span>
+                                    </div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">활성 상태</div>
+                                    <div class="datagrid-content">
+                                        <span th:if="${member.active}" class="badge bg-green-lt">활성화</span>
+                                        <span th:unless="${member.active}" class="badge bg-red-lt">비활성화</span>
+                                    </div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">가입일</div>
+                                    <div class="datagrid-content"
+                                         th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd HH:mm:ss')}">
+                                        2026-02-11 10:00:00
+                                    </div>
+                                </div>
+
+                                <div class="datagrid-item" th:if="${member.updatedAt != null}">
+                                    <div class="datagrid-title">수정일</div>
+                                    <div class="datagrid-content"
+                                         th:text="${#temporals.format(member.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">
+                                        2026-02-11 10:10:00
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- (선택) 활성/비활성 토글 버튼을 붙이고 싶으면 아래 form 사용
+                                 라우트 예: POST /admin/members/{id}/toggle
+                                 CsrfModelAdvice로 _csrf 자동 주입 쓰고 있다면 hidden만 있으면 됨 -->
+                            <!--
+                            <hr class="my-4">
+                            <form th:action="@{|/admin/members/${member.id}/toggle|}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${_csrf}">
+                                <button type="submit" class="btn"
+                                        th:classappend="${member.active} ? 'btn-warning' : 'btn-success'">
+                                    <span th:text="${member.active} ? '비활성화' : '활성화'">토글</span>
+                                </button>
+                            </form>
+                            -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 기본/배송 정보 -->
+                <div class="col-12 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">기본 / 배송 정보</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="datagrid">
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">이름</div>
+                                    <div class="datagrid-content" th:text="${member.name}">홍길동</div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">전화번호</div>
+                                    <div class="datagrid-content" th:text="${member.phone}">010-1234-5678</div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">우편번호</div>
+                                    <div class="datagrid-content" th:text="${member.zipCode}">12345</div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">주소</div>
+                                    <div class="datagrid-content" th:text="${member.baseAddress}">서울시 ...</div>
+                                </div>
+
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">상세주소</div>
+                                    <div class="datagrid-content" th:text="${member.detailAddress}">101동 1001호</div>
+                                </div>
+                            </div>
+
+                            <!-- 주소 없을 때 UI 깔끔하게 -->
+                            <div class="text-muted mt-3"
+                                 th:if="${(member.zipCode == null or #strings.isEmpty(member.zipCode))
+                                          and (member.baseAddress == null or #strings.isEmpty(member.baseAddress))}">
+                                등록된 배송지 정보가 없습니다.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- row -->
+        </div><!-- container -->
+    </div><!-- page-body -->
+
+</div>

@@ -50,9 +50,8 @@ public class Member extends CommonEntity {
         this.isActive = isActive;
     }
 
-    public void changeDefaultInfo(String name, String phone, Address address) {
+    public void changeDefaultInfo(String name, String phone) {
         this.name = name;
         this.phone = phone;
-        this.address = address;
     }
 }

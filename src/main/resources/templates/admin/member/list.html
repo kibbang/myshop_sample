@@ -21,44 +21,43 @@
     <!-- 검색/필터 -->
     <div class="card mb-3">
         <div class="card-body">
-            <form class="row g-2" method="get" th:action="@{/admin/members}">
+            <form class="row g-2" method="get" th:action="@{/admin/members}" th:object="${searchForm}">
 
                 <div class="col-md-3">
                     <label class="form-label">검색</label>
                     <input type="text" class="form-control" name="keyword"
-                           placeholder="이름/이메일/전화번호" />
+                           placeholder="이름" />
                 </div>
 
                 <div class="col-md-2">
-                    <label class="form-label">상태</label>
-                    <select class="form-select" name="status">
+                    <label class="form-label">유형</label>
+                    <select class="form-select" name="role">
                         <option value="">전체</option>
-                        <option value="ACTIVE">활성</option>
-                        <option value="SUSPENDED">정지</option>
-                        <option value="WITHDRAWN">탈퇴</option>
+                        <option value="ADMIN">관리자</option>
+                        <option value="USER">회원</option>
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label">등급</label>
-                    <select class="form-select" name="grade">
-                        <option value="">전체</option>
-                        <option value="BRONZE">BRONZE</option>
-                        <option value="SILVER">SILVER</option>
-                        <option value="GOLD">GOLD</option>
-                        <option value="VIP">VIP</option>
-                    </select>
-                </div>
+<!--                <div class="col-md-2">-->
+<!--                    <label class="form-label">등급</label>-->
+<!--                    <select class="form-select" name="grade">-->
+<!--                        <option value="">전체</option>-->
+<!--                        <option value="BRONZE">BRONZE</option>-->
+<!--                        <option value="SILVER">SILVER</option>-->
+<!--                        <option value="GOLD">GOLD</option>-->
+<!--                        <option value="VIP">VIP</option>-->
+<!--                    </select>-->
+<!--                </div>-->
 
-                <div class="col-md-2">
-                    <label class="form-label">정렬</label>
-                    <select class="form-select" name="sort">
-                        <option value="createdAt_desc">가입 최신순</option>
-                        <option value="createdAt_asc">가입 오래된순</option>
-                        <option value="orders_desc">주문 많은순</option>
-                        <option value="amount_desc">누적금액 높은순</option>
-                    </select>
-                </div>
+<!--                <div class="col-md-2">-->
+<!--                    <label class="form-label">정렬</label>-->
+<!--                    <select class="form-select" name="sort">-->
+<!--                        <option value="createdAt_desc">가입 최신순</option>-->
+<!--                        <option value="createdAt_asc">가입 오래된순</option>-->
+<!--                        <option value="orders_desc">주문 많은순</option>-->
+<!--                        <option value="amount_desc">누적금액 높은순</option>-->
+<!--                    </select>-->
+<!--                </div>-->
 
                 <div class="col-md-3 d-flex align-items-end">
                     <div class="d-flex gap-2 w-100">
@@ -74,91 +73,38 @@
     <!-- 리스트 -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">총 4명</h3>
+            <h3 class="card-title">총 <span th:text="${totalCount}"></span>명</h3>
         </div>
 
         <div class="table-responsive">
             <table class="table table-vcenter card-table table-striped">
                 <thead>
                 <tr>
-                    <th style="width: 60px;">ID</th>
+                    <th style="width: 60px;">#</th>
                     <th>회원</th>
-                    <th>상태</th>
-                    <th>등급</th>
-                    <th class="text-end">주문수</th>
-                    <th class="text-end">누적금액</th>
+                    <th>유형</th>
+<!--                    <th>등급</th>-->
                     <th class="text-end">가입일</th>
                     <th class="text-end">관리</th>
                 </tr>
                 </thead>
 
                 <tbody>
-                <tr>
-                    <td class="text-muted">1</td>
-                    <td>
-                        <div class="fw-bold">홍길동</div>
-                        <div class="text-muted">hong@test.com · 010-1234-5678</div>
-                    </td>
-                    <td><span class="badge bg-green">ACTIVE</span></td>
-                    <td><span class="badge bg-secondary-200">SILVER</span></td>
-                    <td class="text-end">12</td>
-                    <td class="text-end">₩420,000</td>
-                    <td class="text-end text-muted">2026-01-02</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                        <a class="btn btn-sm btn-outline-warning" href="#">정지</a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="text-muted">2</td>
-                    <td>
-                        <div class="fw-bold">김철수</div>
-                        <div class="text-muted">kim@test.com · 010-2222-3333</div>
-                    </td>
-                    <td><span class="badge bg-green">ACTIVE</span></td>
-                    <td><span class="badge bg-yellow">GOLD</span></td>
-                    <td class="text-end">5</td>
-                    <td class="text-end">₩118,000</td>
-                    <td class="text-end text-muted">2026-01-10</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                        <a class="btn btn-sm btn-outline-warning" href="#">정지</a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="text-muted">3</td>
-                    <td>
-                        <div class="fw-bold">이영희</div>
-                        <div class="text-muted">lee@test.com · 010-9999-8888</div>
-                    </td>
-                    <td><span class="badge bg-yellow">SUSPENDED</span></td>
-                    <td><span class="badge bg-secondary-200">BRONZE</span></td>
-                    <td class="text-end">1</td>
-                    <td class="text-end">₩24,500</td>
-                    <td class="text-end text-muted">2026-01-15</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                        <a class="btn btn-sm btn-outline-success" href="#">해제</a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="text-muted">4</td>
-                    <td>
-                        <div class="fw-bold">박민수</div>
-                        <div class="text-muted">park@test.com · 010-4444-5555</div>
-                    </td>
-                    <td><span class="badge bg-secondary-200">WITHDRAWN</span></td>
-                    <td><span class="badge bg-secondary-200">BRONZE</span></td>
-                    <td class="text-end">0</td>
-                    <td class="text-end">₩0</td>
-                    <td class="text-end text-muted">2025-12-29</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" href="#">상세</a>
-                    </td>
-                </tr>
+                    <tr th:each="member, memberStat : ${members}">
+                        <td class="text-muted" th:text="${memberStat.count}"></td>
+                        <td>
+                            <div class="fw-bold" th:text="${member.name}">홍길동</div>
+                            <div class="text-muted" th:text="${member.phone}">hong@test.com · 010-1234-5678</div>
+                        </td>
+                        <td><span class="badge"
+                         th:classappend="${member.role.name() == 'USER' ? 'bg-green-lt' : 'bg-primary-lt'}"  th:text="${member.role.label}">ACTIVE</span></td>
+<!--                        <td><span class="badge bg-secondary-200">SILVER</span></td>-->
+                        <td class="text-end text-muted" th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-01-02</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/members/{id} (id=${member.id})}">상세</a>
+                            <a class="btn btn-sm btn-outline-warning" th:href="@{/admin/members/{id}/edit (id=${member.id})}">수정</a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -166,11 +112,11 @@
         <!-- 페이징 (자리) -->
         <div class="card-footer d-flex align-items-center">
             <p class="m-0 text-muted">
-                Showing <span>1</span> to <span>10</span> of <span>4</span> entries
+                Showing <span th:text="${searchForm.page}">1</span> to <span th:text="${searchForm.size}">10</span> of <span th:text="${totalCount}">4</span> entries
             </p>
             <ul class="pagination m-0 ms-auto">
                 <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">prev</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item active"><a class="page-link" href="#" th:text="${searchForm.page}"></a></li>
                 <li class="page-item disabled"><a class="page-link" href="#">next</a></li>
             </ul>
         </div>

@@ -20,8 +20,27 @@ public class Address {
         this.detailAddress = detailAddress;
     }
 
+    /**
+     * 생성
+     * @param zipcode
+     * @param baseAddress
+     * @param detailAddress
+     * @return
+     */
     public static Address createAddress(String zipcode, String baseAddress, String detailAddress) {
         return new Address(zipcode, baseAddress, detailAddress);
+    }
+
+    /**
+     * 변경
+     * @param zipcode
+     * @param baseAddress
+     * @param detailAddress
+     */
+    public void changeAddress(String zipcode, String baseAddress, String detailAddress) {
+        this.zipcode = zipcode;
+        this.baseAddress = baseAddress;
+        this.detailAddress = detailAddress;
     }
 
 }

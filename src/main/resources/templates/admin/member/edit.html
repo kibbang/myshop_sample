@@ -1,0 +1,175 @@
+<!-- templates/admin/members/edit.html -->
+<div th:fragment="content">
+
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">회원 관리</div>
+                    <h2 class="page-title">회원 수정</h2>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                        <a class="btn" th:href="@{|/admin/members/${member.id}|}">취소</a>
+                        <button class="btn btn-primary" type="submit" form="memberEditForm">
+                            수정
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 에러 메시지 -->
+            <div class="row mt-3" th:if="${error}">
+                <div class="col">
+                    <div class="alert alert-danger" role="alert">
+                        <div th:text="${error}">에러</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="row row-deck row-cards">
+
+                <div class="col-12">
+                    <form id="memberEditForm"
+                          class="card"
+                          th:action="@{|/admin/members/${member.id}|}"
+                          th:object="${form}"
+                          method="post">
+
+                        <!-- CSRF -->
+                        <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span th:text="${member.loginId}">loginId</span> 회원 정보 수정
+                            </h3>
+                        </div>
+
+                        <div class="card-body">
+                            <!-- 글로벌 validation 에러 -->
+                            <div class="alert alert-danger" role="alert"
+                                 th:if="${#fields.hasGlobalErrors()}">
+                                <div th:each="error : ${#fields.globalErrors()}" th:text="${error}">
+                                    글로벌 에러
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- 이름 -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">이름</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:field="*{name}"
+                                           placeholder="이름을 입력하세요">
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('name')}"
+                                         th:errors="*{name}">
+                                        name error
+                                    </div>
+                                </div>
+
+                                <!-- 전화번호 -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">전화번호</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:field="*{phone}"
+                                           placeholder="010-0000-0000">
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('phone')}"
+                                         th:errors="*{phone}">
+                                        phone error
+                                    </div>
+                                </div>
+
+                                <div class="col-12"><hr class="my-2"></div>
+
+                                <!-- 우편번호 -->
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label">우편번호</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:field="*{zipCode}"
+                                           placeholder="우편번호">
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('zipCode')}"
+                                         th:errors="*{zipCode}">
+                                        zip error
+                                    </div>
+                                </div>
+
+                                <!-- 주소 -->
+                                <div class="col-12 col-md-9">
+                                    <label class="form-label">주소</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:field="*{baseAddress}"
+                                           placeholder="기본 주소">
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('baseAddress')}"
+                                         th:errors="*{baseAddress}">
+                                        baseAddress error
+                                    </div>
+                                </div>
+
+                                <!-- 상세주소 -->
+                                <div class="col-12">
+                                    <label class="form-label">상세주소</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:field="*{detailAddress}"
+                                           placeholder="상세 주소">
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('detailAddress')}"
+                                         th:errors="*{detailAddress}">
+                                        detailAddress error
+                                    </div>
+                                </div>
+
+                                <div class="col-12"><hr class="my-2"></div>
+
+                                 활성 상태
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">활성 상태</label>
+                                    <select class="form-select" th:field="*{active}">
+                                        <!-- active: Boolean -->
+                                        <option th:value="true">활성</option>
+                                        <option th:value="false">비활성</option>
+                                    </select>
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('active')}"
+                                         th:errors="*{active}">
+                                        active error
+                                    </div>
+                                </div>
+                            </div><!-- row -->
+                        </div><!-- card-body -->
+
+                        <div class="card-footer text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a class="btn" th:href="@{|/admin/members/${member.id}|}">
+                                    취소
+                                </a>
+                                <button class="btn btn-primary" type="submit">
+                                    수정
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div><!-- row -->
+        </div><!-- container -->
+    </div><!-- page-body -->
+
+</div>

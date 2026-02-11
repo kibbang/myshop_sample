@@ -1,6 +1,15 @@
 package sample.myshop.member.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Role {
-    USER,
-    ADMIN
+    USER("회원"),
+    ADMIN("관리자");
+
+    private final String label;
+
+    Role(String label) {
+        this.label = label;
+    }
 }
