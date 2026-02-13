@@ -3,7 +3,6 @@ package sample.myshop.shop.my.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +23,11 @@ import static sample.myshop.auth.SessionConst.*;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/my")
-public class MyController {
+@RequestMapping("/my/orders")
+public class MyOrderController {
     private final MyOrderService myOrderService;
 
-    @GetMapping("/orders")
+    @GetMapping
     public String orders(HttpSession session, Model model) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(LOGIN_USER);
 
@@ -40,7 +39,7 @@ public class MyController {
         return "shop/layout/base";
     }
 
-    @GetMapping("/orders/{orderNo}")
+    @GetMapping("/{orderNo}")
     public String orderDetails(@PathVariable String orderNo, @LoginUser SessionUser sessionUser, Model model) {
         MyOrderDetailDto myOrderDetail = myOrderService.getMyOrderDetail(orderNo, sessionUser.getMemberId());
 
@@ -50,7 +49,7 @@ public class MyController {
         return "shop/layout/base";
     }
 
-    @PostMapping("/orders/{orderNo}/cancel")
+    @PostMapping("/{orderNo}/cancel")
     public String orderCancel(@PathVariable String orderNo, @LoginUser SessionUser sessionUser, Model model, RedirectAttributes redirectAttributes) {
         try {
             myOrderService.cancelMyOrder(orderNo, sessionUser.getMemberId());
