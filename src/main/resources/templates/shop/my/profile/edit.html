@@ -1,0 +1,124 @@
+<!-- templates/shop/my/profile.html -->
+<div th:fragment="content">
+
+    <div class="container-xl mt-4">
+
+        <!-- Page header -->
+        <div class="page-header mb-3">
+            <div class="row align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">MY</div>
+                    <h2 class="page-title">내 정보 수정</h2>
+                </div>
+                <div class="col-auto">
+                    <a th:href="@{/my/orders}" class="btn btn-outline-primary">
+                        내 주문
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash messages -->
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <div th:text="${message}">저장되었습니다.</div>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <div th:text="${error}">오류가 발생했습니다.</div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <form th:action="@{/my/profile}" th:object="${form}" method="post">
+                    <!-- CSRF -->
+                    <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+
+                    <div class="row g-3">
+
+                        <!-- 이름 -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">이름</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{name}"
+                                   placeholder="이름을 입력하세요">
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('name')}"
+                                 th:errors="*{name}">
+                                이름 오류
+                            </div>
+                        </div>
+
+                        <!-- 전화번호 -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">전화번호</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{phone}"
+                                   placeholder="01012345678">
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('phone')}"
+                                 th:errors="*{phone}">
+                                전화번호 오류
+                            </div>
+                            <div class="form-hint">숫자만 입력 (예: 01012345678)</div>
+                        </div>
+
+                        <!-- 우편번호 -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">우편번호</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{zipCode}"
+                                   placeholder="우편번호">
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('zipCode')}"
+                                 th:errors="*{zipCode}">
+                                우편번호 오류
+                            </div>
+                        </div>
+
+                        <!-- 기본주소 -->
+                        <div class="col-12 col-md-8">
+                            <label class="form-label">기본주소</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{baseAddress}"
+                                   placeholder="기본주소">
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('baseAddress')}"
+                                 th:errors="*{baseAddress}">
+                                기본주소 오류
+                            </div>
+                        </div>
+
+                        <!-- 상세주소 -->
+                        <div class="col-12">
+                            <label class="form-label">상세주소</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{detailAddress}"
+                                   placeholder="상세주소">
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('detailAddress')}"
+                                 th:errors="*{detailAddress}">
+                                상세주소 오류
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-text my-4">저장</div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            저장하기
+                        </button>
+                        <a th:href="@{/}" class="btn btn-outline-secondary">
+                            홈으로
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
