@@ -43,6 +43,12 @@
                             관리자
                         </a>
 
+                        <a class="dropdown-item"
+                           th:if="${session.loginUser.role.name() == 'USER'}"
+                           th:href="@{/my/profile}">
+                            내 정보
+                        </a>
+
                         <form class="px-2 py-1" th:action="@{/logout}" method="post">
                             <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
                             <button type="submit" class="btn btn-sm btn-outline-danger w-100">로그아웃</button>

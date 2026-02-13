@@ -1,6 +1,5 @@
 package sample.myshop.shop.my.domain.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,15 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MyProfileUpdateRequestDto {
-    @NotBlank
+public class MyProfileUpdateDto {
+    private Long id;
     private String name;
-    @NotBlank
     private String phone;
-    @NotBlank
     private String zipCode;
-    @NotBlank
     private String baseAddress;
-    @NotBlank
     private String detailAddress;
 }

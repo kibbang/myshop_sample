@@ -11,6 +11,7 @@ import sample.myshop.member.domain.Member;
 import sample.myshop.member.domain.dto.MemberRegisterFormDto;
 import sample.myshop.member.enums.Role;
 import sample.myshop.member.repository.MemberRepository;
+import sample.myshop.shop.my.domain.dto.MyProfileUpdateDto;
 import sample.myshop.utils.EncryptHelper;
 
 @Slf4j
@@ -66,5 +67,29 @@ public class MemberServiceImpl implements MemberService{
         }
 
         return new SessionUser(foundMember.getId(), foundMember.getLoginId(), foundMember.getRole());
+    }
+
+    @Override
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId);
+    }
+
+    @Override
+    @Transactional
+    public void updateInfo(MyProfileUpdateDto myProfileUpdateDto) {
+        Member member = memberRepository.findById(myProfileUpdateDto.getId());
+
+        Address memberAddress = member.getAddress();
+
+        member.changeDefaultInfo(
+                myProfileUpdateDto.getName(),
+                myProfileUpdateDto.getPhone()
+        );
+
+        memberAddress.changeAddress(
+                myProfileUpdateDto.getZipCode(),
+                myProfileUpdateDto.getBaseAddress(),
+                myProfileUpdateDto.getDetailAddress()
+        );
     }
 }

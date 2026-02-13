@@ -28,6 +28,11 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public Member findById(Long memberId) {
+        return em.find(Member.class, memberId);
+    }
+
+    @Override
     public boolean existByLoginId(String loginId) {
         List<Member> resultList = em.createQuery("select m from Member m where m.loginId = :loginId ", Member.class)
                 .setParameter("loginId", loginId)
