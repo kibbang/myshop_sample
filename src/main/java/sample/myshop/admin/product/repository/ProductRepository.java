@@ -20,4 +20,6 @@ public interface ProductRepository {
     Product findProductByIdForUpdate(Long productId);
 
     Inventory findProductByIdForUpdateInventoryStock(Long productId);
+
+    Product findById(Long productId);
 }

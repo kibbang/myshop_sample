@@ -1,5 +1,6 @@
 package sample.myshop.admin.product.domain;
 
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ public class Option {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false, length = 50)
     private String name;
     private int sortOrder;
 
@@ -22,4 +25,20 @@ public class Option {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    private Option(String name, int sortOrder, Product product) {
+        this.name = name;
+        this.sortOrder = sortOrder;
+        this.product = product;
+    }
+
+    /**
+     * 생성 메소드
+     * @param name
+     * @param sortOrder
+     * @param product
+     * @return
+     */
+    public static Option createOption(String name, int sortOrder, Product product) {
+        return new Option(name, sortOrder, product);
+    }
 }

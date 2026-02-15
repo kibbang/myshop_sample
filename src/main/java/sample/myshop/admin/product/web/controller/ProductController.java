@@ -2,15 +2,20 @@ package sample.myshop.admin.product.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sample.myshop.admin.product.domain.dto.web.*;
+import sample.myshop.admin.product.service.OptionService;
 import sample.myshop.admin.product.service.ProductService;
+import sample.myshop.common.exception.ProductNotFoundException;
 
 import java.util.List;
 
@@ -23,6 +28,7 @@ import static java.lang.Math.*;
 public class ProductController {
 
     private final ProductService productService;
+    private final OptionService optionService;
 
     /**
      * 뷰 페이지
@@ -176,6 +182,57 @@ public class ProductController {
         redirectAttributes.addFlashAttribute("flashMessage", "재고 수정이 완료되었습니다.");
 
         return "redirect:/admin/products/" + productId;
+    }
+
+    @GetMapping("/{productId}/options")
+    public String options(@PathVariable Long productId, @ModelAttribute("form") OptionCreateFormDto optionCreateFormDto, Model model) {
+
+        // 상품 헤더 주입
+        ProductHeaderDto productHeader = productService.showProductHeader(productId);
+
+        if (productHeader == null) {
+            throw new ProductNotFoundException("상품을 찾을 수 없습니다.");
+        }
+
+        // 옵션
+        List<OptionDto> options = optionService.getOptions(productId);
+
+
+        model.addAttribute("product", productHeader);
+        model.addAttribute("options", options);
+        model.addAttribute("optionValueForm", new OptionValueCreateFormDto());
+
+        addContentView(model, "admin/product/options/index :: content");
+        return "admin/layout/base";
+    }
+
+    @PostMapping("/{productId}/options")
+    public String createOption(@PathVariable Long productId, @Validated @ModelAttribute("form") OptionCreateFormDto optionCreateFormDto, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return options(productId, optionCreateFormDto, model);
+        }
+
+        optionService.createOption(productId, optionCreateFormDto);
+
+        redirectAttributes.addFlashAttribute("flashMessage", "옵션 생성이 완료되었습니다.");
+
+        return "redirect:/admin/products/" + productId + "/options";
+    }
+
+    @PostMapping("/{productId}/options/{optionId}/values")
+    public String createOptionValue(
+            @PathVariable Long productId,
+            @PathVariable Long optionId,
+            @Validated @ModelAttribute("optionValueForm") OptionValueCreateFormDto optionValueCreateFormDto,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        optionService.createOptionValues(productId, optionId, optionValueCreateFormDto);
+
+        redirectAttributes.addFlashAttribute("flashMessage","옵션 값이 입력되었습니다.");
+
+        return "redirect:/admin/products/" + productId + "/options";
     }
 
 

@@ -174,6 +174,11 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .getSingleResult();
     }
 
+    @Override
+    public Product findById(Long productId) {
+        return em.find(Product.class, productId);
+    }
+
     private Map<Long, SkuStockRowDto> findSkuAndStockByProductIds(List<Long> productIds) {
         if (productIds == null || productIds.isEmpty()) {
             return Collections.emptyMap();

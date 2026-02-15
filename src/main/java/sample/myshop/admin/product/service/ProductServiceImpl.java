@@ -108,4 +108,14 @@ public class ProductServiceImpl implements ProductService{
 
         productWithInventory.updateStockQuantity(stockQuantity);
     }
+
+    @Override
+    public ProductHeaderDto showProductHeader(Long productId) {
+        Product product = productRepository.findById(productId);
+
+        return new ProductHeaderDto(
+                product.getId(),
+                product.getName()
+        );
+    }
 }

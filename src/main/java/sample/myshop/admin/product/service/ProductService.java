@@ -12,5 +12,8 @@ public interface ProductService {
 
     ProductDetailDto showProduct(Long productId);
     void modifyProduct(ProductUpdateDto productUpdateDto, MultipartFile[] imageFiles, boolean removeImageFiles);
+
     void modifyProductInventoryStock(Long productId, Integer stockQuantity);
+
+    ProductHeaderDto showProductHeader(Long productId);
 }

@@ -1,0 +1,179 @@
+<!-- templates/admin/product/options/index.html -->
+<div th:fragment="content">
+
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">상품 관리</div>
+                    <h2 class="page-title">
+                        옵션 관리
+                        <span class="text-muted ms-2" th:text="${product.name}">상품명</span>
+                    </h2>
+                    <div class="text-muted mt-1">
+                        상품 옵션(예: 색상/사이즈)과 옵션값(예: 블랙/화이트)을 관리합니다.
+                    </div>
+                </div>
+
+                <div class="col-auto ms-auto d-print-none">
+                    <a class="btn btn-outline-primary"
+                       th:href="@{|/admin/products/${product.id}|}">
+                        상품 상세로
+                    </a>
+                </div>
+            </div>
+
+            <!-- flash messages -->
+            <div class="row mt-3" th:if="${message}">
+                <div class="col">
+                    <div class="alert alert-success" role="alert" th:text="${message}">성공 메시지</div>
+                </div>
+            </div>
+
+            <div class="row mt-3" th:if="${error}">
+                <div class="col">
+                    <div class="alert alert-danger" role="alert" th:text="${error}">실패 메시지</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+
+            <div class="row g-3">
+
+                <!-- 옵션 추가 -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">옵션 추가</h3>
+                        </div>
+
+                        <form method="post"
+                              th:action="@{|/admin/products/${product.id}/options|}"
+                              th:object="${form}">
+                            <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                            <div class="card-body">
+                                <div class="row g-2 align-items-end">
+
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label">옵션명</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               placeholder="예: 색상, 사이즈"
+                                               th:field="*{name}">
+                                        <!-- 검증 메시지(선택) -->
+                                        <div class="invalid-feedback d-block"
+                                             th:if="${#fields.hasErrors('name')}"
+                                             th:errors="*{name}">
+                                            옵션명 오류
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-2">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            추가
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 옵션 목록 -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">옵션 목록</h3>
+                        </div>
+
+                        <div class="card-body" th:if="${#lists.isEmpty(options)}">
+                            <div class="empty">
+                                <div class="empty-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M12 9v2m0 4v.01"></path>
+                                        <path d="M5 19h14a2 2 0 0 0 1.84-2.75l-7-14a2 2 0 0 0-3.68 0l-7 14a2 2 0 0 0 1.84 2.75"></path>
+                                    </svg>
+                                </div>
+                                <p class="empty-title">등록된 옵션이 없습니다</p>
+                                <p class="empty-subtitle text-muted">
+                                    먼저 옵션을 추가해 주세요. (예: 색상, 사이즈)
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card-body" th:if="${!#lists.isEmpty(options)}">
+                            <div class="row g-3">
+
+                                <!-- 옵션 카드 반복 -->
+                                <div class="col-12 col-md-6" th:each="option : ${options}">
+                                    <div class="card card-sm">
+                                        <div class="card-header">
+                                            <div>
+                                                <div class="fw-bold" th:text="${option.name}">색상</div>
+                                                <div class="text-muted small">
+                                                    순번: <span th:text="${option.sortOrder}">1</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+
+                                            <!-- 옵션값 영역 (지금은 자리만) -->
+                                            <div class="mb-2 text-muted small">옵션값</div>
+
+                                            <div class="d-flex flex-wrap gap-1" th:if="${!#lists.isEmpty(option.optionValues)}">
+                        <span class="badge bg-azure-lt"
+                              th:each="optionValue : ${option.optionValues}"
+                              th:text="${optionValue.value}">
+                          블랙
+                        </span>
+                                            </div>
+
+                                            <div class="text-muted small" th:if="${#lists.isEmpty(option.optionValues)}">
+                                                아직 옵션값이 없습니다.
+                                            </div>
+
+                                            <hr class="my-3">
+
+                                            <!-- 옵션값 추가 폼 (다음 단계에서 연결) -->
+                                            <form method="post"
+                                                  th:action="@{|/admin/products/${product.id}/options/${option.id}/values|}"
+                                                  th:object="${optionValueForm}">
+                                                <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                                              <div class="row g-2 align-items-end">
+                                                <div class="col">
+                                                  <label class="form-label">옵션값</label>
+                                                  <input type="text" class="form-control"
+                                                         placeholder="예: 블랙, 화이트"
+                                                         th:field="*{valueName}">
+                                                </div>
+                                                <div class="col-auto">
+                                                  <button class="btn btn-outline-primary">추가</button>
+                                                </div>
+                                              </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div><!-- row -->
+
+        </div>
+    </div>
+
+</div>

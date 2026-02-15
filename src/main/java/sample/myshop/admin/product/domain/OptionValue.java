@@ -15,6 +15,7 @@ public class OptionValue {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false, length = 50)
     private String value;
     private int sortOrder;
 
@@ -22,4 +23,13 @@ public class OptionValue {
     @JoinColumn(name = "option_id")
     private Option option;
 
+    private OptionValue(String value, int sortOrder, Option option) {
+        this.value = value;
+        this.sortOrder = sortOrder;
+        this.option = option;
+    }
+
+    public static OptionValue createOptionValue(String value, int sortOrder, Option option) {
+        return new OptionValue(value, sortOrder, option);
+    }
 }
