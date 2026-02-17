@@ -192,6 +192,68 @@
                         </div>
                     </div>
 
+                    <!-- Variants 목록 -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h3 class="card-title">옵션 조합 (Variants)</h3>
+
+                            <div class="ms-auto">
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{|/admin/products/${product.id}/variants/create|}">
+                                    옵션 조합 추가
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table card-table table-vcenter">
+                                <thead>
+                                <tr>
+                                    <th style="width: 80px;">ID</th>
+                                    <th>조합</th>
+                                    <th style="width: 160px;">SKU</th>
+                                    <th style="width: 120px;" class="text-end">커스텀가격</th>
+                                    <th style="width: 90px;" class="text-end">재고</th>
+                                    <th style="width: 90px;">DEFAULT</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:if="${#lists.isEmpty(variants)}">
+                                    <td colspan="6" class="text-secondary">
+                                        아직 생성된 조합이 없습니다.
+                                    </td>
+                                </tr>
+
+                                <tr th:each="variant : ${variants}">
+                                    <td class="text-secondary" th:text="${variant.id}">1</td>
+
+                                    <td>
+                                        <span class="text-secondary" th:text="${variant.optionSummary}">색상: 블랙, 사이즈: L</span>
+                                    </td>
+
+                                    <td>
+                                        <code th:text="${variant.sku != null ? variant.sku : '-'}">SKU-001</code>
+                                    </td>
+
+                                    <td class="text-end">
+                                        <span th:text="${variant.customPrice != null ? #numbers.formatInteger(variant.customPrice, 3, 'COMMA') : '-'}">-</span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        <span th:text="${variant.stockQuantity}">0</span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-success-subtle" th:if="${variant.isDefault}">YES</span>
+                                        <span class="badge bg-warning-subtle" th:unless="${variant.isDefault}">NO</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Meta info -->

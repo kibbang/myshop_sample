@@ -5,11 +5,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sample.myshop.admin.product.domain.*;
 import sample.myshop.admin.product.domain.dto.web.VariantCreateDto;
-import sample.myshop.admin.product.domain.dto.web.VariantListDto;
+import sample.myshop.admin.product.domain.dto.web.VariantInfoDto;
 import sample.myshop.admin.product.repository.*;
 import sample.myshop.common.exception.ProductNotFoundException;
 
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
 
 @Service
 @Transactional(readOnly = true)
@@ -60,14 +64,60 @@ public class VariantServiceImpl implements VariantService {
     }
 
     @Override
-    public void getVariants(Long productId) {
-        List<Variant> productVariants = variantRepository.findByProductId(productId);
+    public List<Variant> getVariants(Long productId) {
+        return variantRepository.findByProductId(productId);
+    }
 
-//        productVariants.stream().map(variant -> new VariantListDto(
-//                variant.getId(),
-//                variant.getSku(),
-//                variant.getPrice(),
-//                variant.
-//        ))
+    @Override
+    public List<VariantOptionValue> getVariantOptionValuesByIds(List<Long> variantIds) {
+        return variantOptionValueRepository.findOptionJoinsByVariantIds(variantIds);
+    }
+
+    @Override
+    public List<VariantInfoDto> getVariantInfoList(List<Variant> variants, List<VariantOptionValue> variantOptionValueList) {
+        Map<Long, List<VariantOptionValue>> grouped = variantOptionValueList.stream()
+                .collect(groupingBy(
+                        variantOptionValue -> variantOptionValue.getVariant().getId()
+                ));
+
+        return variants.stream()
+                .map(variant -> {
+                    int quantity = variant.getInventory() != null ? variant.getInventory().getStockQuantity() : 0;
+                    int price = variant.getPrice() == null ? variant.getProduct().getBasePrice() : variant.getPrice();
+
+                    String optionSummary = getOptionSummary(variant, grouped);
+
+                    return new VariantInfoDto(
+                            variant.getId(),
+                            variant.isDefault(),
+                            variant.getSku(),
+                            price,
+                            quantity,
+                            optionSummary
+                    );
+                })
+                .toList();
+    }
+
+    private String getOptionSummary(Variant variant, Map<Long, List<VariantOptionValue>> grouped) {
+        String optionSummary;
+
+        if (variant.isDefault()) {
+            optionSummary = "기본";
+        } else {
+            List<VariantOptionValue> list = grouped.getOrDefault(variant.getId(), List.of());
+            optionSummary = list.stream().map(variantOptionValue -> {
+                OptionValue optionValue = variantOptionValue.getOptionValue();
+                String optionName = optionValue.getOption().getName();
+                String value = optionValue.getValue();
+
+                return optionName + " : " + value;
+            }).collect(joining(", "));
+
+            if (optionSummary.isBlank()) {
+                optionSummary = "-";
+            }
+        }
+        return optionSummary;
     }
 }

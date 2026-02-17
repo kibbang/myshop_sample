@@ -20,11 +20,10 @@ public class VariantRepositoryImpl implements VariantRepository {
 
     @Override
     public List<Variant> findByProductId(Long productId) {
-        return em.createQuery("select v" +
-                " from Variant v" +
-                " join Inventory i on v.id = i.variant.id" +
-                " join fetch Product p on p.id = v.product.id" +
-                " where p.id = :productId order by v.id desc", Variant.class)
+        return em.createQuery("select distinct v from Variant v" +
+                " join fetch v.product p" +
+                " join fetch v.inventory" +
+                " where p.id = :productId", Variant.class)
                 .setParameter("productId", productId)
                 .getResultList();
     }

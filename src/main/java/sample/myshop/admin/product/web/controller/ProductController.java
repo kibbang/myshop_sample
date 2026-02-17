@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import sample.myshop.admin.product.domain.OptionValue;
 import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.Variant;
+import sample.myshop.admin.product.domain.VariantOptionValue;
 import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.service.OptionService;
 import sample.myshop.admin.product.service.ProductService;
@@ -21,8 +23,12 @@ import sample.myshop.admin.product.service.VariantService;
 import sample.myshop.common.exception.ProductNotFoundException;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.*;
+import static java.util.stream.Collectors.*;
 
 @Controller
 @Slf4j
@@ -104,7 +110,22 @@ public class ProductController {
     public String show(@PathVariable Long productId, @ModelAttribute(name = "inventoryForm") InventoryAdjustRequestDto inventoryAdjustRequestDto, Model model) {
         ProductDetailDto productDetailDto = productService.showProduct(productId);
 
+        List<Variant> variants = variantService.getVariants(productId);
+
+        List<Long> variantIds = variants.stream().map(Variant::getId).toList();
+
+        List<VariantOptionValue> variantOptionValueList = variantService.getVariantOptionValuesByIds(variantIds);
+
+        Map<Long, List<VariantOptionValue>> grouped = variantOptionValueList.stream()
+                .collect(groupingBy(
+                        variantOptionValue -> variantOptionValue.getVariant().getId()
+                ));
+
+        List<VariantInfoDto> variantInfoList = variantService.getVariantInfoList(variants, variantOptionValueList);
+
         model.addAttribute("product", productDetailDto);
+        model.addAttribute("variants", variantInfoList);
+
         addContentView(model, "admin/product/detail :: content");
 
         return "admin/layout/base";

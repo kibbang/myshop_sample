@@ -40,6 +40,10 @@ public class Variant extends CommonEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @OneToOne(fetch = LAZY, mappedBy = "variant")
+    private Inventory inventory;
+
+
     private Variant(Product product, String sku, Integer price) {
         this.sku = sku;
         this.status = ACTIVE;
