@@ -114,6 +114,46 @@ public class OptionServiceImpl implements OptionService{
                 .toList();
     }
 
+    @Override
+    public Long optionCount(Long productId) {
+        return optionRepository.countOption(productId);
+    }
+
+    @Override
+    public void validateOptionFromProduct(Long productId, List<Long> normalizedOptionValueIds) {
+
+        List<Long> distinctOptionValueIds = normalizedOptionValueIds.stream().distinct().toList();
+
+        List<OptionValue> validatedOptionFromProduct = optionRepository.validateOptionFromProduct(productId, distinctOptionValueIds);
+
+        if (distinctOptionValueIds.size() != validatedOptionFromProduct.size()) {
+            throw new IllegalArgumentException("유효하지 않은 옵션값이 포함되어 있습니다.");
+        }
+
+        long distinctOptionCount = validatedOptionFromProduct.stream()
+                .map(optionValue -> optionValue.getOption().getId())
+                .distinct()
+                .count();
+
+        if (distinctOptionCount != validatedOptionFromProduct.size()) {
+            throw new IllegalArgumentException("같은 옵션에서 옵션값을 여러 개 선택할 수 없습니다.");
+        }
+    }
+
+    @Override
+    public List<Long> normalizeOptionValueIds(List<Long> optionValueIds) {
+        return optionValueIds.stream().distinct().sorted().toList();
+    }
+
+    @Override
+    public void checkOptionExists(Long productId, List<Long> normalizedOptionValueIds) {
+        boolean exists = optionRepository.checkOptionExists(productId, normalizedOptionValueIds);
+
+        if (exists) {
+            throw new IllegalArgumentException("이미 존재하는 옵션 조합입니다.");
+        }
+    }
+
     /**
      * 옵션 값 생성
      * @param productId

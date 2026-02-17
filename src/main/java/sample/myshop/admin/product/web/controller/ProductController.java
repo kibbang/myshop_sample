@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import sample.myshop.admin.product.domain.Product;
+import sample.myshop.admin.product.domain.Variant;
 import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.service.OptionService;
 import sample.myshop.admin.product.service.ProductService;
+import sample.myshop.admin.product.service.VariantService;
 import sample.myshop.common.exception.ProductNotFoundException;
 
 import java.util.List;
@@ -29,6 +32,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final OptionService optionService;
+    private final VariantService variantService;
 
     /**
      * 뷰 페이지
@@ -235,6 +239,73 @@ public class ProductController {
         return "redirect:/admin/products/" + productId + "/options";
     }
 
+    /**
+     * 옵션 조합 페이지
+     * @param productId
+     * @param model
+     * @return
+     */
+    @GetMapping("/{productId}/variants/create")
+    public String createVariant(@PathVariable Long productId, Model model) {
+
+        // 옵션
+        List<OptionDto> options = optionService.getOptions(productId);
+
+        model.addAttribute("options", options);
+        addContentView(model, "admin/product/variants/create :: content");
+
+        return "admin/layout/base";
+    }
+
+    @PostMapping("/{productId}/variants/create")
+    public String saveVariant(
+            @PathVariable Long productId,
+            @Validated @ModelAttribute(name = "form") AdminProductVariantCreateRequestDto form,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errors", bindingResult.getFieldError());
+            return "redirect:/admin/products/" + productId + "/variants/create";
+        }
+
+        Long optionsCount = optionService.optionCount(productId);
+        int requestOptionSize = form.getOptionValueIds().size();
+
+        // 옵션이 없을 경우
+        if (optionsCount == 0) {
+            redirectAttributes.addFlashAttribute("error", "옵션이 없습니다. 옵션/옵션값을 먼저 추가해주세요.");
+            return "redirect:/admin/products/" + productId + "/variants/create";
+        }
+
+        // 모든 옵션을 1개씩 선택
+        if (optionsCount != requestOptionSize) {
+            redirectAttributes.addFlashAttribute("error", "각 옵션에서 1개씩 선택해주세요. (옵션 " + optionsCount + "개 / 선택 " + requestOptionSize + "개)");
+            return "redirect:/admin/products/" + productId + "/variants/create";
+        }
+
+        // 리퀘스트로 들어온 생성 요청 옵션값 정규화 처리
+        List<Long> normalizedOptionValueIds = optionService.normalizeOptionValueIds(form.getOptionValueIds());
+
+        //  product 소속 검증
+        optionService.validateOptionFromProduct(productId, normalizedOptionValueIds);
+
+        // 이후 생성된 옵션 조합 있는지 확인
+        optionService.checkOptionExists(productId, normalizedOptionValueIds);
+
+        // 옵션 Variant 우선 저장
+        VariantCreateDto newVariant = new VariantCreateDto(
+                productId,
+                form.getSku(),
+                form.getCustomPrice()
+        );
+
+        Long newVariantId = variantService.createVariant(newVariant, normalizedOptionValueIds);
+
+        redirectAttributes.addFlashAttribute("success","생성된 옵션조합 ID:" + newVariantId);
+
+        return "redirect:/admin/products/" + productId;
+    }
 
     /**
      * 뷰에 컨텐츠 삽입

@@ -1,0 +1,1 @@
+Alter table prd_variant_option_values add updated_at datetime after created_at ;

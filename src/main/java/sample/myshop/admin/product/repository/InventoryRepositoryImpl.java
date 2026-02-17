@@ -28,4 +28,9 @@ public class InventoryRepositoryImpl implements InventoryRepository{
             throw new EntityNotFoundException("재고를 찾을 수 없습니다.: " + variantId);
         }
     }
+
+    @Override
+    public void save(Inventory inventory) {
+        em.persist(inventory);
+    }
 }

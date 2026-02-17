@@ -22,5 +22,15 @@ public class VariantOptionValue extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_value_id", nullable = false)
     private OptionValue optionValue;
+
+    private VariantOptionValue(Variant variant, OptionValue optionValue) {
+        this.variantOptionValueId = new VariantOptionValueId(variant.getId(), optionValue.getId());
+        this.variant = variant;
+        this.optionValue = optionValue;
+    }
+
+    public static VariantOptionValue create(Variant variant, OptionValue optionValue) {
+        return new VariantOptionValue(variant, optionValue);
+    }
 }
 

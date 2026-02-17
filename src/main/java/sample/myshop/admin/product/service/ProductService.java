@@ -1,6 +1,7 @@
 package sample.myshop.admin.product.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.dto.web.*;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface ProductService {
     void modifyProductInventoryStock(Long productId, Integer stockQuantity);
 
     ProductHeaderDto showProductHeader(Long productId);
+
+    Product findById(Long productId);
 }

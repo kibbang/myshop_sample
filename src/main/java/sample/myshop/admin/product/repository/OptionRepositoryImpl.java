@@ -73,4 +73,52 @@ public class OptionRepositoryImpl implements OptionRepository {
                 .setParameter("optionIds", optionIds)
                 .getResultList();
     }
+
+    @Override
+    public Long countOption(Long productId) {
+        return em.createQuery("select count(o) from Option o where o.product.id = :productId", Long.class)
+                .setParameter("productId", productId)
+                .getSingleResult();
+    }
+
+    @Override
+    public List<OptionValue> validateOptionFromProduct(Long productId, List<Long> optionValueIds) {
+        return em.createQuery("select ov from OptionValue ov join fetch ov.option o join fetch o.product p where ov.id in :optionValueIds and p.id = :proudtId", OptionValue.class)
+                .setParameter("optionValueIds", optionValueIds)
+                .setParameter("proudtId", productId)
+                .getResultList();
+
+    }
+
+    @Override
+    public boolean checkOptionExists(Long productId, List<Long> normalizedOptionValueIds) {
+
+        int size = normalizedOptionValueIds.size();
+
+        List<Long> resultList = em.createQuery("select v.id" +
+                        " from VariantOptionValue vov" +
+                        " join vov.variant v" +
+                        " where v.product.id = :productId" +
+                        " group by v.id" +
+                        " having count(vov.id) = :size" +
+                        " and sum(case when vov.optionValue.id in :normalizedOptionValueIds then 1 else 0 end) = :size", Long.class)
+                .setParameter("productId", productId)
+                .setParameter("size", size)
+                .setParameter("normalizedOptionValueIds", normalizedOptionValueIds)
+                .setMaxResults(1)
+                .getResultList();
+
+        return !resultList.isEmpty();
+    }
+
+    @Override
+    public List<OptionValue> findAllOptionValuesByIds(List<Long> optionValueIds) {
+        if (optionValueIds == null || optionValueIds.isEmpty()) {
+            return List.of();
+        }
+
+        return em.createQuery("select ov from OptionValue ov where ov.id in :optionValueIds", OptionValue.class)
+                .setParameter("optionValueIds", optionValueIds)
+                .getResultList();
+    }
 }

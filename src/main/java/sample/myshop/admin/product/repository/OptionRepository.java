@@ -21,4 +21,12 @@ public interface OptionRepository {
     void saveOptionValue(OptionValue optionValue);
 
     List<OptionValue> findByOptionIds(List<Long> optionIds);
+
+    Long countOption(Long productId);
+
+    List<OptionValue> validateOptionFromProduct(Long productId, List<Long> optionValueIds);
+
+    boolean checkOptionExists(Long productId, List<Long> normalizedOptionValueIds);
+
+    List<OptionValue> findAllOptionValuesByIds(List<Long> optionValueIds);
 }

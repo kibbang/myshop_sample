@@ -13,7 +13,6 @@ import static jakarta.persistence.GenerationType.*;
 /**
  * 상품 페이지에 보여줄 대표 정보(상품코드, 이름, 설명, 기본가격, 상태 등)
  */
-
 @Entity
 @Getter
 @Table(name = "prd_products")

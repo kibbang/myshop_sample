@@ -40,6 +40,15 @@ public class Variant extends CommonEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    private Variant(Product product, String sku, Integer price) {
+        this.sku = sku;
+        this.status = ACTIVE;
+        this.isDefault = false;
+        this.price = price;
+        this.salePrice = null;
+        this.product = product;
+    }
+
     /**
      * 기본 판매 상품 단위 생성
      * @param product
@@ -56,6 +65,10 @@ public class Variant extends CommonEntity {
         variant.salePrice = null;
 
         return variant;
+    }
+
+    public static Variant create(Product product, String sku, Integer price) {
+        return new Variant(product, sku, price);
     }
 
     /**
