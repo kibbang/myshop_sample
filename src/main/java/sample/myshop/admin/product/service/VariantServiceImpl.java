@@ -7,6 +7,7 @@ import sample.myshop.admin.product.domain.*;
 import sample.myshop.admin.product.domain.dto.web.VariantCreateDto;
 import sample.myshop.admin.product.domain.dto.web.VariantInfoDto;
 import sample.myshop.admin.product.repository.*;
+import sample.myshop.common.exception.BadRequestException;
 import sample.myshop.common.exception.ProductNotFoundException;
 
 import java.util.List;
@@ -97,6 +98,17 @@ public class VariantServiceImpl implements VariantService {
                     );
                 })
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void changeVariantStock(Long productId, Long variantId, int stockQuantity) {
+        if (stockQuantity < 0) {
+            throw new BadRequestException("재고는 0 이상이여야합니다");
+        }
+
+        Inventory inventory = inventoryRepository.findForUpdateByProductIdAndVariantId(productId, variantId);
+        inventory.updateStockQuantity(stockQuantity);
     }
 
     private String getOptionSummary(Variant variant, Map<Long, List<VariantOptionValue>> grouped) {

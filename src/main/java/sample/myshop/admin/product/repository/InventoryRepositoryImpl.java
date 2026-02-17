@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sample.myshop.admin.product.domain.Inventory;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class InventoryRepositoryImpl implements InventoryRepository{
@@ -32,5 +34,20 @@ public class InventoryRepositoryImpl implements InventoryRepository{
     @Override
     public void save(Inventory inventory) {
         em.persist(inventory);
+    }
+
+    @Override
+    public Inventory findForUpdateByProductIdAndVariantId(Long productId, Long variantId) {
+        List<Inventory> resultList = em.createQuery("select i from Inventory i join i.variant v join v.product p where p.id = :productId and v.id = :variantId", Inventory.class)
+                .setParameter("productId", productId)
+                .setParameter("variantId", variantId)
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE) // 락 걸기
+                .getResultList();
+
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("재로를 찾을 수 없습니다.");
+        }
+
+        return resultList.get(0);
     }
 }

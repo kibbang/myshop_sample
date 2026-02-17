@@ -128,70 +128,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Inventory Adjust Card -->
-                    <div class="card mt-3">
-                        <div class="card-header">
-                            <h3 class="card-title">재고 조정</h3>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <div class="text-muted mb-1">대표 SKU (DEFAULT)</div>
-                                    <div class="fw-bold" th:text="${product.sku}">DEFAULT-SKU</div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="text-muted mb-1">현재 재고</div>
-                                    <div class="fw-bold" th:text="${product.stockQuantity}">0</div>
-                                </div>
-                            </div>
-
-                            <hr class="my-3"/>
-
-                            <form method="post"
-                                  th:action="@{/admin/products/{id}/inventory(id=${product.id})}"
-                                  class="row g-2 align-items-end" th:object="${inventoryForm}">
-
-                                <!-- CSRF -->
-                                <input type="hidden" th:name="'_csrf'" th:value="${_csrf}"/>
-
-                                <div class="col-sm-6 col-md-4">
-                                    <label class="form-label">변경할 재고 수량</label>
-                                    <label>
-                                        <input type="number"
-                                               th:field="*{stockQuantity}"
-                                               class="form-control"
-                                               min="0"
-                                               step="1"
-                                               placeholder="예: 10"
-                                               required />
-                                    </label>
-                                    <div class="form-hint">0 이상만 입력 가능합니다.</div>
-
-                                    <!-- 검증 에러 메시지 (선택) -->
-                                    <!--                                <div class="invalid-feedback d-block"-->
-                                    <!--                                     th:if="${fieldErrors != null}"-->
-                                    <!--                                     th:each="err : ${fieldErrors}"-->
-                                    <!--                                     th:if="${err.field == 'stockQuantity'}"-->
-                                    <!--                                     th:text="${err.message}">-->
-                                    <!--                                    재고는 0 이상이어야 합니다.-->
-                                    <!--                                </div>-->
-                                </div>
-
-                                <div class="col-sm-6 col-md-3">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        재고 변경
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="card-footer text-muted">
-                            변경 대상은 항상 <b>DEFAULT Variant</b>의 Inventory 입니다.
-                        </div>
-                    </div>
-
                     <!-- Variants 목록 -->
                     <div class="card mt-3">
                         <div class="card-header">
@@ -209,12 +145,13 @@
                             <table class="table card-table table-vcenter">
                                 <thead>
                                 <tr>
-                                    <th style="width: 80px;">ID</th>
-                                    <th>조합</th>
+                                    <th style="width: 50px;">ID</th>
+                                    <th style="width: 250px;">조합</th>
                                     <th style="width: 160px;">SKU</th>
-                                    <th style="width: 120px;" class="text-end">커스텀가격</th>
+                                    <th style="width: 120px;" class="text-end">옵션 가격</th>
                                     <th style="width: 90px;" class="text-end">재고</th>
                                     <th style="width: 90px;">DEFAULT</th>
+                                    <th style="width: 220px;">재고변경</th>
                                 </tr>
                                 </thead>
 
@@ -247,6 +184,25 @@
                                     <td>
                                         <span class="badge bg-success-subtle" th:if="${variant.isDefault}">YES</span>
                                         <span class="badge bg-warning-subtle" th:unless="${variant.isDefault}">NO</span>
+                                    </td>
+                                    <td>
+                                        <form method="post"
+                                              th:action="@{|/admin/products/${product.id}/variants/${variant.id}/inventory/edit|}"
+                                              class="d-flex gap-2 align-items-center">
+                                            <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+
+                                            <input type="number"
+                                                   name="stockQuantity"
+                                                   min="0"
+                                                   step="1"
+                                                   class="form-control form-control-sm"
+                                                   style="width: 110px;"
+                                                   th:value="${variant.stockQuantity}" />
+
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                저장
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 </tbody>

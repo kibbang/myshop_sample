@@ -186,28 +186,19 @@ public class ProductController {
         return "redirect:/admin/products/" + productId;
     }
 
-    @PostMapping("/{productId}/inventory")
-    public String updateInventoryStock(@PathVariable Long productId,
-                                       @Validated @ModelAttribute(name = "inventoryForm") InventoryAdjustRequestDto inventoryAdjustRequestDto,
-                                       BindingResult bindingResult,
-                                       @RequestParam(required = false) MultipartFile[] images,
-                                       Model model,
-                                       RedirectAttributes redirectAttributes
+    @PostMapping("/{productId}/variants/{variantId}/inventory/edit")
+    public String updateVariantInventoryStock(
+            @PathVariable Long productId,
+            @PathVariable Long variantId,
+            @RequestParam int stockQuantity,
+            RedirectAttributes redirectAttributes
     ) {
-        if (bindingResult.hasErrors()) {
-            ProductDetailDto product = productService.showProduct(productId);
-            model.addAttribute("product", product);
-            addContentView(model, "admin/product/detail :: content");
-
-            return "admin/layout/base";
-        }
-
-        productService.modifyProductInventoryStock(productId, inventoryAdjustRequestDto.getStockQuantity());
+        variantService.changeVariantStock(productId, variantId, stockQuantity);
 
         redirectAttributes.addFlashAttribute("flashMessage", "재고 수정이 완료되었습니다.");
-
         return "redirect:/admin/products/" + productId;
     }
+
 
     @GetMapping("/{productId}/options")
     public String options(@PathVariable Long productId, @ModelAttribute("form") OptionCreateFormDto optionCreateFormDto, Model model) {

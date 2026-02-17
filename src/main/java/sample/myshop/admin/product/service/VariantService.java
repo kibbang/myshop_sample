@@ -13,4 +13,6 @@ public interface VariantService {
     List<VariantOptionValue> getVariantOptionValuesByIds(List<Long> variantIds);
 
     List<VariantInfoDto> getVariantInfoList(List<Variant> variants, List<VariantOptionValue> variantOptionValueList);
+
+    void changeVariantStock(Long productId, Long variantId, int stockQuantity);
 }
