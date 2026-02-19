@@ -24,11 +24,75 @@
                 <!-- image -->
                 <div class="col-12 col-md-6">
                     <div class="ratio ratio-4x3">
-                        <img class="card-img-left object-cover"
+                        <img id="mainProductImage"
+                             class="card-img-left object-cover"
+                             style="transition: opacity 120ms ease;"
                              th:src="@{|/uploads/products/${product.id}/1.jpg|}"
-                             onerror="this.onerror=null;this.src='/assets/img/product-placeholder.png';"
+                             onerror="this.onerror=null;this.src='/assets/images/products/default.jpg';"
                              alt="product image">
                     </div>
+                    <div class="p-3 border-top">
+                        <div class="text-secondary small mb-2">상품 이미지</div>
+
+                        <div class="d-flex gap-2 flex-wrap">
+                            <img th:each="i : ${#numbers.sequence(1,4)}"
+                                 class="rounded border"
+                                 style="width:72px;height:72px;object-fit:cover;cursor:pointer;"
+                                 th:src="@{|/uploads/products/${product.id}/${i}.jpg|}"
+                                 onerror="this.style.display='none';"
+                                 onclick="swapMainImage(this.src)"
+                                 th:alt="${'thumb' + i}">
+                        </div>
+                    </div>
+                    <!-- ✅ 상품 포인트(왼쪽 이미지 아래) -->
+                    <div class="p-3 border-top">
+                        <div class="row g-2">
+
+                            <div class="col-12 col-sm-4">
+                                <div class="card card-sm h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">✨</span>
+                                            <div>
+                                                <div class="fw-bold">포인트</div>
+                                                <div class="text-secondary small">데일리 베이직</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-4">
+                                <div class="card card-sm h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">📏</span>
+                                            <div>
+                                                <div class="fw-bold">색상 / 사이즈</div>
+                                                <div class="text-secondary small">옵션에서 선택</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-4">
+                                <div class="card card-sm h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">🧼</span>
+                                            <div>
+                                                <div class="fw-bold">관리</div>
+                                                <div class="text-secondary small">상세설명 참조</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- summary -->
@@ -57,15 +121,65 @@
                         <div class="mt-auto">
                             <div class="hr-text">바로 구매</div>
 
-                            <!-- 주문 폼 (기존 그대로) -->
-                            <form th:action="@{/orders/prepare}" method="post" th:object="${orderForm}">
+                            <!-- 주문 폼 -->
+                            <form th:action="@{/orders/prepare}" method="post" th:object="${orderForm}"
+                                  onsubmit="return confirmLoginBeforeOrder(event)">
                                 <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+
+                                <!-- (기존) productId -->
                                 <input type="hidden" th:field="*{productId}" />
 
+                                <!-- ✅ (추가) 선택된 variantId (옵션 매칭 결과 / 기본 구매 버튼 클릭 시 세팅) -->
+                                <input type="hidden" id="variantId" name="variantId" />
+
+                                <!-- ✅ (추가) 기본 옵션으로 바로 구매 -->
+                                <div class="mb-2" th:if="${defaultVariantId != null}">
+                                    <button type="submit"
+                                            class="btn btn-outline-primary w-100"
+                                            onclick="useDefaultVariantForOrder()">
+                                        기본 옵션으로 바로 구매
+                                    </button>
+                                    <div class="text-secondary small mt-1">
+                                        옵션을 선택하지 않아도 기본 조합으로 주문됩니다.
+                                    </div>
+                                </div>
+
+                                <!-- ✅ (추가) 옵션 선택 (라디오) -->
+                                <div th:if="${options != null and !options.isEmpty()}" class="mb-3">
+
+                                    <div th:each="opt : ${options}" class="mb-3">
+                                        <div class="form-label" th:text="${opt.name}">옵션명</div>
+
+                                        <div class="btn-group w-100 flex-wrap" role="group">
+                                            <div th:each="v : ${opt.optionValues}" class="me-2 mb-2">
+                                                <input type="radio"
+                                                       class="btn-check"
+                                                       th:id="${'opt-' + opt.id + '-v-' + v.id}"
+                                                       th:name="${'opt-' + opt.id}"
+                                                       th:value="${v.id}"
+                                                       autocomplete="off"
+                                                       onchange="onOptionChanged()">
+                                                <label class="btn btn-outline-indigo"
+                                                       th:for="${'opt-' + opt.id + '-v-' + v.id}"
+                                                       th:text="${v.name}">값</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="alert alert-info mb-0 py-2" id="variantInfo">옵션을 선택하세요</div>
+                                </div>
+
+                                <!-- (기존) 수량 -->
                                 <div class="mb-3">
                                     <label class="form-label">수량</label>
-                                    <input th:id="'quantityInput'" type="number" class="form-control" min="1" th:field="*{quantity}" th:attr="data-unit-price=${product.basePrice}" />
-                                    <div class="mb-3">
+                                    <input th:id="'quantityInput'"
+                                           type="number"
+                                           class="form-control"
+                                           min="1"
+                                           th:field="*{quantity}"
+                                           th:attr="data-unit-price=${product.basePrice}" />
+
+                                    <div class="mb-3 mt-3">
                                         <label class="form-label">총 금액</label>
                                         <div class="h2 mb-0">
                                             <span id="totalAmountText">0</span>
@@ -84,14 +198,52 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary w-100">
-                                    주문하기
+                                <!-- ✅ 옵션 선택 구매 버튼: 옵션 있는 상품이면 초기 disabled -->
+                                <button type="submit"
+                                        class="btn btn-primary w-100"
+                                        id="orderBtn"
+                                        th:disabled="${options != null and !options.isEmpty()}">
+                                    옵션 선택 후 주문하기
                                 </button>
                             </form>
 
                             <div class="text-secondary mt-2 small">
                                 주문 후 주문서 페이지에서 배송지 정보를 입력합니다.
                             </div>
+
+                            <!-- ✅ 공백 채우기: 배송/반품/결제 요약 -->
+                            <div class="mt-3">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+
+                                        <div class="d-flex align-items-start mb-3">
+                                            <span class="me-2 text-secondary">🚚</span>
+                                            <div>
+                                                <div class="fw-bold">배송</div>
+                                                <div class="text-secondary small">결제 확인 후 1~2일 내 출고 (주말/공휴일 제외)</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex align-items-start mb-3">
+                                            <span class="me-2 text-secondary">🔁</span>
+                                            <div>
+                                                <div class="fw-bold">교환/반품</div>
+                                                <div class="text-secondary small">수령 후 7일 이내 가능 (사용/훼손 시 제한)</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex align-items-start">
+                                            <span class="me-2 text-secondary">💳</span>
+                                            <div>
+                                                <div class="fw-bold">결제 안내</div>
+                                                <div class="text-secondary small">안전결제 지원 · 옵션 선택 후 재고 확인</div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>
@@ -130,7 +282,7 @@
                         <ul class="list-unstyled space-y-2 mb-0">
                             <li class="d-flex">
                                 <span class="me-2 text-secondary">•</span>
-                                <span>재고/옵션 선택은 다음 단계에서 확장 예정</span>
+                                <span>옵션 선택 후 주문 가능합니다.</span>
                             </li>
                             <li class="d-flex">
                                 <span class="me-2 text-secondary">•</span>
@@ -148,6 +300,72 @@
 
     </div>
 
+    <!-- ✅ 옵션 선택 → Variant 매칭 JS + 기본 구매 버튼 JS -->
+    <script th:inline="javascript">
+        const PRODUCT_ID = /*[[${product.id}]]*/ 0;
+        const OPTION_GROUP_COUNT = /*[[${options != null ? options.size() : 0}]]*/ 0;
+        const DEFAULT_VARIANT_ID = /*[[${defaultVariantId}]]*/ null;
+        const IS_LOGGED_IN = /*[[${session.LOGIN_USER != null}]]*/ false;
+
+        function useDefaultVariantForOrder() {
+            const variantIdEl = document.getElementById("variantId");
+            const variantInfoEl = document.getElementById("variantInfo");
+
+            if (variantIdEl && DEFAULT_VARIANT_ID) {
+                variantIdEl.value = DEFAULT_VARIANT_ID;
+            }
+            if (variantInfoEl && DEFAULT_VARIANT_ID) {
+                variantInfoEl.innerText = "기본 옵션으로 주문합니다.";
+            }
+        }
+
+        async function onOptionChanged() {
+            const selected = Array.from(document.querySelectorAll("input[type=radio]:checked"))
+                .map(el => el.value);
+
+            const variantIdEl = document.getElementById("variantId");
+            const variantInfoEl = document.getElementById("variantInfo");
+            const orderBtn = document.getElementById("orderBtn");
+
+            // 옵션을 모두 선택하지 않았으면 초기화 (옵션 구매 버튼 비활성)
+            if (selected.length !== OPTION_GROUP_COUNT) {
+                if (variantIdEl) variantIdEl.value = "";
+                if (variantInfoEl) variantInfoEl.innerText = "옵션을 모두 선택하세요.";
+                if (orderBtn) orderBtn.disabled = true;
+                return;
+            }
+
+            const qs = selected.map(x => `optionValueIds=${encodeURIComponent(x)}`).join("&");
+            const res = await fetch(`/api/products/${PRODUCT_ID}/variant?${qs}`);
+
+            if (!res.ok) {
+                if (variantIdEl) variantIdEl.value = "";
+                if (variantInfoEl) variantInfoEl.innerText = "재고가 없습니다.";
+                if (orderBtn) orderBtn.disabled = true;
+                return;
+            }
+
+            const data = await res.json();
+
+            if (!data.matched) {
+                if (variantIdEl) variantIdEl.value = "";
+                if (variantInfoEl) variantInfoEl.innerText = "재고가 없습니다.";
+                if (orderBtn) orderBtn.disabled = true;
+                return;
+            }
+
+            if (variantIdEl) variantIdEl.value = data.variantId;
+
+            if (variantInfoEl) {
+                variantInfoEl.innerText =
+                    `SKU: ${data.sku ?? '-'} · 재고: ${data.stockQuantity}` + (data.orderable ? "" : " (품절)");
+            }
+
+            if (orderBtn) orderBtn.disabled = !data.orderable;
+        }
+    </script>
+
+    <!-- (기존) 수량 → 총 금액 계산 JS -->
     <script>
         (function () {
             const quantityInput = document.getElementById('quantityInput');
@@ -163,7 +381,7 @@
                 // 빈값/NaN/0/음수면 1로 교정
                 if (!Number.isFinite(quantity) || quantity < 1) {
                     quantity = 1;
-                    quantityInput.value = 1; // ✅ 입력값도 1로 바꿈
+                    quantityInput.value = 1;
                 }
 
                 totalText.textContent = formatNumber(unitPrice * quantity);
@@ -173,6 +391,36 @@
             quantityInput.addEventListener('change', calc);
             calc();
         })();
+
+        function swapMainImage(src) {
+            const main = document.getElementById('mainProductImage');
+            if (!main) return;
+
+            main.style.opacity = '0.35';
+            main.src = src;
+
+            // 이미지 로드되면 자연스럽게 복귀
+            main.onload = () => {
+                main.style.opacity = '1';
+            };
+        }
+
+        function confirmLoginBeforeOrder(e) {
+            // 이미 로그인 상태면 그대로 진행
+            if (typeof IS_LOGGED_IN !== "undefined" && IS_LOGGED_IN){
+                return true;
+            }
+
+            // 비로그인: confirm 띄우기
+            const ok = confirm("로그인이 필요한 서비스입니다. 로그인 창으로 이동하시겠습니까?");
+            if (!ok) {
+                // submit 취소
+                if (e) e.preventDefault();
+                return false;
+            }
+            // ok면 submit 진행 → 서버가 인터셉터로 /login?redirect=...로 보냄
+            return true;
+        }
     </script>
 </div>
 </body>

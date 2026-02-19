@@ -29,7 +29,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/error",
                         "/assets/**",
                         "/.well-known/**",
-                        "/uploads/**"
+                        "/uploads/**",
+                        "/api/**"
                 );
 
         registry.addInterceptor(new AdminInterceptor())

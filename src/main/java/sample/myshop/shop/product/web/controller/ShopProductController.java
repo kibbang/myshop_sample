@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import sample.myshop.shop.order.domain.dto.web.OrderCreateForm;
 import sample.myshop.shop.product.domain.dto.web.ShopProductDetailDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductListItemDto;
+import sample.myshop.shop.product.domain.dto.web.ShopProductOptionDto;
 import sample.myshop.shop.product.service.ShopProductService;
 
 import java.util.List;
@@ -38,8 +39,12 @@ public class ShopProductController {
     public String show(@PathVariable Long productId, @ModelAttribute(name = "orderForm") OrderCreateForm orderForm, Model model) {
 
         ShopProductDetailDto productDetail = shopProductService.getDetail(productId);
+        List<ShopProductOptionDto> options = shopProductService.getOptionsWithValuesByProductId(productId);
+        Long defaultVariantId = shopProductService.getDefaultVariant(productId);
 
         model.addAttribute("product", productDetail);
+        model.addAttribute("options", options);
+        model.addAttribute("defaultVariantId", defaultVariantId);
         addContentView(model, "shop/product/detail :: content");
 
         return "shop/layout/base";

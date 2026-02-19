@@ -1,5 +1,6 @@
 package sample.myshop.shop.product.repository;
 
+import sample.myshop.admin.product.domain.Option;
 import sample.myshop.shop.main.dto.MainProductCardDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductDetailDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductListItemDto;
@@ -12,4 +13,6 @@ public interface ShopProductRepository {
     ShopProductDetailDto findById(Long productId);
 
     List<MainProductCardDto> findMainProductCards(int limit);
+
+    Long findMatchedVariant(Long productId, List<Long> optionValueIds);
 }

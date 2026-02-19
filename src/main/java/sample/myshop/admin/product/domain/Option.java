@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 
