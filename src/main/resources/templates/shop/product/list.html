@@ -25,50 +25,53 @@
         </div>
 
         <!-- List -->
-        <div class="card" th:if="${!productList.isEmpty()}">
-            <div class="card-header">
-                <h3 class="card-title mb-0">상품</h3>
-            </div>
+        <!-- List (Card Grid) -->
+        <div th:if="${!productList.isEmpty()}">
 
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead>
-                    <tr>
-                        <th style="width: 80px;">ID</th>
-                        <th>상품명</th>
-                        <th style="width: 160px;">가격</th>
-                        <th style="width: 120px;">통화</th>
-                        <th style="width: 120px;"></th>
-                    </tr>
-                    </thead>
+            <div class="row row-cards">
 
-                    <tbody>
-                    <tr th:each="product : ${productList}">
-                        <td class="text-secondary" th:text="${product.id}">1</td>
+                <div class="col-6 col-md-4 col-lg-3" th:each="product : ${productList}">
+                    <div class="card h-100">
 
-                        <td>
-                            <a class="text-reset fw-bold"
-                               th:href="@{/products/{id}(id=${product.id})}"
-                               th:text="${product.name}">
-                                상품명
-                            </a>
-                        </td>
+                        <!-- 대표 이미지: /uploads/products/{id}/1.jpg, 없으면 placeholder -->
+                        <div class="ratio ratio-16x9">
+                            <img class="card-img-top object-cover"
+                                 th:src="@{|/uploads/products/${product.id}/1.jpg|}"
+                                 onerror="this.onerror=null;this.src='/assets/images/products/default.jpg';"
+                                 alt="product image">
+                        </div>
 
-                        <td>
-                            <span th:text="${#numbers.formatInteger(product.basePrice, 3, 'COMMA')}">10,000</span>
-                        </td>
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title mb-2">
+                                <a class="text-reset fw-bold"
+                                   th:href="@{/products/{id}(id=${product.id})}"
+                                   th:text="${product.name}">
+                                    상품명
+                                </a>
+                            </h3>
 
-                        <td class="text-secondary" th:text="${product.currency}">KRW</td>
+                            <div class="text-secondary mb-3">
+                                ID: <span th:text="${product.id}">1</span>
+                                <span class="mx-2">·</span>
+                                <span th:text="${product.currency}">KRW</span>
+                            </div>
 
-                        <td class="text-end">
-                            <a class="btn btn-sm btn-primary" th:href="@{/products/{id}(id=${product.id})}">
-                                상세
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
+                            <div class="mt-auto d-flex align-items-center justify-content-between">
+                                <div class="h3 m-0">
+                                    <span th:text="${#numbers.formatInteger(product.basePrice, 0, 'COMMA')}">10,000</span>
+                                    <span class="text-secondary" th:text="${product.currency}">KRW</span>
+                                </div>
 
-                </table>
+                                <a class="btn btn-sm btn-primary"
+                                   th:href="@{/products/{id}(id=${product.id})}">
+                                    상세
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
