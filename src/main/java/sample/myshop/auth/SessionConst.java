@@ -5,4 +5,5 @@ public interface SessionConst {
     String CSRF_TOKEN = "CSRF_TOKEN";
     String CSRF_PARAM = "_csrf";
     String ORDER_PREPARE = "ORDER_PREPARE";
+    String CART_SESSION_ID = "CART_SESSION_ID";
 }

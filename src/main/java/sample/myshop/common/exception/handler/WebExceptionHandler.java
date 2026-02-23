@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import sample.myshop.common.exception.BadRequestException;
 import sample.myshop.common.exception.ForbiddenException;
 import sample.myshop.common.exception.NotFoundException;
@@ -38,9 +40,15 @@ public class WebExceptionHandler {
         return "error/403";
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleNoResourceFound(NoResourceFoundException e) {
+        log.debug("Static resource not found: {}", e.getResourcePath());
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleException(Exception e, HttpServletResponse response, Model model) {
-        log.error("Unhandled Exception", e);
+        log.debug("Unhandled Exception", e);
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         model.addAttribute("message", "서버 오류가 발생했습니다.");
         return "error/500";

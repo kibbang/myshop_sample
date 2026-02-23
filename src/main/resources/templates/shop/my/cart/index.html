@@ -1,0 +1,141 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="container-xl">
+
+        <!-- header -->
+        <div class="page-header d-print-none">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <div class="page-pretitle">My</div>
+                    <h2 class="page-title">장바구니</h2>
+                </div>
+                <div class="col-auto ms-auto d-print-none">
+                    <a class="btn btn-outline-secondary" th:href="@{/products}">쇼핑 계속하기</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- flash message -->
+        <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}">
+            장바구니에 담았습니다.
+        </div>
+
+        <!-- error message -->
+        <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}">
+            요청 처리 중 오류가 발생했습니다.
+        </div>
+
+        <!-- empty -->
+        <div class="card" th:if="${cart.empty}">
+            <div class="card-body text-center py-5">
+                <div class="text-secondary mb-3">장바구니가 비어 있습니다.</div>
+                <a class="btn btn-primary" th:href="@{/products}">상품 보러가기</a>
+            </div>
+        </div>
+
+        <!-- list -->
+        <div th:if="${!cart.empty}">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                        <tr>
+                            <th style="width: 90px;"></th>
+                            <th>상품</th>
+                            <th class="text-end">단가</th>
+                            <th style="width: 190px;">수량</th>
+                            <th class="text-end">합계</th>
+                            <th class="text-center">재고</th>
+                            <th class="text-center" style="width: 110px;">삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${cart.items}">
+
+                            <td>
+                                <img th:src="@{|/uploads/products/${item.productId}/1.jpg|}"
+                                     onerror="this.onerror=null;this.src='/assets/images/products/default.jpg';"
+                                     alt="대표이미지"
+                                     class="rounded border"
+                                     style="width:64px;height:64px;object-fit:cover;">
+                            </td>
+
+                            <!-- 상품 -->
+                            <td>
+                                <div class="fw-bold" th:text="${item.productName}">상품명</div>
+                                <div class="text-secondary small" th:text="${item.sku}">SKU(옵션)</div>
+                            </td>
+
+                            <!-- 단가 -->
+                            <td class="text-end">
+                                <span th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}">10,000</span>원
+                            </td>
+
+                            <!-- 수량 변경 -->
+                            <td>
+                                <form th:action="@{|/my/cart/items/${item.cartItemId}/quantity|}"
+                                      method="post"
+                                      class="d-flex gap-2 align-items-center">
+                                    <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+
+                                    <input type="number"
+                                           name="quantity"
+                                           class="form-control form-control-sm"
+                                           min="1"
+                                           th:value="${item.quantity}">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">변경</button>
+                                </form>
+                            </td>
+
+                            <!-- 합계 -->
+                            <td class="text-end fw-bold">
+                                <span th:text="${#numbers.formatInteger(item.lineAmount, 0, 'COMMA')}">20,000</span>원
+                            </td>
+
+                            <!-- 재고 상태 -->
+                            <td class="text-center">
+                                <span th:if="${item.orderable}" class="badge bg-green-lt">가능</span>
+                                <span th:if="${!item.orderable}" class="badge bg-red-lt">
+                                    부족(<span th:text="${item.stockQuantity}">0</span>)
+                                </span>
+                            </td>
+
+                            <!-- 삭제 -->
+                            <td class="text-center">
+                                <form th:action="@{|/my/cart/items/${item.cartItemId}/remove|}"
+                                      method="post"
+                                      onsubmit="return confirm('삭제할까요?');">
+                                    <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- summary -->
+            <div class="card mt-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-secondary">총 합계</div>
+                        <div class="h3 mb-0">
+                            <span th:text="${#numbers.formatInteger(cart.totalAmount, 0, 'COMMA')}">0</span>원
+                        </div>
+                    </div>
+
+                    <!-- cart -> 주문 연동은 다음 단계 -->
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-primary" disabled>주문하기 (다음 단계)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

@@ -59,11 +59,9 @@ public class AuthController {
     public String loginProcess(
             @ModelAttribute("loginForm") LoginForm loginForm,
             @RequestParam(required = false) String redirect,
-            HttpSession session,
             HttpServletRequest request,
             Model model
     ) {
-        log.info("redirect: {}", redirect);
         String loginId = loginForm.getLoginId();
         String password = loginForm.getPassword();
 
@@ -89,6 +87,11 @@ public class AuthController {
 
             if (!decodedRedirect.startsWith("/") || decodedRedirect.startsWith("//") || decodedRedirect.contains("\\")) {
                 decodedRedirect = "/";
+            }
+
+            // 관리자로 로그인 할 경우 redirect URL 여부와 관계 없이 /admin으로
+            if (Role.ADMIN.equals(loggedInUser.getRole())) {
+                return "redirect:/admin";
             }
 
             return "redirect:" + decodedRedirect;

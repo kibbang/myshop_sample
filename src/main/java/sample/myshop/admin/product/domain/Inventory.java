@@ -3,6 +3,7 @@ package sample.myshop.admin.product.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sample.myshop.common.entity.CommonEntity;
 import sample.myshop.common.exception.BadRequestException;
 
 import static jakarta.persistence.FetchType.*;
@@ -11,7 +12,7 @@ import static jakarta.persistence.FetchType.*;
 @Getter
 @NoArgsConstructor
 @Table(name = "prd_inventories")
-public class Inventory {
+public class Inventory extends CommonEntity {
     @Id
     @Column(name = "variant_id")
     private Long id;
