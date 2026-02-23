@@ -7,6 +7,7 @@ import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sample.myshop.admin.product.domain.Inventory;
+import sample.myshop.common.exception.NotFoundException;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class InventoryRepositoryImpl implements InventoryRepository{
                     .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                     .getSingleResult();
         } catch (NoResultException e) {
-            throw new EntityNotFoundException("재고를 찾을 수 없습니다.: " + variantId);
+            throw new NotFoundException("재고를 찾을 수 없습니다.: " + variantId);
         }
     }
 
@@ -45,7 +46,7 @@ public class InventoryRepositoryImpl implements InventoryRepository{
                 .getResultList();
 
         if (resultList.isEmpty()) {
-            throw new EntityNotFoundException("재로를 찾을 수 없습니다.");
+            throw new NotFoundException("재로를 찾을 수 없습니다.");
         }
 
         return resultList.get(0);

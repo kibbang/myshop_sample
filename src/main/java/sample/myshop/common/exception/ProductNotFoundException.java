@@ -1,6 +1,6 @@
 package sample.myshop.common.exception;
 
-public class ProductNotFoundException extends RuntimeException {
+public class ProductNotFoundException extends NotFoundException {
     public ProductNotFoundException() {
         super();
     }

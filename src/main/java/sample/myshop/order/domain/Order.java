@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sample.myshop.common.entity.CommonEntity;
+import sample.myshop.common.exception.BadRequestException;
+import sample.myshop.common.exception.NotFoundException;
 import sample.myshop.enums.order.OrderStatus;
 import sample.myshop.release.domain.OrderRelease;
 import sample.myshop.release.enums.ReleaseStatus;
@@ -106,16 +108,16 @@ public class Order extends CommonEntity {
             String deliveryMemo
     ) {
         if (orderNo == null || orderNo.isBlank()) {
-            throw new IllegalArgumentException("주문번호는 필수입니다.");
+            throw new BadRequestException("주문번호는 필수입니다.");
         }
 
         if (memberId == null) {
-            throw new IllegalArgumentException("주문 회원이 없습니다.");
+            throw new NotFoundException("주문 회원이 없습니다.");
         }
 
 
         if (buyerLoginId == null || buyerLoginId.isBlank()) {
-            throw new IllegalArgumentException("주문자 아이디는 필수입니다.");
+            throw new BadRequestException("주문자 아이디는 필수입니다.");
         }
 
         return new Order(
@@ -136,7 +138,7 @@ public class Order extends CommonEntity {
      */
     public void addOrderItem(OrderItem orderItem) {
         if (orderItem == null) {
-            throw new IllegalArgumentException("주문 상품은 필수입니다.");
+            throw new BadRequestException("주문 상품은 필수입니다.");
         }
 
         orderItems.add(orderItem);
@@ -157,12 +159,12 @@ public class Order extends CommonEntity {
     public void cancel() {
         //  주문 상태 체크
         if (status != ORDERED) {
-            throw new IllegalStateException("주문 상태가 '" + ORDERED.getLabel() + "'이어야 합니다.");
+            throw new BadRequestException("주문 상태가 '" + ORDERED.getLabel() + "'이어야 합니다.");
         }
 
         // 주문 체크 이후 출고 단위 존재 여부 체크
         if (release == null) {
-            throw new IllegalStateException("출고 정보가 없습니다.");
+            throw new NotFoundException("출고 정보가 없습니다.");
         }
 
         // 출고 상태 변경

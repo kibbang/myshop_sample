@@ -12,6 +12,8 @@ import sample.myshop.admin.product.domain.dto.web.OptionValueCreateFormDto;
 import sample.myshop.admin.product.domain.dto.web.OptionValueDto;
 import sample.myshop.admin.product.repository.OptionRepository;
 import sample.myshop.admin.product.repository.ProductRepository;
+import sample.myshop.common.exception.BadRequestException;
+import sample.myshop.common.exception.NotFoundException;
 import sample.myshop.common.exception.ProductNotFoundException;
 
 import java.util.Collections;
@@ -47,7 +49,7 @@ public class OptionServiceImpl implements OptionService{
         String optionName = optionCreateFormDto.getName();
 
         if (optionName == null) {
-            throw new IllegalArgumentException("옵션명 입력");
+            throw new BadRequestException("옵션명입력");
         }
 
         String nameTrim = optionName.trim();
@@ -61,7 +63,7 @@ public class OptionServiceImpl implements OptionService{
         boolean optionAlreadyExists = optionRepository.checkDuplicate(productId, nameTrim);
 
         if (optionAlreadyExists) {
-            throw new IllegalArgumentException("옵션 명이 중복입니다.");
+            throw new BadRequestException("옵션 명이 중복입니다.");
         }
 
         Integer optionMaxSortOrder = optionRepository.getOptionMaxSortOrder(productId);
@@ -150,7 +152,7 @@ public class OptionServiceImpl implements OptionService{
         boolean exists = optionRepository.checkOptionExists(productId, normalizedOptionValueIds);
 
         if (exists) {
-            throw new IllegalArgumentException("이미 존재하는 옵션 조합입니다.");
+            throw new BadRequestException("이미 존재하는 옵션 조합입니다.");
         }
     }
 
@@ -184,13 +186,13 @@ public class OptionServiceImpl implements OptionService{
         String optionValueName = optionValueCreateFormDto.getValueName();
 
         if (optionValueName == null) {
-            throw new IllegalArgumentException("옵션 값이 없습니다.");
+            throw new NotFoundException("옵션 값이 없습니다.");
         }
 
         String trim = optionValueName.trim();
 
         if (trim.isEmpty()) {
-            throw new IllegalArgumentException("옵션 명이 유효하지 않습니다.");
+            throw new BadRequestException("옵션 명이 유효하지 않습니다.");
         }
 
         Integer optionValueMaxOrder = optionRepository.getOptionValueMaxOrder(optionId);

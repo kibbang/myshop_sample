@@ -3,6 +3,7 @@ package sample.myshop.admin.product.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sample.myshop.common.exception.BadRequestException;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -38,7 +39,7 @@ public class Inventory {
 
     public void updateStockQuantity(int value) {
         if (value < 0) {
-            throw new IllegalArgumentException("재고는 0보다 커야합니다.");
+            throw new BadRequestException("재고는 0보다 커야합니다.");
         }
         this.stockQuantity = value;
     }
@@ -57,7 +58,7 @@ public class Inventory {
      */
     public void decreaseQuantity(int value) {
         if (this.stockQuantity < value) {
-            throw new IllegalArgumentException("재고가 부족합니다.");
+            throw new BadRequestException("재고가 부족합니다.");
         }
 
         this.stockQuantity -= value;

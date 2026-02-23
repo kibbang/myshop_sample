@@ -9,6 +9,7 @@ import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.domain.Product;
 import sample.myshop.admin.product.domain.dto.web.*;
 import sample.myshop.admin.product.repository.ProductRepository;
+import sample.myshop.common.exception.ProductNotFoundException;
 import sample.myshop.utils.ImageStorage;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class ProductServiceImpl implements ProductService{
         ProductDetailDto findProduct = productRepository.findProductById(productId);
 
         if(findProduct == null) {
-            throw new IllegalArgumentException("Product not found with id: " + productId);
+            throw new ProductNotFoundException("상품을 찾을 수 없습니다. : " + productId);
         }
 
         return findProduct;
@@ -72,7 +73,7 @@ public class ProductServiceImpl implements ProductService{
         Product updateTargetProduct = productRepository.findProductByIdForUpdate(productUpdateDto.getId());
 
         if(updateTargetProduct == null) {
-            throw new IllegalArgumentException("Product not found with id: " + productUpdateDto.getId());
+            throw new ProductNotFoundException("상품을 찾을 수 없습니다. : " + productUpdateDto.getId());
         }
 
         updateTargetProduct.updateBasicInfo(
@@ -103,7 +104,7 @@ public class ProductServiceImpl implements ProductService{
         Inventory productWithInventory = productRepository.findProductByIdForUpdateInventoryStock(productId);
 
         if(productWithInventory == null) {
-            throw new IllegalArgumentException("아이템이 없습니다: " + productId);
+            throw new ProductNotFoundException("아이템이 없습니다: " + productId);
         }
 
         productWithInventory.updateStockQuantity(stockQuantity);

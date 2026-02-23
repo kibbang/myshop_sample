@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
+import sample.myshop.common.exception.NotFoundException;
 import sample.myshop.enums.order.OrderStatus;
 import sample.myshop.order.domain.Order;
 import sample.myshop.order.domain.dto.VariantSnapshotDto;
@@ -32,8 +33,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .orElse(null);
 
         if (foundVariant == null) {
-            // TODO 커스텀 익셉션 생성 하면 교체
-            throw new EntityNotFoundException("옵션조합을 찾을 수 없습니다.: " + productId);
+            throw new NotFoundException("옵션조합을 찾을 수 없습니다.: " + productId);
         }
 
         return foundVariant;

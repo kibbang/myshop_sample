@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>400 잘못된 요청</title>
+
+    <!-- Tabler (네 프로젝트 경로에 맞게 유지) -->
+    <link rel="stylesheet" th:href="@{/assets/tabler/css/tabler.min.css}">
+</head>
+<body class=" d-flex flex-column">
+<div class="page page-center">
+    <div class="container container-tight py-4">
+        <div class="text-center mb-4">
+            <a th:href="@{/}" class="navbar-brand navbar-brand-autodark">
+                myshop
+            </a>
+        </div>
+
+        <div class="card card-md">
+            <div class="card-body text-center py-5">
+                <div class="display-1 fw-bold text-muted">400</div>
+                <h2 class="mt-3">잘못된 요청입니다</h2>
+                <p class="text-secondary mb-4">
+                    요청 형식이 올바르지 않거나 필요한 값이 누락되었습니다.
+                </p>
+
+                <p class="text-secondary small mb-4" th:if="${message != null}" th:text="${message}">
+                    상세 메시지
+                </p>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <a th:href="@{/}" class="btn btn-primary">홈으로</a>
+                    <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                        이전 페이지
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/tabler/js/tabler.min.js}"></script>
+</body>
+</html>

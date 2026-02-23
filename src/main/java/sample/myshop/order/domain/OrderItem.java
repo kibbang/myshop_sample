@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sample.myshop.common.entity.CommonEntity;
+import sample.myshop.common.exception.BadRequestException;
 
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -58,27 +59,27 @@ public class OrderItem extends CommonEntity {
             int quantity
     ) {
         if (productId == null) {
-            throw new IllegalArgumentException("상품은 필수 입니다.");
+            throw new BadRequestException("상품은 필수 입니다.");
         }
 
         if (variantId == null) {
-            throw new IllegalArgumentException("상품의 SKU(Variant)는 필수 입니다.");
+            throw new BadRequestException("상품의 SKU(Variant)는 필수 입니다.");
         }
 
         if (skuSnapshot == null || skuSnapshot.isBlank()) {
-            throw new IllegalArgumentException("상품의 SKU는 필수 입니다.");
+            throw new BadRequestException("상품의 SKU는 필수 입니다.");
         }
 
         if (productNameSnapshot == null || productNameSnapshot.isBlank()) {
-            throw new IllegalArgumentException("상품의 이름은 필수 입니다.");
+            throw new BadRequestException("상품의 이름은 필수 입니다.");
         }
 
         if (unitPrice <= 0) {
-            throw new IllegalArgumentException("상품의 가격은 0보다 커야 합니다.");
+            throw new BadRequestException("상품의 가격은 0보다 커야 합니다.");
         }
 
         if (quantity <= 0) {
-            throw new IllegalArgumentException("상품의 수량은 0보다 커야 합니다.");
+            throw new BadRequestException("상품의 수량은 0보다 커야 합니다.");
         }
 
         return new OrderItem(productId, variantId, skuSnapshot, productNameSnapshot, unitPrice, quantity);

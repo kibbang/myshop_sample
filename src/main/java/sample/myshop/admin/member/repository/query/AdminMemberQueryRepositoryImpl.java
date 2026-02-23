@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sample.myshop.admin.member.domain.dto.web.AdminMemberListDto;
 import sample.myshop.admin.member.domain.dto.web.AdminMemberSearchConditionDto;
+import sample.myshop.common.exception.NotFoundException;
 import sample.myshop.member.domain.Address;
 import sample.myshop.member.domain.Member;
 import sample.myshop.member.enums.Role;
@@ -85,7 +86,7 @@ public class AdminMemberQueryRepositoryImpl implements AdminMemberQueryRepositor
                 .getResultList();
 
         if (foundMembers.isEmpty()) {
-            throw new EntityNotFoundException("회원이 없습니다.: " + memberId);
+            throw new NotFoundException("회원이 없습니다.: " + memberId);
         }
 
         Member member = foundMembers.get(0);
