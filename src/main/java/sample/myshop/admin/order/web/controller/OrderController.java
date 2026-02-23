@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sample.myshop.admin.order.domain.dto.web.OrderDetailDto;
 import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
+import sample.myshop.common.exception.BadRequestException;
 import sample.myshop.order.service.OrderService;
 
 import java.util.List;
@@ -24,6 +25,11 @@ public class OrderController {
 
     @GetMapping
     public String orders(@ModelAttribute(name = "searchForm") OrderSearchConditionDto searchForm, Model model) {
+        if (searchForm.getFromDate() != null && searchForm.getToDate() != null
+                && searchForm.getFromDate().isAfter(searchForm.getToDate())) {
+            throw new BadRequestException("시작일은 종료일보다 늦을 수 없습니다.");
+        }
+
         List<OrderListItemDto> orderList = orderService.searchOrders(searchForm, max(searchForm.getPage(), 1), searchForm.getSize());
         Long totalOrderCount = orderService.getTotalOrderCount(searchForm);
 

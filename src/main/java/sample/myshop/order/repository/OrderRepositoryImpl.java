@@ -88,6 +88,24 @@ public class OrderRepositoryImpl implements OrderRepository {
             }
         }
 
+        if (condition.getFromDate() != null) {
+            if (isFirstCondition) {
+                baseJpql += " where o.createdAt >= :fromDate";
+                isFirstCondition = false;
+            } else {
+                baseJpql += " and o.createdAt >= :fromDate";
+            }
+        }
+
+        if (condition.getToDate() != null) {
+            if (isFirstCondition) {
+                baseJpql += " where o.createdAt < :toDate";
+                isFirstCondition = false;
+            } else {
+                baseJpql += " and o.createdAt < :toDate";
+            }
+        }
+
         baseJpql += " order by o.id desc";
 
         TypedQuery<OrderListItemDto> orderListItemDtoTypedQuery = em.createQuery(baseJpql, OrderListItemDto.class).setFirstResult((page - 1) * size).setMaxResults(size);
@@ -100,12 +118,81 @@ public class OrderRepositoryImpl implements OrderRepository {
             orderListItemDtoTypedQuery.setParameter("status", status);
         }
 
+        if (condition.getFromDate() != null) {
+            orderListItemDtoTypedQuery.setParameter("fromDate", condition.getFromDate().atStartOfDay());
+        }
+
+        if (condition.getToDate() != null) {
+            orderListItemDtoTypedQuery.setParameter("toDate", condition.getToDate().plusDays(1).atStartOfDay());
+        }
+
         return orderListItemDtoTypedQuery.getResultList();
     }
 
     @Override
     public Long countOrders(OrderSearchConditionDto condition) {
-        return em.createQuery("select count(o) from Order o", Long.class).getSingleResult();
+        String keyword = condition.getKeyword();
+        OrderStatus status = condition.getStatus();
+
+        String countJpql = "select count(o) from Order o";
+
+        boolean isFirstCondition = true;
+
+        if (keyword != null && !keyword.isBlank()) {
+            if (isFirstCondition) {
+                countJpql += " where (o.orderNo like :keyword or o.buyerLoginId like :keyword)";
+                isFirstCondition = false;
+            } else {
+                countJpql += " and (o.orderNo like :keyword or o.buyerLoginId like :keyword)";
+            }
+        }
+
+        if (status != null) {
+            if (isFirstCondition) {
+                countJpql += " where o.status = :status";
+                isFirstCondition = false;
+            } else {
+                countJpql += " and o.status = :status";
+            }
+        }
+
+        if (condition.getFromDate() != null) {
+            if (isFirstCondition) {
+                countJpql += " where o.createdAt >= :fromDate";
+                isFirstCondition = false;
+            } else {
+                countJpql += " and o.createdAt >= :fromDate";
+            }
+        }
+
+        if (condition.getToDate() != null) {
+            if (isFirstCondition) {
+                countJpql += " where o.createdAt < :toDate";
+                isFirstCondition = false;
+            } else {
+                countJpql += " and o.createdAt < :toDate";
+            }
+        }
+
+        TypedQuery<Long> query = em.createQuery(countJpql, Long.class);
+
+        if (keyword != null && !keyword.isBlank()) {
+            query.setParameter("keyword", "%" + keyword.trim() + "%");
+        }
+
+        if (status != null) {
+            query.setParameter("status", status);
+        }
+
+        if (condition.getFromDate() != null) {
+            query.setParameter("fromDate", condition.getFromDate().atStartOfDay());
+        }
+
+        if (condition.getToDate() != null) {
+            query.setParameter("toDate", condition.getToDate().plusDays(1).atStartOfDay());
+        }
+
+        return query.getSingleResult();
     }
 
     @Override

@@ -1,27 +1,27 @@
 package sample.myshop.admin.order.domain.dto.web;
 
-import jakarta.annotation.Nullable;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import sample.myshop.common.entity.PaginatorEntity;
 import sample.myshop.enums.order.OrderStatus;
 
+import java.time.LocalDate;
+
 @Getter
+@Setter
 public class OrderSearchConditionDto extends PaginatorEntity {
-    private final String keyword; // like
-    private final OrderStatus status;
+    private  String keyword; // like
+    private  OrderStatus status;
 
-    private OrderSearchConditionDto(@Nullable String keyword, @Nullable OrderStatus status) {
-        this.keyword = keyword;
-        this.status = status;
-    }
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fromDate;
 
-    /**
-     * 생성 메소드
-     * @param keyword
-     * @param status
-     * @return
-     */
-    public static OrderSearchConditionDto of(String keyword, OrderStatus status) {
-        return new OrderSearchConditionDto(keyword, status);
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate toDate;
+
+    public OrderSearchConditionDto() {
+        this.fromDate = LocalDate.now().minusMonths(1);
+        this.toDate = LocalDate.now();
     }
 }

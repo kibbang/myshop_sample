@@ -10,12 +10,12 @@
                 <div class="text-muted">상품 조회/재고/노출 상태 관리</div>
             </div>
 
-            <div class="col-auto ms-auto d-print-none">
-                <div class="btn-list">
-                    <a class="btn btn-primary" th:href="@{/admin/products/create}">상품 등록</a>
-                    <a class="btn btn-outline-primary" href="#">엑셀 다운로드</a>
-                </div>
-            </div>
+<!--            <div class="col-auto ms-auto d-print-none">-->
+<!--                <div class="btn-list">-->
+<!--                    <a class="btn btn-primary" th:href="@{/admin/products/create}">상품 등록</a>-->
+<!--                    <a class="btn btn-outline-primary" href="#">엑셀 다운로드</a>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </div>
 
@@ -30,16 +30,16 @@
                            placeholder="상품명/상품코드/브랜드" />
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label">카테고리</label>
-                    <select class="form-select" name="category">
-                        <option value="">전체</option>
-                        <option value="TOP">상의</option>
-                        <option value="BOTTOM">하의</option>
-                        <option value="SHOES">신발</option>
-                        <option value="ETC">기타</option>
-                    </select>
-                </div>
+<!--                <div class="col-md-2">-->
+<!--                    <label class="form-label">카테고리</label>-->
+<!--                    <select class="form-select" name="category">-->
+<!--                        <option value="">전체</option>-->
+<!--                        <option value="TOP">상의</option>-->
+<!--                        <option value="BOTTOM">하의</option>-->
+<!--                        <option value="SHOES">신발</option>-->
+<!--                        <option value="ETC">기타</option>-->
+<!--                    </select>-->
+<!--                </div>-->
 
                 <div class="col-md-2">
                     <label class="form-label">판매 상태</label>
@@ -95,7 +95,7 @@
                     <th>상품명</th>
 <!--                    <th>카테고리</th>-->
                     <th class="text-end">가격</th>
-                    <th class="text-end">재고</th>
+                    <th class="text-end">대표 옵션 재고</th>
                     <th>상태</th>
                     <th class="text-end">관리</th>
                 </tr>
@@ -111,7 +111,7 @@
 <!--                    <td>상의</td>-->
                     <td class="text-end" th:text="|${#numbers.formatInteger(product.basePrice, 0, 'COMMA')}|">₩19,900</td>
                     <td class="text-end" th:text="${product.stockQuantity}"></td>
-                    <td><span class="badge bg-green" th:text="${product.status.label}">판매중</span></td>
+                    <td><span class="badge bg-green-lt" th:text="${product.status.label}">판매중</span></td>
                     <td class="text-end">
                         <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/products/{id}/edit (id=${product.id})}">수정</a>
                         <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/products/{id} (id=${product.id})}">상세</a>

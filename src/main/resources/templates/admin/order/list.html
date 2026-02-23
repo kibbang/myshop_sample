@@ -9,11 +9,11 @@
                 <h2 class="page-title">주문 목록</h2>
                 <div class="text-muted">주문 조회/상태 관리</div>
             </div>
-            <div class="col-auto ms-auto d-print-none">
-                <div class="btn-list">
-                    <a class="btn btn-outline-primary" href="#">엑셀 다운로드</a>
-                </div>
-            </div>
+<!--            <div class="col-auto ms-auto d-print-none">-->
+<!--                <div class="btn-list">-->
+<!--                    <a class="btn btn-outline-primary" href="#">엑셀 다운로드</a>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </div>
 
@@ -24,9 +24,9 @@
                 <div class="col-md-3">
                     <label class="form-label">기간</label>
                     <div class="input-group">
-                        <input type="date" class="form-control" name="from" />
+                        <input type="date" class="form-control" th:field="*{fromDate}" />
                         <span class="input-group-text">~</span>
-                        <input type="date" class="form-control" name="to" />
+                        <input type="date" class="form-control" th:field="*{toDate}" />
                     </div>
                 </div>
 
