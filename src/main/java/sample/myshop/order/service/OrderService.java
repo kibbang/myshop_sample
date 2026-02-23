@@ -5,11 +5,12 @@ import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 import sample.myshop.order.domain.Order;
 import sample.myshop.order.session.OrderDeliveryRequestDto;
+import sample.myshop.shop.order.domain.dto.web.OrderPrepareInfoDto;
 
 import java.util.List;
 
 public interface OrderService {
-    String placeOrder(Long productId, int quantity, String buyerLoginId, OrderDeliveryRequestDto orderDeliveryRequestDto);
+    String placeOrder(Long productId, Long variantId, int quantity, String buyerLoginId, OrderDeliveryRequestDto orderDeliveryRequestDto);
 
     void cancelOrder(Long orderId);
 
@@ -20,4 +21,6 @@ public interface OrderService {
     Long getTotalOrderCount(OrderSearchConditionDto condition);
 
     Order getOrderWithItemsByOrderNo(String orderNo);
+
+    OrderPrepareInfoDto getOrderPrepareInfo(Long productId, Long variantId, int quantity, String loginId);
 }

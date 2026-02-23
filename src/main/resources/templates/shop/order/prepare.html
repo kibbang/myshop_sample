@@ -106,7 +106,19 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <div class="text-muted">상품</div>
-                            <div class="fw-bold" th:text="${product != null ? product.name : '상품명'}">상품명</div>
+                            <div class="fw-bold" th:text="${prepareInfo != null ? prepareInfo.productName : '상품명'}">상품명</div>
+
+                            <!-- 옵션/SKU 표시 (추가) -->
+                            <div class="text-secondary small mt-1" th:if="${prepareInfo != null}">
+                                <div>
+                                    SKU:
+                                    <span th:text="${prepareInfo.sku}">SKU-001</span>
+                                </div>
+                                <div>
+                                    옵션:
+                                    <span th:text="${prepareInfo.optionSummary != null ? prepareInfo.optionSummary : '-'}">-</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="table-responsive">
@@ -114,13 +126,13 @@
                                 <tbody>
                                 <tr>
                                     <td class="text-muted">수량</td>
-                                    <td class="text-end" th:text="${quantity}">1</td>
+                                    <td class="text-end" th:text="${prepareInfo != null ? prepareInfo.quantity : 1}">1</td>
                                 </tr>
 
                                 <tr>
                                     <td class="text-muted">단가</td>
                                     <td class="text-end">
-                                        <span th:text="${product != null ? #numbers.formatInteger(product.basePrice, 0, 'COMMA') : '0'}">0</span>
+                                        <span th:text="${prepareInfo != null ? #numbers.formatInteger(prepareInfo.unitPrice, 0, 'COMMA') : '0'}">0</span>
                                         <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
                                     </td>
                                 </tr>
@@ -128,7 +140,7 @@
                                 <tr>
                                     <td class="text-muted">소계</td>
                                     <td class="text-end">
-                                        <span th:text="${product != null ? #numbers.formatInteger(product.basePrice * quantity, 0, 'COMMA') : '0'}">0</span>
+                                        <span th:text="${prepareInfo != null ? #numbers.formatInteger(prepareInfo.lineAmount, 0, 'COMMA') : '0'}">0</span>
                                         <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
                                     </td>
                                 </tr>
@@ -141,7 +153,7 @@
                                 <tr>
                                     <td class="fw-bold">총 결제금액</td>
                                     <td class="text-end fw-bold">
-                                        <span th:text="${product != null ? #numbers.formatInteger(product.basePrice * quantity, 0, 'COMMA') : '0'}">0</span>
+                                        <span th:text="${prepareInfo != null ? #numbers.formatInteger(prepareInfo.lineAmount, 0, 'COMMA') : '0'}">0</span>
                                         <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
                                     </td>
                                 </tr>
@@ -152,7 +164,6 @@
                         <div class="alert alert-info mt-3" role="alert">
                             결제/쿠폰은 다음 단계에서 붙일 예정. 지금은 “주문 스냅샷(배송지)”까지 안정적으로 가는 게 목표
                         </div>
-
                     </div>
                 </div>
             </div>

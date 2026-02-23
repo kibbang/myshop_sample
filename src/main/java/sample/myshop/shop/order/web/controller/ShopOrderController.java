@@ -16,6 +16,7 @@ import sample.myshop.order.service.OrderService;
 import sample.myshop.order.session.OrderDeliveryRequestDto;
 import sample.myshop.order.session.OrderPrepareSession;
 import sample.myshop.shop.order.domain.dto.web.OrderCreateForm;
+import sample.myshop.shop.order.domain.dto.web.OrderPrepareInfoDto;
 import sample.myshop.shop.product.domain.dto.web.ShopProductDetailDto;
 import sample.myshop.shop.product.service.ShopProductService;
 
@@ -32,7 +33,11 @@ public class ShopOrderController {
     public String prepare(@ModelAttribute OrderCreateForm form, HttpSession session, Model model) {
 
         // 1) 주문 준비 세션 저장 (URL에 노출 X)
-        session.setAttribute(SessionConst.ORDER_PREPARE, new OrderPrepareSession(form.getProductId(), form.getQuantity()));
+        session.setAttribute(SessionConst.ORDER_PREPARE, new OrderPrepareSession(
+                form.getProductId(),
+                form.getVariantId(),
+                form.getQuantity()
+        ));
 
         // 2) 비로그인이면 로그인으로
         SessionUser user = (SessionUser) session.getAttribute(SessionConst.LOGIN_USER);
@@ -62,8 +67,16 @@ public class ShopOrderController {
             return "redirect:/";
         }
 
+        OrderPrepareInfoDto prepareInfo = orderService.getOrderPrepareInfo(
+                orderPrepareSession.getProductId(),
+                orderPrepareSession.getVariantId(),
+                orderPrepareSession.getQuantity(),
+                user.getLoginId()
+        );
+
         ShopProductDetailDto productDetail = shopProductService.getDetail(orderPrepareSession.getProductId());
         model.addAttribute("product", productDetail);
+        model.addAttribute("prepareInfo", prepareInfo);
 
         model.addAttribute("quantity", orderPrepareSession.getQuantity());
         model.addAttribute("orderDeliveryForm", new OrderDeliveryRequestDto());
@@ -103,6 +116,7 @@ public class ShopOrderController {
 
         String placedOrderNo = orderService.placeOrder(
                 orderPrepareSession.getProductId(),
+                orderPrepareSession.getVariantId(),
                 orderPrepareSession.getQuantity(),
                 sessionUser.getLoginId(),
                 deliveryForm

@@ -50,4 +50,18 @@ public class InventoryRepositoryImpl implements InventoryRepository{
 
         return resultList.get(0);
     }
+
+    @Override
+    public Inventory findByVariantId(Long variantId) {
+        return em.createQuery(
+                        "select i " +
+                                "from Inventory i " +
+                                "where i.variant.id = :variantId",
+                        Inventory.class
+                )
+                .setParameter("variantId", variantId)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+    }
 }

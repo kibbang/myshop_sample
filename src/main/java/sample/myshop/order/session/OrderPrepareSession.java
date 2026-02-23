@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class OrderPrepareSession {
     private Long productId;
+    private Long variantId;
     private int quantity;
 }

@@ -70,7 +70,7 @@ public class ReleaseServiceImplTest {
         requestDto.setReceiverDetailAddress("상세주소");
         requestDto.setDeliveryMemo("메모");
 
-        String orderNo = orderService.placeOrder(productId, 2, "shoptester", requestDto);
+        String orderNo = orderService.placeOrder(productId, 23L, 2, "shoptester", requestDto);
 
         em.flush();
         em.clear();
@@ -118,7 +118,7 @@ public class ReleaseServiceImplTest {
         requestDto.setReceiverDetailAddress("상세주소");
         requestDto.setDeliveryMemo("메모");
 
-        String orderNo = orderService.placeOrder(productId, 2, "shoptester", requestDto);
+        String orderNo = orderService.placeOrder(productId, 23L, 2, "shoptester", requestDto);
 
         em.flush();
         em.clear();

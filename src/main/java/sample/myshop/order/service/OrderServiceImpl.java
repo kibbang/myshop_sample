@@ -9,14 +9,18 @@ import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 import sample.myshop.admin.product.domain.Inventory;
 import sample.myshop.admin.product.repository.InventoryRepository;
+import sample.myshop.admin.product.repository.VariantRepository;
+import sample.myshop.common.exception.BadRequestException;
+import sample.myshop.common.exception.NotFoundException;
 import sample.myshop.member.domain.Member;
 import sample.myshop.member.repository.MemberRepository;
 import sample.myshop.order.domain.Order;
 import sample.myshop.order.domain.OrderItem;
-import sample.myshop.order.domain.dto.DefaultVariantSnapshotDto;
+import sample.myshop.order.domain.dto.VariantSnapshotDto;
 import sample.myshop.order.repository.OrderRepository;
 import sample.myshop.order.session.OrderDeliveryRequestDto;
 import sample.myshop.release.domain.OrderRelease;
+import sample.myshop.shop.order.domain.dto.web.OrderPrepareInfoDto;
 import sample.myshop.utils.OrderGenerator;
 
 import java.util.ArrayList;
@@ -31,33 +35,47 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final InventoryRepository inventoryRepository;
     private final MemberRepository memberRepository;
+    private final VariantRepository variantRepository;
 
     @Override
     @Transactional
-    public String placeOrder(Long productId, int quantity, String buyerLoginId, OrderDeliveryRequestDto orderDeliveryRequestDto) {
+    public String placeOrder(Long productId, Long variantId, int quantity, String buyerLoginId, OrderDeliveryRequestDto orderDeliveryRequestDto) {
+
+        if (quantity < 1) {
+            throw new BadRequestException("수량은 1개 이상이어야 합니다.");
+        }
+
         // 주문자 ID 찾기
         Member member = memberRepository.findByLoginId(buyerLoginId);
+        if (member == null) {
+            throw new NotFoundException("주문자 정보를 찾을 수 없습니다.");
+        }
 
-        // 대표 variant 찾기
-        DefaultVariantSnapshotDto defaultVariant = orderRepository.findDefaultVariantForOrder(productId);
+        // variant 찾기
+        VariantSnapshotDto variantSnapshot = orderRepository.findVariantForOrder(productId, variantId);
+
+        if (variantSnapshot == null) {
+            // productId + variantId 조합이 맞지 않거나 variant 없음
+            throw new BadRequestException("해당 상품의 옵션 정보를 찾을 수 없습니다.");
+        }
 
         // 인벤토리 찾기
-        Inventory inventoryForUpdate = inventoryRepository.findInventoryForUpdateByVariantId(defaultVariant.getVariantId());
+        Inventory inventoryForUpdate = inventoryRepository.findInventoryForUpdateByVariantId(variantSnapshot.getVariantId());
 
         // 재고 감소 (재고가 부족할 경우 주문을 생성할 필요가 없음 그렇기 때문에 주문 생성 -> 감소 패턴 보다 나음)
         inventoryForUpdate.decreaseQuantity(quantity);
 
         // unitPrice 세팅
-        int unitPrice = defaultVariant.getVariantPrice() != null
-                ? defaultVariant.getVariantPrice()
-                : defaultVariant.getBasePrice();
+        int unitPrice = variantSnapshot.getVariantPrice() != null
+                ? variantSnapshot.getVariantPrice()
+                : variantSnapshot.getBasePrice();
 
         // OrderItem 생성 (OrderItem 조각을 생성하고 그것들을 Order에 담는다)
         OrderItem orderItem = OrderItem.createOrderItem(
                 productId,
-                defaultVariant.getVariantId(),
-                defaultVariant.getSku(),
-                defaultVariant.getProductName(),
+                variantSnapshot.getVariantId(),
+                variantSnapshot.getSku(),
+                variantSnapshot.getProductName(),
                 unitPrice,
                 quantity
         );
@@ -80,6 +98,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 배송 생성
         OrderRelease orderRelease = OrderRelease.create();
+
         order.createRelease(orderRelease);
 
         orderRepository.save(order);
@@ -136,6 +155,41 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getOrderWithItemsByOrderNo(String orderNo) {
         return orderRepository.findByOrderNoWithOrderItems(orderNo);
+    }
+
+    @Override
+    public OrderPrepareInfoDto getOrderPrepareInfo(Long productId, Long variantId, int quantity, String loginId) {
+        if (quantity < 1) {
+            throw new BadRequestException("수량은 1개 이상이어야 합니다.");
+        }
+
+        // 선택한 variant가 해당 product 소속인지 포함해서 조회
+        VariantSnapshotDto variantSnapshot = orderRepository.findVariantForOrder(productId, variantId);
+
+        // 재고 조회 (prepare 화면은 락 없이 조회)
+        Inventory inventory = inventoryRepository.findByVariantId(variantSnapshot.getVariantId());
+
+        if (inventory == null) {
+            throw new NotFoundException("재고 정보를 찾을 수 없습니다.");
+        }
+
+        int unitPrice = variantSnapshot.getVariantPrice() != null
+                ? variantSnapshot.getVariantPrice()
+                : variantSnapshot.getBasePrice();
+
+        int totalPrice = unitPrice * quantity;
+
+        return new OrderPrepareInfoDto(
+                productId,
+                variantSnapshot.getVariantId(),
+                variantSnapshot.getProductName(),
+                variantSnapshot.getSku(),
+                "-",
+                quantity,
+                inventory.getStockQuantity(),
+                unitPrice,
+                totalPrice
+        );
     }
 
     /**

@@ -7,4 +7,6 @@ public interface InventoryRepository {
     void save(Inventory inventory);
 
     Inventory findForUpdateByProductIdAndVariantId(Long productId, Long variantId);
+
+    Inventory findByVariantId(Long variantId);
 }

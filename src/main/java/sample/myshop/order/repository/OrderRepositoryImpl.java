@@ -7,7 +7,7 @@ import sample.myshop.admin.order.domain.dto.web.OrderListItemDto;
 import sample.myshop.admin.order.domain.dto.web.OrderSearchConditionDto;
 import sample.myshop.enums.order.OrderStatus;
 import sample.myshop.order.domain.Order;
-import sample.myshop.order.domain.dto.DefaultVariantSnapshotDto;
+import sample.myshop.order.domain.dto.VariantSnapshotDto;
 
 import java.util.List;
 
@@ -18,19 +18,22 @@ public class OrderRepositoryImpl implements OrderRepository {
     private final EntityManager em;
 
     @Override
-    public DefaultVariantSnapshotDto findDefaultVariantForOrder(Long productId) {
-        DefaultVariantSnapshotDto foundVariant = em.createQuery("select new sample.myshop.order.domain.dto.DefaultVariantSnapshotDto(v.id, v.sku, v.salePrice, p.name, p.basePrice)" +
+    public VariantSnapshotDto findVariantForOrder(Long productId, Long variantId) {
+        VariantSnapshotDto foundVariant = em.createQuery("select new sample.myshop.order.domain.dto.VariantSnapshotDto(v.id, v.sku, v.salePrice, p.name, p.basePrice)" +
                 " from Variant v" +
                 " join v.product p" +
-                " where v.isDefault = true" +
-                " and p.id = :productId", DefaultVariantSnapshotDto.class
+                " where p.id = :productId" +
+                " and  v.id = :variantId", VariantSnapshotDto.class
         )
                 .setParameter("productId", productId)
-                .getSingleResult();
+                .setParameter("variantId", variantId)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
 
         if (foundVariant == null) {
             // TODO 커스텀 익셉션 생성 하면 교체
-            throw new EntityNotFoundException("대표 Variant를 찾을 수 없습니다.: " + productId);
+            throw new EntityNotFoundException("옵션조합을 찾을 수 없습니다.: " + productId);
         }
 
         return foundVariant;

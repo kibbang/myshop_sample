@@ -60,6 +60,7 @@ public class LocalDataInitializer implements CommandLineRunner { // SEED 역할�
 
         orderService.placeOrder(
                 productId,
+                23L,
                 2,
                 "buyer01",
                 requestDto

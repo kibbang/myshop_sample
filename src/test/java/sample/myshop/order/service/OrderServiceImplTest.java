@@ -58,7 +58,7 @@ class OrderServiceImplTest {
         requestDto.setReceiverDetailAddress("상세주소");
         requestDto.setDeliveryMemo("메모");
 
-        String orderNo = orderService.placeOrder(productId, 2, "buyer01", requestDto);
+        String orderNo = orderService.placeOrder(productId, 23L, 1, "buyer01", requestDto);
 
         em.flush();
         em.clear();
@@ -121,7 +121,7 @@ class OrderServiceImplTest {
 
         // when & then
         assertThrows(IllegalStateException.class,
-                () -> orderService.placeOrder(productId, 2, "buyer01", requestDto),
+                () -> orderService.placeOrder(productId, 23L,2, "buyer01", requestDto),
                 "Inventory.decreaseQuantity에서 재고 부족 예외가 발생해야 함"
         );
     }
@@ -159,7 +159,7 @@ class OrderServiceImplTest {
         requestDto.setReceiverDetailAddress("상세주소");
         requestDto.setDeliveryMemo("메모");
 
-        String orderNo = orderService.placeOrder(productId, 2, "buyer01", requestDto);
+        String orderNo = orderService.placeOrder(productId, 23L, 2,"buyer01", requestDto);
 
         em.flush();
         em.clear();
@@ -221,7 +221,7 @@ class OrderServiceImplTest {
         requestDto.setReceiverDetailAddress("상세주소");
         requestDto.setDeliveryMemo("메모");
 
-        String orderNo = orderService.placeOrder(productId, 2, "buyer01", requestDto);
+        String orderNo = orderService.placeOrder(productId, 23L, 2, "buyer01", requestDto);
         em.flush();
         em.clear();
 
@@ -276,7 +276,7 @@ class OrderServiceImplTest {
 
         // when: placeOrder(productId, 2) 시도 → 예외
         assertThrows(IllegalArgumentException.class,
-                () -> orderService.placeOrder(productId, 2, "buyer01", requestDto)
+                () -> orderService.placeOrder(productId, 23L,2, "buyer01", requestDto)
         );
 
         em.flush();

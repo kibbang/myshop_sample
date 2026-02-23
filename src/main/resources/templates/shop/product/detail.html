@@ -305,7 +305,8 @@
         const PRODUCT_ID = /*[[${product.id}]]*/ 0;
         const OPTION_GROUP_COUNT = /*[[${options != null ? options.size() : 0}]]*/ 0;
         const DEFAULT_VARIANT_ID = /*[[${defaultVariantId}]]*/ null;
-        const IS_LOGGED_IN = /*[[${session.LOGIN_USER != null}]]*/ false;
+        const IS_LOGGED_IN = /*[[${sessionView.sessionUser != null}]]*/ false;
+        console.log("IS_LOGGED_IN =", IS_LOGGED_IN);
 
         function useDefaultVariantForOrder() {
             const variantIdEl = document.getElementById("variantId");
