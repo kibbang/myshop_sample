@@ -1,6 +1,7 @@
 package sample.myshop.shop.my.cart.repository;
 
 import sample.myshop.shop.my.cart.domain.CartItem;
+import sample.myshop.shop.my.cart.domain.dto.CartItemOrderSourceDto;
 import sample.myshop.shop.my.cart.domain.dto.CartListItemDto;
 
 import java.util.List;
@@ -28,4 +29,10 @@ public interface CartRepository {
     List<CartListItemDto> findCartListItemsByMemberId(Long memberId);
 
     List<CartListItemDto> findCartListItemsBySessionId(String sessionId);
+
+    List<CartItemOrderSourceDto> findSelectedForOrder(Long memberId, List<Long> cartItemIds);
+
+    List<CartItemOrderSourceDto> findAllForOrder(Long memberId);
+
+    void deleteByMemberIdAndIds(Long memberId, List<Long> cartItemIds);
 }

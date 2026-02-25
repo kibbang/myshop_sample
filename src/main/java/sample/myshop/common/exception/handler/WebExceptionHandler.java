@@ -46,11 +46,11 @@ public class WebExceptionHandler {
         log.debug("Static resource not found: {}", e.getResourcePath());
     }
 
-    @ExceptionHandler(Exception.class)
-    public String handleException(Exception e, HttpServletResponse response, Model model) {
-        log.debug("Unhandled Exception", e);
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        model.addAttribute("message", "서버 오류가 발생했습니다.");
-        return "error/500";
-    }
+//    @ExceptionHandler(Exception.class)
+//    public String handleException(Exception e, HttpServletResponse response, Model model) {
+//        log.debug("Unhandled Exception", e);
+//        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//        model.addAttribute("message", "서버 오류가 발생했습니다.");
+//        return "error/500";
+//    }
 }

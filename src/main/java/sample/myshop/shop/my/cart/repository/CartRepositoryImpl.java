@@ -3,7 +3,9 @@ package sample.myshop.shop.my.cart.repository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import sample.myshop.common.exception.BadRequestException;
 import sample.myshop.shop.my.cart.domain.CartItem;
+import sample.myshop.shop.my.cart.domain.dto.CartItemOrderSourceDto;
 import sample.myshop.shop.my.cart.domain.dto.CartListItemDto;
 
 import java.util.List;
@@ -177,5 +179,57 @@ public class CartRepositoryImpl implements CartRepository {
             """, CartListItemDto.class)
                 .setParameter("sessionId", sessionId)
                 .getResultList();
+    }
+
+    @Override
+    public List<CartItemOrderSourceDto> findSelectedForOrder(Long memberId, List<Long> cartItemIds) {
+        if (cartItemIds == null || cartItemIds.isEmpty()) { // 쿼리 안정성 한번 더 방어
+            return List.of();
+        }
+
+        return em.createQuery(
+                "select new sample.myshop.shop.my.cart.domain.dto.CartItemOrderSourceDto(ci.id, ci.productId, ci.variantId, ci.quantity)" +
+                        " from CartItem ci" +
+                        " where ci.memberId = :memberId" +
+                        " and ci.id in :cartItemIds" +
+                        " order by ci.id", CartItemOrderSourceDto.class
+        )
+                .setParameter("memberId", memberId)
+                .setParameter("cartItemIds", cartItemIds)
+                .getResultList();
+    }
+
+    @Override
+    public List<CartItemOrderSourceDto> findAllForOrder(Long memberId) {
+        return em.createQuery(
+                        "select new sample.myshop.shop.my.cart.domain.dto.CartItemOrderSourceDto(" +
+                                " ci.id, ci.productId, ci.variantId, ci.quantity)" +
+                                " from CartItem ci" +
+                                " where ci.memberId = :memberId" +
+                                " order by ci.id asc",
+                        CartItemOrderSourceDto.class
+                )
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
+    @Override
+    public void deleteByMemberIdAndIds(Long memberId, List<Long> cartItemIds) {
+        if (memberId == null) {
+            throw new BadRequestException("회원 정보가 없습니다.");
+        }
+
+        if (cartItemIds == null || cartItemIds.isEmpty()) {
+            return;
+        }
+
+        em.createQuery(
+                        "delete from CartItem c " +
+                                " where c.memberId = :memberId " +
+                                "   and c.id in :cartItemIds"
+                )
+                .setParameter("memberId", memberId)
+                .setParameter("cartItemIds", cartItemIds)
+                .executeUpdate();
     }
 }

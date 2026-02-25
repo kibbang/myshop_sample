@@ -5,14 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sample.myshop.auth.SessionUser;
+import sample.myshop.common.exception.BadRequestException;
 import sample.myshop.common.exception.NotFoundException;
 import sample.myshop.order.domain.dto.VariantSnapshotDto;
 import sample.myshop.order.repository.OrderRepository;
 import sample.myshop.shop.my.cart.domain.CartItem;
-import sample.myshop.shop.my.cart.domain.dto.CartAddRequestDto;
-import sample.myshop.shop.my.cart.domain.dto.CartChangeQuantityRequestDto;
-import sample.myshop.shop.my.cart.domain.dto.CartListDto;
-import sample.myshop.shop.my.cart.domain.dto.CartListItemDto;
+import sample.myshop.shop.my.cart.domain.dto.*;
 import sample.myshop.shop.my.cart.repository.CartRepository;
 
 import java.util.List;
@@ -88,6 +86,41 @@ public class CartServiceImpl implements CartService {
         }
 
         return new CartListDto(items);
+    }
+
+    @Override
+    public List<CartItemOrderSourceDto> getSelectedCartItemsForOrder(Long memberId, List<Long> selectedCartItemIds) {
+        // 1차 서비스 방어
+        if (selectedCartItemIds == null || selectedCartItemIds.isEmpty()) {
+            throw new BadRequestException("선택된 카트 주문 아이템이 없습니다.");
+        }
+
+        List<CartItemOrderSourceDto> selectedForOrder = cartRepository.findSelectedForOrder(memberId, selectedCartItemIds);
+
+        // 조회 후 검증
+        if (selectedForOrder.size() != selectedCartItemIds.size()) {
+            throw new BadRequestException("유효하지 않은 카트 항목이 포함되어 있습니다.");
+        }
+        return selectedForOrder;
+    }
+
+    @Override
+    public List<CartItemOrderSourceDto> getAllCartItemsForOrder(Long memberId) {
+        return cartRepository.findAllForOrder(memberId);
+    }
+
+    @Override
+    @Transactional
+    public void removeItems(Long memberId, List<Long> cartItemIds) {
+        if (memberId == null) {
+            throw new BadRequestException("회원 정보가 없습니다.");
+        }
+
+        if (cartItemIds == null || cartItemIds.isEmpty()) {
+            return;
+        }
+
+        cartRepository.deleteByMemberIdAndIds(memberId, cartItemIds);
     }
 
     private CartItem findExisting(Long memberId, String sessionId, Long variantId) {

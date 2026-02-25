@@ -12,9 +12,8 @@
                 </div>
 
                 <div class="col-auto ms-auto d-print-none">
-                    <a class="btn btn-outline-secondary"
-                       th:href="@{/products/{id}(id=${product.id})}">
-                        상품으로 돌아가기
+                    <a class="btn btn-outline-secondary" th:href="@{/products}">
+                        상품 목록으로
                     </a>
                 </div>
             </div>
@@ -33,7 +32,7 @@
                         <form th:action="@{/orders}" method="post" th:object="${orderDeliveryForm}">
 
                             <!-- CSRF -->
-                            <input type="hidden" name="_csrf" th:value="${_csrf}"/>
+                            <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
 
                             <div class="row g-3">
 
@@ -82,8 +81,7 @@
                                     최종 주문하기
                                 </button>
 
-                                <a class="btn btn-outline-secondary"
-                                   th:href="@{/products/{id}(id=${product.id})}">
+                                <a class="btn btn-outline-secondary" th:href="@{/my/cart}">
                                     취소
                                 </a>
                             </div>
@@ -97,75 +95,81 @@
             </div>
 
             <!-- RIGHT: 주문 요약 -->
-            <div class="col-12 col-lg-5">
-                <div class="card">
+            <div class="col-12 col-lg-5" th:if="${preparePage != null}">
+
+                <!-- 주문 상품 목록 -->
+                <div class="card mb-3">
                     <div class="card-header">
-                        <h3 class="card-title">주문 요약</h3>
+                        <h3 class="card-title">주문 상품</h3>
                     </div>
 
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="text-muted">상품</div>
-                            <div class="fw-bold" th:text="${prepareInfo != null ? prepareInfo.productName : '상품명'}">상품명</div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
 
-                            <!-- 옵션/SKU 표시 (추가) -->
-                            <div class="text-secondary small mt-1" th:if="${prepareInfo != null}">
-                                <div>
-                                    SKU:
-                                    <span th:text="${prepareInfo.sku}">SKU-001</span>
-                                </div>
-                                <div>
-                                    옵션:
-                                    <span th:text="${prepareInfo.optionSummary != null ? prepareInfo.optionSummary : '-'}">-</span>
+                            <div class="list-group-item" th:each="item : ${preparePage.items}">
+                                <div class="d-flex align-items-center">
+                                    <img th:src="@{|/uploads/products/${item.productId}/1.jpg|}"
+                                         onerror="this.src='/assets/images/products/default.jpg';"
+                                         class="rounded me-3"
+                                         style="width:56px; height:56px; object-fit:cover;">
+
+                                    <div class="flex-fill">
+                                        <div class="fw-bold" th:text="${item.productName}">상품명</div>
+                                        <div class="text-secondary small" th:text="${item.sku}">SKU</div>
+
+                                        <div class="d-flex justify-content-between mt-1 small">
+                                            <span class="text-muted"
+                                                  th:text="|수량 ${item.quantity}개|">수량 1개</span>
+                                            <span class="fw-medium"
+                                                  th:text="|${#numbers.formatInteger(item.lineAmount, 0, 'COMMA')}원|">10,000원</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="table-responsive">
-                            <table class="table table-vcenter">
-                                <tbody>
-                                <tr>
-                                    <td class="text-muted">수량</td>
-                                    <td class="text-end" th:text="${prepareInfo != null ? prepareInfo.quantity : 1}">1</td>
-                                </tr>
-
-                                <tr>
-                                    <td class="text-muted">단가</td>
-                                    <td class="text-end">
-                                        <span th:text="${prepareInfo != null ? #numbers.formatInteger(prepareInfo.unitPrice, 0, 'COMMA') : '0'}">0</span>
-                                        <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="text-muted">소계</td>
-                                    <td class="text-end">
-                                        <span th:text="${prepareInfo != null ? #numbers.formatInteger(prepareInfo.lineAmount, 0, 'COMMA') : '0'}">0</span>
-                                        <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="text-muted">배송비</td>
-                                    <td class="text-end">0</td>
-                                </tr>
-
-                                <tr>
-                                    <td class="fw-bold">총 결제금액</td>
-                                    <td class="text-end fw-bold">
-                                        <span th:text="${prepareInfo != null ? #numbers.formatInteger(prepareInfo.lineAmount, 0, 'COMMA') : '0'}">0</span>
-                                        <span class="text-muted" th:text="${product != null ? product.currency : ''}"></span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="alert alert-info mt-3" role="alert">
-                            결제/쿠폰은 다음 단계에서 붙일 예정. 지금은 “주문 스냅샷(배송지)”까지 안정적으로 가는 게 목표
                         </div>
                     </div>
                 </div>
+
+                <!-- 결제 요약 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">결제 요약</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-vcenter mb-0">
+                            <tbody>
+                            <tr>
+                                <td class="text-muted">상품 종류</td>
+                                <td class="text-end" th:text="|${preparePage.itemCount}개|">1개</td>
+                            </tr>
+
+                            <tr>
+                                <td class="text-muted">총 수량</td>
+                                <td class="text-end" th:text="|${preparePage.totalQuantity}개|">1개</td>
+                            </tr>
+
+                            <tr>
+                                <td class="text-muted">배송비</td>
+                                <td class="text-end">0원</td>
+                            </tr>
+
+                            <tr>
+                                <td class="fw-bold">총 결제금액</td>
+                                <td class="text-end fw-bold">
+                                    <span th:text="|${#numbers.formatInteger(preparePage.totalAmount, 0, 'COMMA')}원|">0원</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            결제/쿠폰은 다음 단계에서 붙일 예정. 지금은 주문 흐름 완성이 목표.
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>

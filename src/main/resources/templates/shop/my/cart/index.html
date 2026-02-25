@@ -42,6 +42,7 @@
                     <table class="table table-vcenter card-table">
                         <thead>
                         <tr>
+                            <th class="text-center" style="width: 70px;">선택</th>
                             <th style="width: 90px;"></th>
                             <th>상품</th>
                             <th class="text-end">단가</th>
@@ -53,7 +54,18 @@
                         </thead>
                         <tbody>
                         <tr th:each="item : ${cart.items}">
+                            <!-- 선택 -->
+                            <td class="text-center align-middle">
+                                <input class="form-check-input cart-select"
+                                       type="checkbox"
+                                       name="selectedCartItemIds"
+                                       th:value="${item.cartItemId}"
+                                       th:data-line-amount="${item.lineAmount}"
+                                       th:checked="${item.orderable}"
+                                       th:disabled="${!item.orderable}">
+                            </td>
 
+                            <!-- 대표 이미지 -->
                             <td>
                                 <img th:src="@{|/uploads/products/${item.productId}/1.jpg|}"
                                      onerror="this.onerror=null;this.src='/assets/images/products/default.jpg';"
@@ -121,21 +133,95 @@
             <div class="card mt-3">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-secondary">총 합계</div>
+                        <div class="text-secondary">선택 합계</div>
                         <div class="h3 mb-0">
+                            <span id="selectedTotalAmountText">0</span>원
+                        </div>
+                        <div class="text-secondary mt-1" style="font-size: 0.9rem;">
+                            전체 합계:
                             <span th:text="${#numbers.formatInteger(cart.totalAmount, 0, 'COMMA')}">0</span>원
                         </div>
                     </div>
 
-                    <!-- cart -> 주문 연동은 다음 단계 -->
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-primary" disabled>주문하기 (다음 단계)</button>
+                        <button type="button" class="btn btn-primary" onclick="submitSelectedCartOrder()">
+                            선택 상품 주문
+                        </button>
                     </div>
                 </div>
             </div>
+
+            <!-- 전체 주문 -->
+            <div class="mt-2 d-flex justify-content-end">
+                <form th:action="@{/orders/prepare/cart-all}" method="post" class="d-inline">
+                    <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+                    <button type="submit" class="btn btn-outline-primary">
+                        전체 주문
+                    </button>
+                </form>
+            </div>
         </div>
 
+        <!-- 선택 주문 hidden form -->
+        <form id="selectedOrderForm" th:action="@{/orders/prepare/cart}" method="post" style="display:none;">
+            <th:block th:replace="~{common/fragments/csrf :: csrf}"></th:block>
+        </form>
+
     </div>
+
+    <script th:inline="javascript">
+        function formatNumberWithComma(value) {
+            return new Intl.NumberFormat('ko-KR').format(value);
+        }
+
+        function recalculateSelectedTotal() {
+            const checkedBoxes = document.querySelectorAll('.cart-select:checked');
+            let total = 0;
+
+            checkedBoxes.forEach((checkbox) => {
+                const lineAmount = Number(checkbox.dataset.lineAmount || 0);
+                total += lineAmount;
+            });
+
+            const totalEl = document.getElementById('selectedTotalAmountText');
+            if (totalEl) {
+                totalEl.textContent = formatNumberWithComma(total);
+            }
+        }
+
+        function submitSelectedCartOrder() {
+            const checked = document.querySelectorAll('.cart-select:checked');
+
+            if (checked.length === 0) {
+                alert('주문할 상품을 선택해주세요.');
+                return;
+            }
+
+            const form = document.getElementById('selectedOrderForm');
+
+            // 기존 hidden 제거 (중복 방지)
+            form.querySelectorAll('input[name="selectedCartItemIds"]').forEach(el => el.remove());
+
+            checked.forEach((checkbox) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selectedCartItemIds';
+                input.value = checkbox.value;
+                form.appendChild(input);
+            });
+
+            form.submit();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.cart-select').forEach((checkbox) => {
+                checkbox.addEventListener('change', recalculateSelectedTotal);
+            });
+
+            // 초기값 계산
+            recalculateSelectedTotal();
+        });
+    </script>
 </div>
 </body>
 </html>
