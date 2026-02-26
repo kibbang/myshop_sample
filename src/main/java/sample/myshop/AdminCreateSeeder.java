@@ -31,6 +31,8 @@ public class AdminCreateSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (!seedAdmin) return;
+
         Long count = em.createQuery("select count(m) from Member m where m.role = 'ADMIN'", Long.class)
                 .getSingleResult();
 
