@@ -38,3 +38,8 @@ out/
 
 ### local uploads (product images)
 uploads/
+
+### Settings
+application.properties
+application-local.properties
+application-test.properties

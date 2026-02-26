@@ -12,11 +12,12 @@ import sample.myshop.member.domain.Member;
 import sample.myshop.member.enums.Role;
 import sample.myshop.member.repository.MemberRepository;
 import sample.myshop.member.service.MemberService;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-@Profile("local")
+@Profile({"local","prod"})
 @Component
 @Transactional
 public class AdminCreateSeeder implements CommandLineRunner {
@@ -24,6 +25,9 @@ public class AdminCreateSeeder implements CommandLineRunner {
     private final MemberRepository memberRepository;
     private final EntityManager em;
     private final BCryptPasswordEncoder passwordEncoder;
+
+    @Value("${myshop.seed.admin:false}")
+    private boolean seedAdmin;
 
     @Override
     public void run(String... args) throws Exception {
