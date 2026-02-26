@@ -42,5 +42,6 @@ uploads/
 ### Settings
 application.properties
 application-local.properties
-application-test.propertiessrc/main/resources/application.properties
+application-test.properties
+src/main/resources/application.properties
 src/test/resources/application-test.properties
