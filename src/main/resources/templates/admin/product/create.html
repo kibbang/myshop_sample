@@ -91,7 +91,7 @@
                                            th:classappend="${#fields.hasErrors('slug')} ? ' is-invalid' : ''"
                                            placeholder="예) basic-tshirt">
                                     <div class="field-error" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}">slug error</div>
-                                    <div class="form-hint">URL용 식별자(선택). 비워두면 서버에서 생성하는 정책도 흔함.</div>
+                                    <div class="form-hint">URL용 식별자(선택).</div>
                                 </div>
 
                                 <div class="mb-3">
@@ -113,7 +113,6 @@
                                         <span class="input-group-text">원</span>
                                     </div>
                                     <div class="field-error" th:if="${#fields.hasErrors('basePrice')}" th:errors="*{basePrice}">basePrice error</div>
-                                    <div class="form-hint">Variant 가격을 쓰는 경우 override될 수 있음.</div>
                                 </div>
 
                                 <div class="col-12 col-md-6">
@@ -161,7 +160,7 @@
                                 <li>✅ Inventory(0) 1개 생성</li>
                             </ul>
                             <div class="text-muted">
-                                이후 옵션/옵션값을 만든 뒤 Variant를 수동으로 추가하는 흐름으로 확장하면 됨.
+                                이후 옵션/옵션값을 만든 뒤 Variant를 수동으로 추가
                             </div>
                         </div>
                     </div>
