@@ -79,3 +79,14 @@
 
 ## 7) AWS 호스팅
 http://13.124.61.213
+
+## 8) 화면
+- 상품
+<img width="904" height="914" alt="상품등록" src="https://github.com/user-attachments/assets/60ca4901-0823-4228-a66b-899121e09975" />
+
+- 메인
+<img width="1308" height="931" alt="메인" src="https://github.com/user-attachments/assets/7d19ecd8-89ac-45ee-8928-7a04cfccbac1" />
+
+-회원리스트
+<img width="1388" height="577" alt="회원리스트" src="https://github.com/user-attachments/assets/830ee410-dbc6-44b2-a6fa-d854e8ad6039" />
+
