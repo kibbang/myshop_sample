@@ -181,7 +181,22 @@
                 await navigator.clipboard.writeText(orderNo);
                 showCopyToast('주문번호가 복사되었습니다.');
             } catch (e) {
-                showCopyToast('복사에 실패했습니다. 주문번호를 드래그해서 복사해주세요.');
+                // HTTP 폴백 (deprecated지만 동작함)
+                const textArea = document.createElement('textarea');
+                textArea.value = orderNo;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+
+                const success = document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                if (success) {
+                    showCopyToast('주문번호가 복사되었습니다.');
+                } else {
+                    showCopyToast('복사에 실패했습니다. 주문번호를 드래그해서 복사해주세요.');
+                }
             }
         }
     </script>
